@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "dungeons",
+  "version": "${version}",
+  "name": "Dungeons",
+  "description": "Dungeon crawler in Minecraft",
+  "authors": [
+    "Nucleoid Developers"
+  ],
+  "license": "LGPLv3",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "xyz.nucleoid.dungeons.dungeons.Dungeons"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.9.1",
+    "fabric": "*",
+    "minecraft": "1.16.2",
+    "plasmid": "0.3.x"
+  }
+}
