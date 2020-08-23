@@ -6,12 +6,12 @@ import xyz.nucleoid.plasmid.game.map.template.TemplateChunkGenerator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class DungeonsMap {
+public class DgMap {
     private final MapTemplate template;
-    private final DungeonsMapConfig config;
+    private final DgMapConfig config;
     public BlockPos spawn;
 
-    public DungeonsMap(MapTemplate template, DungeonsMapConfig config) {
+    public DgMap(MapTemplate template, DgMapConfig config) {
         this.template = template;
         this.config = config;
     }

@@ -10,13 +10,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.dungeons.dungeons.Dungeons;
-import xyz.nucleoid.dungeons.dungeons.game.map.DungeonsMap;
+import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 
-public class DungeonsSpawnLogic {
+public class DgSpawnLogic {
     private final GameWorld gameWorld;
-    private final DungeonsMap map;
+    private final DgMap map;
 
-    public DungeonsSpawnLogic(GameWorld gameWorld, DungeonsMap map) {
+    public DgSpawnLogic(GameWorld gameWorld, DgMap map) {
         this.gameWorld = gameWorld;
         this.map = map;
     }

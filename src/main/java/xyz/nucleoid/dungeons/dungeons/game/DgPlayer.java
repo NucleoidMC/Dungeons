@@ -1,5 +1,5 @@
 package xyz.nucleoid.dungeons.dungeons.game;
 
-public class DungeonsPlayer {
+public class DgPlayer {
     // TODO data about the player in the game
 }

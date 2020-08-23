@@ -1,29 +1,26 @@
 package xyz.nucleoid.dungeons.dungeons.game.map;
 
 import xyz.nucleoid.plasmid.game.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.util.BlockBounds;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import xyz.nucleoid.dungeons.dungeons.game.DungeonsConfig;
 
 import java.util.concurrent.CompletableFuture;
 
-public class DungeonsMapGenerator {
+public class DgMapGenerator {
 
-    private final DungeonsMapConfig config;
+    private final DgMapConfig config;
 
-    public DungeonsMapGenerator(DungeonsMapConfig config) {
+    public DgMapGenerator(DgMapConfig config) {
         this.config = config;
     }
 
-    public CompletableFuture<DungeonsMap> create() {
+    public CompletableFuture<DgMap> create() {
         return CompletableFuture.supplyAsync(this::build, Util.getMainWorkerExecutor());
     }
 
-    private DungeonsMap build() {
+    private DgMap build() {
         MapTemplate template = MapTemplate.createEmpty();
-        DungeonsMap map = new DungeonsMap(template, this.config);
+        DgMap map = new DgMap(template, this.config);
 
         this.buildSpawn(template);
         map.spawn = new BlockPos(0,65,0);

@@ -1,6 +1,5 @@
 package xyz.nucleoid.dungeons.dungeons.game;
 
-import io.netty.util.internal.logging.AbstractInternalLogger;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.util.ActionResult;
@@ -9,10 +8,7 @@ import xyz.nucleoid.plasmid.game.event.*;
 import xyz.nucleoid.plasmid.game.player.JoinResult;
 import xyz.nucleoid.plasmid.game.rule.GameRule;
 import xyz.nucleoid.plasmid.game.rule.RuleResult;
-import xyz.nucleoid.plasmid.util.BlockBounds;
 import xyz.nucleoid.plasmid.util.PlayerRef;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,51 +19,46 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import xyz.nucleoid.dungeons.dungeons.Dungeons;
-import xyz.nucleoid.dungeons.dungeons.game.map.DungeonsMap;
+import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DungeonsActive {
-    private final DungeonsConfig config;
+public class DgActive {
+    private final DgConfig config;
 
     public final GameWorld gameWorld;
-    private final DungeonsMap gameMap;
+    private final DgMap gameMap;
 
     // TODO replace with ServerPlayerEntity if players are removed upon leaving
-    private final Object2ObjectMap<PlayerRef, DungeonsPlayer> participants;
-    private final DungeonsSpawnLogic spawnLogic;
-    private final DungeonsIdle idle;
+    private final Object2ObjectMap<PlayerRef, DgPlayer> participants;
+    private final DgSpawnLogic spawnLogic;
+    private final DgIdle idle;
     private final boolean ignoreWinState;
-    private final DungeonsTimerBar timerBar;
+    private final DgTimerBar timerBar;
 
-    private DungeonsActive(GameWorld gameWorld, DungeonsMap map, DungeonsConfig config, Set<PlayerRef> participants) {
+    private DgActive(GameWorld gameWorld, DgMap map, DgConfig config, Set<PlayerRef> participants) {
         this.gameWorld = gameWorld;
         this.config = config;
         this.gameMap = map;
-        this.spawnLogic = new DungeonsSpawnLogic(gameWorld, map);
+        this.spawnLogic = new DgSpawnLogic(gameWorld, map);
         this.participants = new Object2ObjectOpenHashMap<>();
 
         for (PlayerRef player : participants) {
-            this.participants.put(player, new DungeonsPlayer());
+            this.participants.put(player, new DgPlayer());
         }
 
-        this.idle = new DungeonsIdle();
+        this.idle = new DgIdle();
         this.ignoreWinState = this.participants.size() <= 1;
-        this.timerBar = new DungeonsTimerBar();
+        this.timerBar = new DgTimerBar();
     }
 
-    public static void open(GameWorld gameWorld, DungeonsMap map, DungeonsConfig config) {
+    public static void open(GameWorld gameWorld, DgMap map, DgConfig config) {
         Set<PlayerRef> participants = gameWorld.getPlayers().stream()
                 .map(PlayerRef::of)
                 .collect(Collectors.toSet());
-        DungeonsActive active = new DungeonsActive(gameWorld, map, config, participants);
+        DgActive active = new DgActive(gameWorld, map, config, participants);
 
         gameWorld.openGame(builder -> {
             builder.setRule(GameRule.CRAFTING, RuleResult.DENY);
@@ -146,7 +137,7 @@ public class DungeonsActive {
         ServerWorld world = this.gameWorld.getWorld();
         long time = world.getTime();
 
-        DungeonsIdle.IdleTickResult result = this.idle.tick(time, gameWorld);
+        DgIdle.IdleTickResult result = this.idle.tick(time, gameWorld);
 
         switch (result) {
             case CONTINUE_TICK:

@@ -6,10 +6,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
-public final class DungeonsTimerBar implements AutoCloseable {
+public final class DgTimerBar implements AutoCloseable {
     private final ServerBossBar bar;
 
-    public DungeonsTimerBar() {
+    public DgTimerBar() {
         LiteralText title = new LiteralText("Waiting for the game to start...");
 
         this.bar = new ServerBossBar(title, BossBar.Color.GREEN, BossBar.Style.NOTCHED_10);

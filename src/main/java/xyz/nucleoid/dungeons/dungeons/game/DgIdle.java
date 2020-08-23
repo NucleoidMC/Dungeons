@@ -10,18 +10,18 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 
-public class DungeonsIdle {
+public class DgIdle {
     private long closeTime = -1;
     public long finishTime = -1;
     private long startTime = -1;
     private final Object2ObjectMap<ServerPlayerEntity, FrozenPlayer> frozen;
     private boolean setSpectator = false;
 
-    public DungeonsIdle() {
+    public DgIdle() {
         this.frozen = new Object2ObjectOpenHashMap<>();
     }
 
-    public void onOpen(long time, DungeonsConfig config) {
+    public void onOpen(long time, DgConfig config) {
         this.startTime = time - (time % 20) + (4 * 20) + 19;
         this.finishTime = this.startTime + (config.timeLimitSecs * 20);
     }
@@ -81,11 +81,11 @@ public class DungeonsIdle {
 
         if ((this.startTime - time) % 20 == 0) {
             if (sec > 0) {
-                DungeonsActive.broadcastTitle(new LiteralText(Integer.toString(sec)).formatted(Formatting.BOLD), world);
-                DungeonsActive.broadcastSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, 1.0F, world);
+                DgActive.broadcastTitle(new LiteralText(Integer.toString(sec)).formatted(Formatting.BOLD), world);
+                DgActive.broadcastSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, 1.0F, world);
             } else {
-                DungeonsActive.broadcastTitle(new LiteralText("Go!").formatted(Formatting.BOLD), world);
-                DungeonsActive.broadcastSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, 2.0F, world);
+                DgActive.broadcastTitle(new LiteralText("Go!").formatted(Formatting.BOLD), world);
+                DgActive.broadcastSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, 2.0F, world);
             }
         }
     }
