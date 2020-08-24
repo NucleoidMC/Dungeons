@@ -26,28 +26,11 @@ public class DgSpawnLogic {
         player.setVelocity(Vec3d.ZERO);
         player.fallDistance = 0.0f;
 
-        player.addStatusEffect(new StatusEffectInstance(
-                StatusEffects.NIGHT_VISION,
-                20 * 60 * 60,
-                1,
-                true,
-                false
-        ));
     }
 
     public void spawnPlayer(ServerPlayerEntity player) {
         ServerWorld world = this.gameWorld.getWorld();
 
-        BlockPos pos = this.map.spawn;
-        if (pos == null) {
-            Dungeons.LOGGER.error("Cannot spawn player! No spawn is defined in the map!");
-            return;
-        }
-
-        float radius = 4.5f;
-        float x = pos.getX() + MathHelper.nextFloat(player.getRandom(), -radius, radius);
-        float z = pos.getZ() + MathHelper.nextFloat(player.getRandom(), -radius, radius);
-
-        player.teleport(world, x, pos.getY() + 0.5, z, 0.0F, 0.0F);
+        player.teleport(world, 0, 44, 0, 0.0F, 0.0F);
     }
 }

@@ -25,6 +25,9 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+    implementation "kdotjpg:open-simplex:2.0"
+    include "kdotjpg:open-simplex:2.0"
+
     // Plasmid
     modImplementation "xyz.nucleoid:plasmid:0.3.4"
 

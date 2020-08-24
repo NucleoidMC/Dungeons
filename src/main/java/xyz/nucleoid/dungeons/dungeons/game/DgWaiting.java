@@ -31,7 +31,7 @@ public class DgWaiting {
     }
 
     public static CompletableFuture<GameWorld> open(GameOpenContext<DgConfig> context) {
-        DgMapGenerator generator = new DgMapGenerator(context.getConfig().mapConfig);
+        DgMapGenerator generator = new DgMapGenerator();
 
         return generator.create().thenCompose(map -> {
             BubbleWorldConfig worldConfig = new BubbleWorldConfig()

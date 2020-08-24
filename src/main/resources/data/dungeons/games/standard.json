@@ -1,11 +1,5 @@
 {
   "type": "dungeons:dungeons",
-  "map": {
-    "spawn_block": {
-      "Name": "minecraft:red_terracotta",
-      "Properties": {}
-    }
-  },
   "players": {
     "min": 1,
     "max": 100

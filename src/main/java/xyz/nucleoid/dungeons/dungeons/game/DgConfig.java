@@ -8,17 +8,14 @@ import xyz.nucleoid.dungeons.dungeons.game.map.DgMapConfig;
 public class DgConfig {
     public static final Codec<DgConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             PlayerConfig.CODEC.fieldOf("players").forGetter(config -> config.playerConfig),
-            DgMapConfig.CODEC.fieldOf("map").forGetter(config -> config.mapConfig),
             Codec.INT.fieldOf("time_limit_secs").forGetter(config -> config.timeLimitSecs)
     ).apply(instance, DgConfig::new));
 
     public final PlayerConfig playerConfig;
-    public final DgMapConfig mapConfig;
     public final int timeLimitSecs;
 
-    public DgConfig(PlayerConfig players, DgMapConfig mapConfig, int timeLimitSecs) {
+    public DgConfig(PlayerConfig players, int timeLimitSecs) {
         this.playerConfig = players;
-        this.mapConfig = mapConfig;
         this.timeLimitSecs = timeLimitSecs;
     }
 }
