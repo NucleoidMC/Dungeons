@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.chunk.Chunk;
@@ -62,6 +63,40 @@ public class DgChunkGenerator extends GameChunkGenerator {
 	}
 
 	private double noiseFalloffAt(int y) {
-		return (10.0 / y) - (10.0 / (y - 40));
+		return (16.0 / y) - (16.0 / (y - 40));
+	}
+
+	@Override
+	public void generateFeatures(ChunkRegion world, StructureAccessor structures) {
+		int chunkX = world.getCenterChunkX() * 16;
+		int chunkZ = world.getCenterChunkZ() * 16;
+
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		Random random = new Random();
+
+		for (int x = chunkX; x < chunkX + 16; x++) {
+			for (int z = chunkZ; z < chunkZ + 16; z++) {
+				if (random.nextInt(60) == 0) {
+					// Place glowstone
+					for (int y = 0; y < 39; y++) {
+						mutable.set(x, y, z);
+
+						BlockState atPos = world.getBlockState(mutable);
+
+						if (atPos.isOpaque() && world.getBlockState(mutable.up()).isAir()) {
+							if (random.nextBoolean()) {
+								world.setBlockState(mutable, Blocks.GLOWSTONE.getDefaultState(), 3);
+							}
+						}
+
+						if (atPos.isOpaque() && world.getBlockState(mutable.down()).isAir()) {
+							if (random.nextBoolean()) {
+								world.setBlockState(mutable, Blocks.GLOWSTONE.getDefaultState(), 3);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
