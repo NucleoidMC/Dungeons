@@ -49,7 +49,7 @@ public class DgChunkGenerator extends GameChunkGenerator {
 						state = Blocks.BEDROCK.getDefaultState();
 						world.setBlockState(mutable, state, 3);
 					} else {
-						if ((noiseFalloffAt(y) + (verticalThreshold.eval(x / 40.0, y / 20.0, z / 40.0) * 2)) > threshold) {
+						if ((noiseFalloffAt(y) + (verticalThreshold.eval(x / 40.0, y / 20.0, z / 40.0) * 2.5)) > threshold) {
 							world.setBlockState(mutable, state, 3);
 						}
 					}
@@ -76,23 +76,26 @@ public class DgChunkGenerator extends GameChunkGenerator {
 
 		for (int x = chunkX; x < chunkX + 16; x++) {
 			for (int z = chunkZ; z < chunkZ + 16; z++) {
-				if (random.nextInt(60) == 0) {
-					// Place glowstone
-					for (int y = 0; y < 39; y++) {
-						mutable.set(x, y, z);
+				for (int y = 0; y < 39; y++) {
+					mutable.set(x, y, z);
 
-						BlockState atPos = world.getBlockState(mutable);
+					BlockState atPos = world.getBlockState(mutable);
 
-						if (atPos.isOpaque() && world.getBlockState(mutable.up()).isAir()) {
-							if (random.nextBoolean()) {
-								world.setBlockState(mutable, Blocks.GLOWSTONE.getDefaultState(), 3);
-							}
+					// Floor
+					if (atPos.isOpaque() && world.getBlockState(mutable.up()).isAir()) {
+						if (random.nextInt(120) == 0) {
+							world.setBlockState(mutable, Blocks.GLOWSTONE.getDefaultState(), 3);
+						} else if (random.nextInt(2) == 0) {
+							world.setBlockState(mutable, Blocks.GRASS_BLOCK.getDefaultState(), 3);
+						} else if (random.nextInt(6) == 0) {
+							world.setBlockState(mutable, Blocks.COARSE_DIRT.getDefaultState(), 3);
 						}
+					}
 
-						if (atPos.isOpaque() && world.getBlockState(mutable.down()).isAir()) {
-							if (random.nextBoolean()) {
-								world.setBlockState(mutable, Blocks.GLOWSTONE.getDefaultState(), 3);
-							}
+					// Ceiling
+					if (atPos.isOpaque() && world.getBlockState(mutable.down()).isAir()) {
+						if (random.nextInt(80) == 0) {
+							world.setBlockState(mutable, Blocks.GLOWSTONE.getDefaultState(), 3);
 						}
 					}
 				}
