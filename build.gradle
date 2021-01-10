@@ -31,6 +31,8 @@ dependencies {
     // Plasmid
     modImplementation "xyz.nucleoid:plasmid:0.4.81"
 
+    modImplementation "xyz.nucleoid:substrate:0.1.1"
+
     modRuntime("com.github.SuperCoder7979:databreaker:0.2.6") {
         exclude module: "fabric-loader"
     }
