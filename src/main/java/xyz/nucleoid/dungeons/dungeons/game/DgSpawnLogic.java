@@ -1,22 +1,18 @@
 package xyz.nucleoid.dungeons.dungeons.game;
 
 import net.minecraft.util.math.Vec3d;
-import xyz.nucleoid.plasmid.game.GameWorld;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
+
+import xyz.nucleoid.plasmid.game.GameSpace;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
-import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 
 public class DgSpawnLogic {
-    private final GameWorld gameWorld;
+    private final GameSpace gameWorld;
     private final DgMap map;
 
-    public DgSpawnLogic(GameWorld gameWorld, DgMap map) {
+    public DgSpawnLogic(GameSpace gameWorld, DgMap map) {
         this.gameWorld = gameWorld;
         this.map = map;
     }

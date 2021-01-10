@@ -11,6 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.StructureAccessor;
@@ -21,7 +22,7 @@ public class DgChunkGenerator extends GameChunkGenerator {
 	private final OpenSimplexNoise verticalThreshold;
 
 	public DgChunkGenerator(MinecraftServer server) {
-		super(createBiomeSource(server, BuiltinBiomes.THE_VOID), new StructuresConfig(false));
+		super(createBiomeSource(server, BiomeKeys.THE_VOID), new StructuresConfig(false));
 		Random random = new Random();
 		horizontalThreshold = new OpenSimplexNoise(random.nextLong());
 		verticalThreshold = new OpenSimplexNoise(random.nextLong());

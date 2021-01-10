@@ -3,7 +3,8 @@ package xyz.nucleoid.dungeons.dungeons.game;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.util.ActionResult;
-import xyz.nucleoid.plasmid.game.GameWorld;
+
+import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.event.*;
 import xyz.nucleoid.plasmid.game.player.JoinResult;
 import xyz.nucleoid.plasmid.game.rule.GameRule;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 public class DgActive {
     private final DgConfig config;
 
-    public final GameWorld gameWorld;
+    public final GameSpace gameWorld;
     private final DgMap gameMap;
 
     // TODO replace with ServerPlayerEntity if players are removed upon leaving
@@ -38,7 +39,7 @@ public class DgActive {
     private final boolean ignoreWinState;
     private final DgTimerBar timerBar;
 
-    private DgActive(GameWorld gameWorld, DgMap map, DgConfig config, Set<PlayerRef> participants) {
+    private DgActive(GameSpace gameWorld, DgMap map, DgConfig config, Set<PlayerRef> participants) {
         this.gameWorld = gameWorld;
         this.config = config;
         this.gameMap = map;
@@ -54,7 +55,7 @@ public class DgActive {
         this.timerBar = new DgTimerBar();
     }
 
-    public static void open(GameWorld gameWorld, DgMap map, DgConfig config) {
+    public static void open(GameSpace gameWorld, DgMap map, DgConfig config) {
         Set<PlayerRef> participants = gameWorld.getPlayers().stream()
                 .map(PlayerRef::of)
                 .collect(Collectors.toSet());
@@ -111,10 +112,9 @@ public class DgActive {
         this.timerBar.removePlayer(player);
     }
 
-    private boolean onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
+    private ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
         // TODO handle damage
-        this.spawnParticipant(player);
-        return true;
+        return ActionResult.PASS;
     }
 
     private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
@@ -157,23 +157,23 @@ public class DgActive {
         // TODO tick logic
     }
 
-    protected static void broadcastMessage(Text message, GameWorld world) {
+    protected static void broadcastMessage(Text message, GameSpace world) {
         for (ServerPlayerEntity player : world.getPlayers()) {
             player.sendMessage(message, false);
         }
     }
 
-    protected static void broadcastSound(SoundEvent sound, float pitch, GameWorld world) {
+    protected static void broadcastSound(SoundEvent sound, float pitch, GameSpace world) {
         for (ServerPlayerEntity player : world.getPlayers()) {
             player.playSound(sound, SoundCategory.PLAYERS, 1.0F, pitch);
         }
     }
 
-    protected static void broadcastSound(SoundEvent sound,  GameWorld world) {
+    protected static void broadcastSound(SoundEvent sound,  GameSpace world) {
         broadcastSound(sound, 1.0f, world);
     }
 
-    protected static void broadcastTitle(Text message, GameWorld world) {
+    protected static void broadcastTitle(Text message, GameSpace world) {
         for (ServerPlayerEntity player : world.getPlayers()) {
             TitleS2CPacket packet = new TitleS2CPacket(TitleS2CPacket.Action.TITLE, message, 1, 5,  3);
             player.networkHandler.sendPacket(packet);
