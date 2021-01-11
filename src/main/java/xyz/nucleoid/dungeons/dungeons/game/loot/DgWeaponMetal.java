@@ -7,7 +7,7 @@ public enum DgWeaponMetal {
     BRONZE("Bronze", DgLootGrade.BATTERED, DgLootGrade.FINE),
     IRON("Iron", DgLootGrade.DUSTY, DgLootGrade.FINE),
     STEEL("Steel", DgLootGrade.MEDIOCRE, DgLootGrade.EXCELLENT),
-    DAMASCUS("Damascus", DgLootGrade.MEDIOCRE, DgLootGrade.EXCELLENT),
+    DAMASCUS("Damascus Steel", DgLootGrade.MEDIOCRE, DgLootGrade.EXCELLENT),
     NETHERITE("Netherite", DgLootGrade.FINE, DgLootGrade.SUPERB),
     VIARITE("Viarite", DgLootGrade.FINE, DgLootGrade.SUPERB),
     GREYSTONE("Greystone", DgLootGrade.FINE, DgLootGrade.SUPERB);

@@ -8,7 +8,7 @@ public enum DgLootGrade {
     BATTERED("Battered"),
     OLD("Old"),
     DUSTY("Dusty"),
-    MEDIOCRE(""),
+    MEDIOCRE("Mediocre"),
     STURDY("Sturdy"),
     FINE("Fine"),
     EXCELLENT("Excellent"),

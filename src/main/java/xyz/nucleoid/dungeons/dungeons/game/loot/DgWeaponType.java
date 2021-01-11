@@ -6,7 +6,7 @@ import net.minecraft.item.Items;
 import java.util.Random;
 
 public enum DgWeaponType {
-    HAND_AXE("Hand axe"),
+    HAND_AXE("Handaxe"),
     BATTLE_AXE("Battleaxe"),
     SWORD("Sword"),
     GREAT_SWORD("Greatsword"),
