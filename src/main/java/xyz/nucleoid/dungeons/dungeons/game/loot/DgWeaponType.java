@@ -6,23 +6,26 @@ import net.minecraft.item.Items;
 import java.util.Random;
 
 public enum DgWeaponType {
-    HAND_AXE("Handaxe"),
-    BATTLE_AXE("Battleaxe"),
-    SWORD("Sword"),
-    GREAT_SWORD("Greatsword"),
-    DAGGER("Dagger"),
-    MACE("Mace"),
+    HAND_AXE("Handaxe", 6),
+    BATTLE_AXE("Battleaxe", 7),
+    SWORD("Sword", 5),
+    GREAT_SWORD("Greatsword", 7),
+    DAGGER("Dagger", 2.5),
+    MACE("Mace", 4),
     // TODO(restioson): how to handle these having different materials?
 //    QUARTERSTAFF("Quarterstaff"),
 //    BOW("Bow"),
 //    CROSSBOW("Crossbow");
     ;
 
-    DgWeaponType(String name) {
+    public final String name;
+    public final double baseDamage;
+
+    DgWeaponType(String name, double baseDamage) {
         this.name = name;
+        this.baseDamage = baseDamage;
     }
 
-    public final String name;
 
     public static DgWeaponType choose(Random random) {
         DgWeaponType[] types = DgWeaponType.values();

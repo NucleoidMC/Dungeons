@@ -30,7 +30,7 @@ public class DgWeapon {
         DgWeaponType type = DgWeaponType.choose(random);
         DgWeaponMetal metal = DgWeaponMetal.choose(random);
         DgLootGrade grade = DgLootGrade.chooseInRange(random, metal.minGrade, metal.maxGrade);
-        double attackDamage = 4 + random.nextDouble() * 4;
+        double attackDamage = (type.baseDamage + (random.nextDouble() / 2)) * metal.damageModifier * grade.damageModifier;
         String flavourText = DgWeapon.generateFlavourText(random, grade, metal);
 
         return new DgWeapon(type, grade, metal, flavourText, attackDamage);
@@ -48,14 +48,14 @@ public class DgWeapon {
                     "Maybe it will give your enemies some sort of disease?",
                     "It would be a bad idea to bring this anywhere near to the cookfire."
             );
-        } else if (grade.ordinal() <= DgLootGrade.MEDIOCRE.ordinal()) {
+        } else if (grade.ordinal() <= DgLootGrade.FINE.ordinal()) {
             Collections.addAll(
                     choices,
                     "It will do, for now.",
                     "Impressive to anyone who isn't knowledgeable about weapons.",
                     "It seems to be standard issue from an old kingdom army."
             );
-        } else if (grade.ordinal() <= DgLootGrade.EXCELLENT.ordinal()) {
+        } else if (grade.ordinal() <= DgLootGrade.SUPERB.ordinal()) {
             Collections.addAll(
                     choices,
                     "It almost seems to glow softly in the dim light.",
@@ -101,8 +101,6 @@ public class DgWeapon {
     }
 
     public ItemStack toItemStack() {
-        List<String> lore = new ArrayList<>();
-
         ItemStackBuilder builder = ItemStackBuilder.of(this.type.asVanillaItem())
                 .setName(new LiteralText(String.format("%s %s %s", this.grade.name, this.metal.name, this.type.name)))
                 .addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", this.attackDamage, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
