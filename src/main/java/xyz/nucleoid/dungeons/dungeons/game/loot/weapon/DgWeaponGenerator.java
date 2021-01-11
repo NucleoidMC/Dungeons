@@ -13,9 +13,9 @@ public class DgWeaponGenerator {
     public static ItemStack generate(Random random) {
         int rand = (int) Math.round(random.nextFloat() * 10.0);
 
-        if (rand < 2) {
+        if (rand <= 3) {
             return DgBow.generate(random).toItemStack();
-        } else if (rand < 9) {
+        } else if (rand <= 7) {
             return DgMetalMeleeWeapon.generate(random).toItemStack();
         } else {
             return DgQuarterstaff.generate(random).toItemStack();
