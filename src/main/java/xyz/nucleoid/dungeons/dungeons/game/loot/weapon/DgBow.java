@@ -40,7 +40,7 @@ public class DgBow {
                 .setName(new LiteralText(String.format("%s %s %s", this.grade.name, this.material.name, this.type.name)))
                 .addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", this.attackDamage, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
 
-        DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s quarterstaff made of %s.", this.grade.name.toLowerCase(), this.material.name.toLowerCase()));
+        DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.material.name.toLowerCase()));
         return builder.build();
     }
 }
