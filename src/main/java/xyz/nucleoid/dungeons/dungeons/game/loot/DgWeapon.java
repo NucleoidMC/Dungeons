@@ -85,7 +85,7 @@ public class DgWeapon {
                     choices,
                     "A sturdy blade with a formidable cutting edge.",
                     "Rather heavy, but balanced and sharp nonetheless.",
-                        "It is impressively durable and flexible.."
+                    "It is impressively durable and flexible."
             );
         } else {
             Collections.addAll(
