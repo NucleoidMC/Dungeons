@@ -28,7 +28,13 @@ public class DgWeapon {
 
     public static DgWeapon generate(Random random) {
         DgWeaponType type = DgWeaponType.choose(random);
-        DgWeaponMetal metal = DgWeaponMetal.choose(random);
+
+        DgWeaponMetal skip = null;
+        if (type == DgWeaponType.MACE) {
+            skip = DgWeaponMetal.DAMASCUS;
+        }
+        DgWeaponMetal metal = DgWeaponMetal.choose(random, skip);
+
         DgLootGrade grade = DgLootGrade.chooseInRange(random, metal.minGrade, metal.maxGrade);
         double attackDamage = (type.baseDamage + (random.nextDouble() / 2)) * metal.damageModifier * grade.damageModifier;
         String flavourText = DgWeapon.generateFlavourText(random, grade, metal);

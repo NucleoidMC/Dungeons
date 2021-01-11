@@ -1,6 +1,8 @@
 package xyz.nucleoid.dungeons.dungeons.game.loot;
 
-import java.util.Random;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
 
 public enum DgWeaponMetal {
     // Tier 1
@@ -31,9 +33,15 @@ public enum DgWeaponMetal {
         this.maxGrade = maxGrade;
     }
 
-    public static DgWeaponMetal choose(Random random) {
-        DgWeaponMetal[] types = DgWeaponMetal.values();
-        int idx = random.nextInt(types.length);
-        return types[idx];
+    public static DgWeaponMetal choose(Random random, @Nullable DgWeaponMetal skip) {
+        if (skip == null) {
+            DgWeaponMetal[] types = DgWeaponMetal.values();
+            return types[random.nextInt(types.length)];
+        } else {
+            ArrayList<DgWeaponMetal> types = new ArrayList<>();
+            Collections.addAll(types, DgWeaponMetal.values());
+            types.remove(skip.ordinal());
+            return types.get(random.nextInt(types.size()));
+        }
     }
 }
