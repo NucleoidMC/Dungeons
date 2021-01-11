@@ -6,6 +6,7 @@ import kdotjpg.opensimplex.OpenSimplexNoise;
 
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 
 public class SpheroidRoom extends Room {
 	private final OpenSimplexNoise noise;
@@ -40,5 +41,15 @@ public class SpheroidRoom extends Room {
 		}
 
 		return false;
+	}
+
+	@Override
+	public BlockPos getCenter() {
+		return this.center;
+	}
+
+	@Override
+	public Vec3i getSize() {
+		return new Vec3i(this.xRadius, this.yRadius, this.zRadius);
 	}
 }

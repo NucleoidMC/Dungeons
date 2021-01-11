@@ -27,6 +27,6 @@ public class DgSpawnLogic {
     public void spawnPlayer(ServerPlayerEntity player) {
         ServerWorld world = this.gameWorld.getWorld();
 
-        player.teleport(world, 0, 44, 0, 0.0F, 0.0F);
+        player.teleport(world, 0, 40, 0, 0.0F, 0.0F);
     }
 }

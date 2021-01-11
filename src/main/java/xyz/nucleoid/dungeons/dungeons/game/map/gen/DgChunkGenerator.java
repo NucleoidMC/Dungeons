@@ -35,12 +35,12 @@ public class DgChunkGenerator extends GameChunkGenerator {
 
 		for (int x = chunkX; x < chunkX + 16; x++) {
 			for (int z = chunkZ; z < chunkZ + 16; z++) {
-				for (int y = 0; y < 40; y++) {
+				for (int y = 0; y < 80; y++) {
 					mutable.set(x, y, z);
 
 					BlockState state = Blocks.STONE.getDefaultState();
 
-					if (y == 0 || y == 39) {
+					if (y == 0 || y == 79) {
 						state = Blocks.BEDROCK.getDefaultState();
 					}
 

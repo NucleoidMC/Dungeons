@@ -6,7 +6,7 @@ import java.util.Random;
 
 import net.minecraft.util.math.BlockPos;
 
-public class RoomManager {
+public final class RoomManager {
 	private final List<Room> rooms;
 
 	public RoomManager() {
