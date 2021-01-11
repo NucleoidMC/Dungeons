@@ -1,11 +1,11 @@
-package xyz.nucleoid.dungeons.dungeons.game.loot;
+package xyz.nucleoid.dungeons.dungeons.game.loot.weapon;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 
 import java.util.Random;
 
-public enum DgWeaponType {
+public enum DgMetalMeleeWeaponType {
     HAND_AXE("Handaxe", 6),
     BATTLE_AXE("Battleaxe", 7),
     SWORD("Sword", 5),
@@ -21,14 +21,13 @@ public enum DgWeaponType {
     public final String name;
     public final double baseDamage;
 
-    DgWeaponType(String name, double baseDamage) {
+    DgMetalMeleeWeaponType(String name, double baseDamage) {
         this.name = name;
         this.baseDamage = baseDamage;
     }
 
-
-    public static DgWeaponType choose(Random random) {
-        DgWeaponType[] types = DgWeaponType.values();
+    public static DgMetalMeleeWeaponType choose(Random random) {
+        DgMetalMeleeWeaponType[] types = DgMetalMeleeWeaponType.values();
         int idx = random.nextInt(types.length);
         return types[idx];
     }

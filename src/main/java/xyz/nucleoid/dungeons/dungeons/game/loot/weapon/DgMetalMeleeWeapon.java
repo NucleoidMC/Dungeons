@@ -1,24 +1,28 @@
-package xyz.nucleoid.dungeons.dungeons.game.loot;
+package xyz.nucleoid.dungeons.dungeons.game.loot.weapon;
 
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
+import xyz.nucleoid.dungeons.dungeons.game.loot.DgLootGrade;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
-public class DgWeapon {
-    private static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
+import static xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgWeaponGenerator.ATTACK_DAMAGE_MODIFIER_ID;
 
-    public DgWeaponType type;
+public class DgMetalMeleeWeapon {
+    public DgMetalMeleeWeaponType type;
     public DgLootGrade grade;
     public DgWeaponMetal metal; // TODO(restioson): how to do other weapons?
     public String flavourText;
     public double attackDamage;
 
-    public DgWeapon(DgWeaponType type, DgLootGrade grade, DgWeaponMetal metal, String flavourText, double attackDamage) {
+    public DgMetalMeleeWeapon(DgMetalMeleeWeaponType type, DgLootGrade grade, DgWeaponMetal metal, String flavourText, double attackDamage) {
         this.type = type;
         this.grade = grade;
         this.metal = metal;
@@ -26,20 +30,20 @@ public class DgWeapon {
         this.attackDamage = attackDamage;
     }
 
-    public static DgWeapon generate(Random random) {
-        DgWeaponType type = DgWeaponType.choose(random);
+    public static DgMetalMeleeWeapon generate(Random random) {
+        DgMetalMeleeWeaponType type = DgMetalMeleeWeaponType.choose(random);
 
         DgWeaponMetal skip = null;
-        if (type == DgWeaponType.MACE) {
+        if (type == DgMetalMeleeWeaponType.MACE) {
             skip = DgWeaponMetal.DAMASCUS;
         }
         DgWeaponMetal metal = DgWeaponMetal.choose(random, skip);
 
         DgLootGrade grade = DgLootGrade.chooseInRange(random, metal.minGrade, metal.maxGrade);
         double attackDamage = (type.baseDamage + (random.nextDouble() / 2)) * metal.damageModifier * grade.damageModifier;
-        String flavourText = DgWeapon.generateFlavourText(random, grade, metal);
+        String flavourText = DgMetalMeleeWeapon.generateFlavourText(random, grade, metal);
 
-        return new DgWeapon(type, grade, metal, flavourText, attackDamage);
+        return new DgMetalMeleeWeapon(type, grade, metal, flavourText, attackDamage);
     }
 
     private static String generateFlavourText(Random random, DgLootGrade grade, DgWeaponMetal metal) {
@@ -111,28 +115,9 @@ public class DgWeapon {
                 .setName(new LiteralText(String.format("%s %s %s", this.grade.name, this.metal.name, this.type.name)))
                 .addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", this.attackDamage, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
 
-        DgWeapon.addLoreWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.metal.name.toLowerCase()));
-        DgWeapon.addLoreWrapped(builder, this.flavourText);
+        DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.metal.name.toLowerCase()));
+        DgWeaponGenerator.addLoreWrapped(builder, this.flavourText);
 
         return builder.build();
-    }
-
-    private static void addLoreWrapped(ItemStackBuilder builder, String text) {
-        int maxLoreLength = 25;
-        String[] split = text.split(" ");
-        StringBuilder currentLine = new StringBuilder(split[0]);
-
-        for (int idx = 1; idx < split.length; idx++) { // skip first word
-            String word = split[idx];
-            if (currentLine.length() + word.length() <= maxLoreLength) {
-                currentLine.append(" ");
-            } else {
-                builder.addLore(new LiteralText(currentLine.toString()));
-                currentLine.setLength(0);
-            }
-            currentLine.append(word);
-        }
-
-        builder.addLore(new LiteralText(currentLine.toString()));
     }
 }

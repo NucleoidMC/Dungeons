@@ -1,8 +1,11 @@
-package xyz.nucleoid.dungeons.dungeons.game.loot;
+package xyz.nucleoid.dungeons.dungeons.game.loot.weapon;
 
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.dungeons.dungeons.game.loot.DgLootGrade;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 public enum DgWeaponMetal {
     // Tier 1

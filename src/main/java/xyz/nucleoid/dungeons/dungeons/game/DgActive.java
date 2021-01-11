@@ -2,17 +2,6 @@ package xyz.nucleoid.dungeons.dungeons.game;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-
-import xyz.nucleoid.dungeons.dungeons.Dungeons;
-import xyz.nucleoid.dungeons.dungeons.game.loot.DgWeapon;
-import xyz.nucleoid.plasmid.game.GameSpace;
-import xyz.nucleoid.plasmid.game.event.*;
-import xyz.nucleoid.plasmid.game.player.JoinResult;
-import xyz.nucleoid.plasmid.game.rule.GameRule;
-import xyz.nucleoid.plasmid.game.rule.RuleResult;
-import xyz.nucleoid.plasmid.util.PlayerRef;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -22,11 +11,19 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
+import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgWeaponGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
+import xyz.nucleoid.plasmid.game.GameSpace;
+import xyz.nucleoid.plasmid.game.event.*;
+import xyz.nucleoid.plasmid.game.player.JoinResult;
+import xyz.nucleoid.plasmid.game.rule.GameRule;
+import xyz.nucleoid.plasmid.game.rule.RuleResult;
+import xyz.nucleoid.plasmid.util.PlayerRef;
 
-import java.util.*;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DgActive {
@@ -132,7 +129,7 @@ public class DgActive {
 
         ServerWorld world = this.gameSpace.getWorld();
         for (int i = 0; i < 10; i++) {
-            player.inventory.offerOrDrop(world, DgWeapon.generate(player.getRandom()).toItemStack());
+            player.inventory.offerOrDrop(world, DgWeaponGenerator.generate(player.getRandom()));
         }
     }
 
