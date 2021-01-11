@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.util.ActionResult;
 
+import xyz.nucleoid.dungeons.dungeons.game.loot.DgWeapon;
 import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.event.*;
 import xyz.nucleoid.plasmid.game.player.JoinResult;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 public class DgActive {
     private final DgConfig config;
 
-    public final GameSpace gameWorld;
+    public final GameSpace gameSpace;
     private final DgMap gameMap;
 
     // TODO replace with ServerPlayerEntity if players are removed upon leaving
@@ -39,11 +40,11 @@ public class DgActive {
     private final boolean ignoreWinState;
     private final DgTimerBar timerBar;
 
-    private DgActive(GameSpace gameWorld, DgMap map, DgConfig config, Set<PlayerRef> participants) {
-        this.gameWorld = gameWorld;
+    private DgActive(GameSpace gameSpace, DgMap map, DgConfig config, Set<PlayerRef> participants) {
+        this.gameSpace = gameSpace;
         this.config = config;
         this.gameMap = map;
-        this.spawnLogic = new DgSpawnLogic(gameWorld, map);
+        this.spawnLogic = new DgSpawnLogic(gameSpace, map);
         this.participants = new Object2ObjectOpenHashMap<>();
 
         for (PlayerRef player : participants) {
@@ -87,7 +88,7 @@ public class DgActive {
     }
 
     private void onOpen() {
-        ServerWorld world = this.gameWorld.getWorld();
+        ServerWorld world = this.gameSpace.getWorld();
         for (PlayerRef ref : this.participants.keySet()) {
             ref.ifOnline(world, this::spawnParticipant);
         }
@@ -126,6 +127,11 @@ public class DgActive {
     private void spawnParticipant(ServerPlayerEntity player) {
         this.spawnLogic.resetPlayer(player, GameMode.ADVENTURE);
         this.spawnLogic.spawnPlayer(player);
+
+        ServerWorld world = this.gameSpace.getWorld();
+        for (int i = 0; i < 10; i++) {
+            player.inventory.offerOrDrop(world, DgWeapon.generate(player.getRandom()).toItemStack());
+        }
     }
 
     private void spawnSpectator(ServerPlayerEntity player) {
@@ -134,10 +140,10 @@ public class DgActive {
     }
 
     private void tick() {
-        ServerWorld world = this.gameWorld.getWorld();
+        ServerWorld world = this.gameSpace.getWorld();
         long time = world.getTime();
 
-        DgIdle.IdleTickResult result = this.idle.tick(time, gameWorld);
+        DgIdle.IdleTickResult result = this.idle.tick(time, gameSpace);
 
         switch (result) {
             case CONTINUE_TICK:
@@ -148,7 +154,7 @@ public class DgActive {
                 this.broadcastWin(this.checkWinResult());
                 return;
             case GAME_CLOSED:
-                this.gameWorld.close();
+                this.gameSpace.close();
                 return;
         }
 
@@ -190,8 +196,8 @@ public class DgActive {
             message = new LiteralText("The game ended, but nobody won!").formatted(Formatting.GOLD);
         }
 
-        broadcastMessage(message, this.gameWorld);
-        broadcastSound(SoundEvents.ENTITY_VILLAGER_YES, this.gameWorld);
+        broadcastMessage(message, this.gameSpace);
+        broadcastSound(SoundEvents.ENTITY_VILLAGER_YES, this.gameSpace);
     }
 
     private WinResult checkWinResult() {
@@ -200,7 +206,7 @@ public class DgActive {
             return WinResult.no();
         }
 
-        ServerWorld world = this.gameWorld.getWorld();
+        ServerWorld world = this.gameSpace.getWorld();
         ServerPlayerEntity winningPlayer = null;
 
         // TODO win result logic
