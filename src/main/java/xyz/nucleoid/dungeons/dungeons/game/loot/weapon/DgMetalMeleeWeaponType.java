@@ -6,23 +6,23 @@ import net.minecraft.item.Items;
 import java.util.Random;
 
 public enum DgMetalMeleeWeaponType {
-    HAND_AXE("Handaxe", 6),
-    BATTLE_AXE("Battleaxe", 7),
-    SWORD("Sword", 5),
-    GREAT_SWORD("Greatsword", 7),
-    DAGGER("Dagger", 2.5),
-    MACE("Mace", 4),
+    HAND_AXE("hand_axe", 6),
+    BATTLE_AXE("battle_axe", 7),
+    SWORD("sword", 5),
+    GREAT_SWORD("great_sword", 7),
+    DAGGER("dagger", 2.5),
+    MACE("mace", 4),
     // TODO(restioson): how to handle these having different materials?
 //    QUARTERSTAFF("Quarterstaff"),
 //    BOW("Bow"),
 //    CROSSBOW("Crossbow");
     ;
 
-    public final String name;
+    public final String id;
     public final double baseDamage;
 
-    DgMetalMeleeWeaponType(String name, double baseDamage) {
-        this.name = name;
+    DgMetalMeleeWeaponType(String id, double baseDamage) {
+        this.id = id;
         this.baseDamage = baseDamage;
     }
 

@@ -6,15 +6,15 @@ import net.minecraft.item.Items;
 import java.util.Random;
 
 public enum DgBowType {
-    SHORTBOW("Shortbow", 5.5),
-    LONGBOW("Longbow", 6.2),
-    CROSSBOW("Crossbow", 7);
+    SHORTBOW("shortbow", 5.5),
+    LONGBOW("longbow", 6.2),
+    CROSSBOW("crossbow", 7);
 
-    public String name;
+    public String id;
     public double baseDamage;
 
-    DgBowType(String name, double baseDamage) {
-        this.name = name;
+    DgBowType(String id, double baseDamage) {
+        this.id = id;
         this.baseDamage = baseDamage;
     }
 
@@ -25,7 +25,7 @@ public enum DgBowType {
     }
 
     public Item asVanillaItem() {
-        switch(this) {
+        switch (this) {
             case SHORTBOW:
             case LONGBOW:
                 return Items.BOW;

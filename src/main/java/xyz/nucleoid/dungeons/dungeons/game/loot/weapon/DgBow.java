@@ -4,8 +4,9 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import xyz.nucleoid.dungeons.dungeons.game.loot.DgLootGrade;
+import xyz.nucleoid.dungeons.dungeons.game.loot.DgModelRegistry;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 
 import java.util.Random;
@@ -25,6 +26,14 @@ public class DgBow {
         this.attackDamage = attackDamage;
     }
 
+    public static void registerModels() {
+        for (DgBowType type : DgBowType.values()) {
+            for (DgBowMaterial material : DgBowMaterial.values()) {
+                DgModelRegistry.register(type.asVanillaItem(), material.id, type.id);
+            }
+        }
+    }
+
     // TODO(weapons): flavour text
     public static DgBow generate(Random random) {
         DgBowType type = DgBowType.choose(random);
@@ -37,10 +46,12 @@ public class DgBow {
 
     public ItemStack toItemStack() {
         ItemStackBuilder builder = ItemStackBuilder.of(this.type.asVanillaItem())
-                .setName(new LiteralText(String.format("%s %s %s", this.grade.name, this.material.name, this.type.name)))
+                .setName(new TranslatableText("item.dungeons." + this.type.id, new TranslatableText("grade." + this.grade.id), new TranslatableText("material.bow." + this.material.id)))
                 .addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", this.attackDamage, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
 
-        DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.material.name.toLowerCase()));
-        return builder.build();
+        DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s %s made of %s.", this.grade.id.toLowerCase(), this.type.id.toLowerCase(), this.material.id.toLowerCase()));
+        ItemStack stack = builder.build();
+        DgWeaponGenerator.addCustomModel(stack, material.id, type.id);
+        return stack;
     }
 }

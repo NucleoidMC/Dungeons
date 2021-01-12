@@ -2,6 +2,7 @@ package xyz.nucleoid.dungeons.dungeons.game.loot.weapon;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
+import xyz.nucleoid.dungeons.dungeons.game.loot.DgModelRegistry;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 
 import java.util.Random;
@@ -39,5 +40,9 @@ public class DgWeaponGenerator {
         }
 
         builder.addLore(new LiteralText(currentLine.toString()));
+    }
+
+    public static void addCustomModel(ItemStack stack, String... modifiers) {
+        stack.getOrCreateTag().putInt("CustomModelData", DgModelRegistry.getId(modifiers));
     }
 }

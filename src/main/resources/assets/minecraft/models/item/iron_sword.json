@@ -1,0 +1,152 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/iron_sword"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "dungeons:item/copper/sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2
+      },
+      "model": "dungeons:item/bronze/sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3
+      },
+      "model": "dungeons:item/iron/sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4
+      },
+      "model": "dungeons:item/steel/sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5
+      },
+      "model": "dungeons:item/damascus_steel/sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6
+      },
+      "model": "dungeons:item/netherite/sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 7
+      },
+      "model": "dungeons:item/viarite/sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 8
+      },
+      "model": "dungeons:item/greystone/sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9
+      },
+      "model": "dungeons:item/copper/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 10
+      },
+      "model": "dungeons:item/bronze/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 11
+      },
+      "model": "dungeons:item/iron/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12
+      },
+      "model": "dungeons:item/steel/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13
+      },
+      "model": "dungeons:item/damascus_steel/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 14
+      },
+      "model": "dungeons:item/netherite/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 15
+      },
+      "model": "dungeons:item/viarite/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 16
+      },
+      "model": "dungeons:item/greystone/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 17
+      },
+      "model": "dungeons:item/copper/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 18
+      },
+      "model": "dungeons:item/bronze/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 19
+      },
+      "model": "dungeons:item/iron/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 20
+      },
+      "model": "dungeons:item/steel/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 21
+      },
+      "model": "dungeons:item/damascus_steel/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 22
+      },
+      "model": "dungeons:item/netherite/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 23
+      },
+      "model": "dungeons:item/viarite/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 24
+      },
+      "model": "dungeons:item/greystone/dagger"
+    }
+  ]
+}
