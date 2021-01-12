@@ -6,15 +6,14 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import xyz.nucleoid.dungeons.dungeons.fake.DgItems;
 import xyz.nucleoid.dungeons.dungeons.assets.DgModelGenerator;
+import xyz.nucleoid.dungeons.dungeons.fake.DgItems;
 import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.DgWaiting;
 import xyz.nucleoid.dungeons.dungeons.game.command.GiveWeaponCommand;
-import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgBow;
 import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgMetalMeleeWeapon;
 import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgQuarterstaff;
-import xyz.nucleoid.plasmid.game.GameType;
+import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgRangedWeapon;
 import xyz.nucleoid.plasmid.game.GameType;
 
 public class Dungeons implements ModInitializer {
@@ -35,7 +34,7 @@ public class Dungeons implements ModInitializer {
         Dungeons.LOGGER.debug("===============================================================================================");
         Dungeons.LOGGER.debug("DUNGEONS MODEL IDS:");
         Dungeons.LOGGER.debug("===============================================================================================");
-        DgBow.registerModels();
+        DgRangedWeapon.registerModels();
         DgMetalMeleeWeapon.registerModels();
         DgQuarterstaff.registerModels();
         Dungeons.LOGGER.debug("===============================================================================================");

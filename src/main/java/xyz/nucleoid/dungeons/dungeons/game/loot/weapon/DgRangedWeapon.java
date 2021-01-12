@@ -1,8 +1,8 @@
 package xyz.nucleoid.dungeons.dungeons.game.loot.weapon;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.text.TranslatableText;
 import xyz.nucleoid.dungeons.dungeons.game.loot.DgLootGrade;
 import xyz.nucleoid.dungeons.dungeons.game.loot.DgModelRegistry;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
@@ -30,9 +30,9 @@ public class DgRangedWeapon {
     }
 
     public static void registerModels() {
-        for (DgBowType type : DgBowType.values()) {
-            for (DgBowMaterial material : DgBowMaterial.values()) {
-                DgModelRegistry.register(type.asVanillaItem(), material.id, type.id);
+        for (DgRangedWeaponType type : DgRangedWeaponType.values()) {
+            for (DgRangedWeaponMaterial material : DgRangedWeaponMaterial.values()) {
+                DgModelRegistry.register(type.asItem(), material.id, type.id);
             }
         }
     }

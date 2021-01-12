@@ -44,7 +44,7 @@ public class DgMetalMeleeWeapon {
     public static void registerModels() {
         for (DgMetalMeleeWeaponType type : DgMetalMeleeWeaponType.values()) {
             for (DgWeaponMetal material : DgWeaponMetal.values()) {
-                DgModelRegistry.register(type.asVanillaItem(), material.id, type.id);
+                DgModelRegistry.register(type.asItem(), material.id, type.id);
             }
         }
     }

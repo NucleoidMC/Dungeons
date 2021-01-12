@@ -30,11 +30,11 @@ public class GiveWeaponCommand {
     }
 
     private static void addBows(DgLootGrade grade, LiteralArgumentBuilder<ServerCommandSource> builder) {
-        for (DgBowType type : DgBowType.values()) {
+        for (DgRangedWeaponType type : DgRangedWeaponType.values()) {
             LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal(type.id);
-            for (DgBowMaterial material : DgBowMaterial.values()) {
+            for (DgRangedWeaponMaterial material : DgRangedWeaponMaterial.values()) {
                 node.then(CommandManager.literal(material.id).executes(context -> give(context.getSource(),
-                        new DgBow(type, material, grade, 1.0D, 1).toItemStack())));
+                        new DgRangedWeapon(type, grade, material,1.0D, 1).toItemStack())));
             }
             builder.then(node);
         }
