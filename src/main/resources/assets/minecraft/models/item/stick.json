@@ -1,0 +1,62 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/stick"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "dungeons:item/cork/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2
+      },
+      "model": "dungeons:item/balsa/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3
+      },
+      "model": "dungeons:item/hickory/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4
+      },
+      "model": "dungeons:item/ash/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5
+      },
+      "model": "dungeons:item/yew/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6
+      },
+      "model": "dungeons:item/ebony/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 7
+      },
+      "model": "dungeons:item/ironwood/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 8
+      },
+      "model": "dungeons:item/kiralis/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9
+      },
+      "model": "dungeons:item/arantew/quarterstaff"
+    }
+  ]
+}

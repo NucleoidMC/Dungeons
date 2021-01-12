@@ -4,8 +4,9 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import xyz.nucleoid.dungeons.dungeons.game.loot.DgLootGrade;
+import xyz.nucleoid.dungeons.dungeons.game.loot.DgModelRegistry;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 
 import java.util.ArrayList;
@@ -38,6 +39,14 @@ public class DgMetalMeleeWeapon {
         this.flavourText = flavourText;
         this.attackDamage = attackDamage;
         this.attackSpeed = attackSpeed;
+    }
+
+    public static void registerModels() {
+        for (DgMetalMeleeWeaponType type : DgMetalMeleeWeaponType.values()) {
+            for (DgWeaponMetal material : DgWeaponMetal.values()) {
+                DgModelRegistry.register(type.asVanillaItem(), material.id, type.id);
+            }
+        }
     }
 
     public static DgMetalMeleeWeapon generate(Random random, double meanLevel) {
@@ -117,14 +126,17 @@ public class DgMetalMeleeWeapon {
 
     public ItemStack toItemStack() {
         ItemStackBuilder builder = ItemStackBuilder.of(this.type.asVanillaItem())
-                .setName(new LiteralText(String.format("%s %s %s", this.grade.name, this.metal.name, this.type.name)))
                 .setUnbreakable()
+                .setName(new TranslatableText("item.dungeons." + this.type.id, new TranslatableText("grade." + this.grade.id), new TranslatableText("material.metal." + this.metal.id)))
                 // modifier is based on empty hand, so some subtraction must be done
                 .addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Attack damage modifier", this.attackDamage - 0.5, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND)
                 .addModifier(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Attack speed modifier", this.attackSpeed - 4.0, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
 
-        DgWeaponGenerator.addWeaponInfoWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.metal.name.toLowerCase()));
+        DgWeaponGenerator.addWeaponInfoWrapped(builder, String.format("A %s %s made of %s.", this.grade.id, this.type.id, this.metal.id));
         DgWeaponGenerator.addLoreWrapped(builder, this.flavourText);
-        return DgWeaponGenerator.fakeWeaponStats(builder, this.attackDamage, this.attackSpeed);
+        ItemStack stack = DgWeaponGenerator.fakeWeaponStats(builder, this.attackDamage, this.attackSpeed);;
+        DgWeaponGenerator.addCustomModel(stack, metal.id, type.id);
+        DgWeaponGenerator.formatName(stack, grade);
+        return stack;
     }
 }

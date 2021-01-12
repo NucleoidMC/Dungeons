@@ -1,0 +1,104 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/iron_axe"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "dungeons:item/copper/hand_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2
+      },
+      "model": "dungeons:item/bronze/hand_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3
+      },
+      "model": "dungeons:item/iron/hand_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4
+      },
+      "model": "dungeons:item/steel/hand_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5
+      },
+      "model": "dungeons:item/damascus_steel/hand_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6
+      },
+      "model": "dungeons:item/netherite/hand_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 7
+      },
+      "model": "dungeons:item/viarite/hand_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 8
+      },
+      "model": "dungeons:item/greystone/hand_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9
+      },
+      "model": "dungeons:item/copper/battle_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 10
+      },
+      "model": "dungeons:item/bronze/battle_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 11
+      },
+      "model": "dungeons:item/iron/battle_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12
+      },
+      "model": "dungeons:item/steel/battle_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13
+      },
+      "model": "dungeons:item/damascus_steel/battle_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 14
+      },
+      "model": "dungeons:item/netherite/battle_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 15
+      },
+      "model": "dungeons:item/viarite/battle_axe"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 16
+      },
+      "model": "dungeons:item/greystone/battle_axe"
+    }
+  ]
+}
