@@ -1,0 +1,116 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/bow"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "dungeons:item/pine/shortbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2
+      },
+      "model": "dungeons:item/balsa/shortbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3
+      },
+      "model": "dungeons:item/oak/shortbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4
+      },
+      "model": "dungeons:item/cedar/shortbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5
+      },
+      "model": "dungeons:item/horn/shortbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6
+      },
+      "model": "dungeons:item/ash/shortbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 7
+      },
+      "model": "dungeons:item/yew/shortbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 8
+      },
+      "model": "dungeons:item/kiralis/shortbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9
+      },
+      "model": "dungeons:item/erelian/shortbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 10
+      },
+      "model": "dungeons:item/pine/longbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 11
+      },
+      "model": "dungeons:item/balsa/longbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12
+      },
+      "model": "dungeons:item/oak/longbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13
+      },
+      "model": "dungeons:item/cedar/longbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 14
+      },
+      "model": "dungeons:item/horn/longbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 15
+      },
+      "model": "dungeons:item/ash/longbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 16
+      },
+      "model": "dungeons:item/yew/longbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 17
+      },
+      "model": "dungeons:item/kiralis/longbow"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 18
+      },
+      "model": "dungeons:item/erelian/longbow"
+    }
+  ]
+}
