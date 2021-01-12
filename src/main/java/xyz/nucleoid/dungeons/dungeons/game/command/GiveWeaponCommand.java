@@ -34,7 +34,7 @@ public class GiveWeaponCommand {
             LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal(type.id);
             for (DgBowMaterial material : DgBowMaterial.values()) {
                 node.then(CommandManager.literal(material.id).executes(context -> give(context.getSource(),
-                        new DgBow(type, material, grade, 0.0D, 1).toItemStack())));
+                        new DgBow(type, material, grade, 1.0D, 1).toItemStack())));
             }
             builder.then(node);
         }
@@ -45,7 +45,7 @@ public class GiveWeaponCommand {
             LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal(type.id);
             for (DgWeaponMetal material : DgWeaponMetal.values()) {
                 node.then(CommandManager.literal(material.id).executes(context -> give(context.getSource(),
-                        new DgMetalMeleeWeapon(type, material, grade, "Forged with /giveweapon", 0.0D, 0.0D).toItemStack())));
+                        new DgMetalMeleeWeapon(type, material, grade, "Forged with /giveweapon", 1.0D, 1.0D).toItemStack())));
             }
             builder.then(node);
         }
@@ -55,7 +55,7 @@ public class GiveWeaponCommand {
         LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal("quarterstaff");
         for (DgQuarterstaffWood material : DgQuarterstaffWood.values()) {
             node.then(CommandManager.literal(material.id).executes(context -> give(context.getSource(),
-                    new DgQuarterstaff(material, grade, 0.0D, 0.0D).toItemStack())));
+                    new DgQuarterstaff(material, grade, 1.0D, 1.0D).toItemStack())));
         }
         builder.then(node);
     }
