@@ -4,7 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import xyz.nucleoid.dungeons.dungeons.assets.ShittyAssModelGenerator;
+import xyz.nucleoid.dungeons.dungeons.assets.DgModelGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.DgWaiting;
 import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgBow;
@@ -34,7 +34,7 @@ public class Dungeons implements ModInitializer {
             DgMetalMeleeWeapon.registerModels();
             DgQuarterstaff.registerModels();
             Dungeons.LOGGER.info("===============================================================================================");
-            ShittyAssModelGenerator.generateModelsShittily();
+            DgModelGenerator.generateModelsShittily();
         }
     }
 }

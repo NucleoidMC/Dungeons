@@ -16,7 +16,8 @@ import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class ShittyAssModelGenerator {
+// Todo: make better
+public class DgModelGenerator {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static void generateModelsShittily() {
