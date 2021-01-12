@@ -6,16 +6,18 @@ import net.minecraft.item.Items;
 import java.util.Random;
 
 public enum DgBowType {
-    SHORTBOW("Shortbow", 5.5),
-    LONGBOW("Longbow", 6.2),
-    CROSSBOW("Crossbow", 7);
+    SHORTBOW("Shortbow", 5.5, 20),
+    LONGBOW("Longbow", 6.2, 25),
+    CROSSBOW("Crossbow", 7, 25);
 
     public String name;
     public double baseDamage;
+    public int baseDrawTicks;
 
-    DgBowType(String name, double baseDamage) {
+    DgBowType(String name, double baseDamage, int baseDrawTicks) {
         this.name = name;
         this.baseDamage = baseDamage;
+        this.baseDrawTicks = baseDrawTicks;
     }
 
     public static DgBowType choose(Random random) {

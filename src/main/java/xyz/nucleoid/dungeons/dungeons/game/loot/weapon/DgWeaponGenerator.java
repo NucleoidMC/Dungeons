@@ -71,4 +71,23 @@ public class DgWeaponGenerator {
 
         return stack;
     }
+
+    public static ItemStack fakeWeaponStats(ItemStackBuilder builder, double attackDamage, int drawTicks) {
+        Style statStyle = Style.EMPTY.withItalic(false).withFormatting(Formatting.DARK_GREEN);
+        Style headerStyle = Style.EMPTY.withItalic(false).withFormatting(Formatting.GRAY);
+
+        ItemStack stack = builder
+                .addLore(new LiteralText(""))
+                .addLore(new LiteralText("When in Main Hand:").setStyle(headerStyle))
+                .addLore(new LiteralText(String.format(Locale.ENGLISH, " %.2f Attack Damage", attackDamage)).setStyle(statStyle))
+                .addLore(new LiteralText(String.format(Locale.ENGLISH, " %.2fs To Draw", drawTicks / 20.0)).setStyle(statStyle))
+                .build();
+
+        // https://minecraft.gamepedia.com/Tutorials/Command_NBT_tags#Items
+        //  dmg/speed   unbreakable
+        byte flags = 2 + 4;
+        stack.getOrCreateTag().putByte("HideFlags", flags);
+
+        return stack;
+    }
 }
