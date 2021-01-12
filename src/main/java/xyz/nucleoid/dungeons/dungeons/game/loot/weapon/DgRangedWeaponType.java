@@ -8,16 +8,16 @@ import java.util.Random;
 
 public enum DgRangedWeaponType {
     // TODO shortbow range?
-    SHORTBOW("Shortbow", 3.0, 15),
-    LONGBOW("Longbow", 6.2, 30),
-    CROSSBOW("Crossbow", 7, 35);
+    SHORTBOW("shortbow", 3.0, 15),
+    LONGBOW("longbow", 6.2, 30),
+    CROSSBOW("crossbow", 7, 35);
 
-    public String name;
+    public String id;
     public double baseDamage;
     public int baseDrawTicks;
 
-    DgRangedWeaponType(String name, double baseDamage, int baseDrawTicks) {
-        this.name = name;
+    DgRangedWeaponType(String id, double baseDamage, int baseDrawTicks) {
+        this.id = id;
         this.baseDamage = baseDamage;
         this.baseDrawTicks = baseDrawTicks;
     }
@@ -29,7 +29,7 @@ public enum DgRangedWeaponType {
     }
 
     public Item asItem() {
-        switch(this) {
+        switch (this) {
             case SHORTBOW:
             case LONGBOW:
                 return DgItems.BOW;

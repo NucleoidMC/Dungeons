@@ -8,29 +8,29 @@ import java.util.Random;
 // Can someone take a look?
 public enum DgRangedWeaponMaterial {
     // Tier 1
-    PINE("Pine", 0.7, DgLootGrade.BATTERED, DgLootGrade.DUSTY),
-    BALSA("Balsa", 0.8, DgLootGrade.BATTERED, DgLootGrade.DUSTY),
+    PINE("pine", 0.7, DgLootGrade.BATTERED, DgLootGrade.DUSTY),
+    BALSA("balsa", 0.8, DgLootGrade.BATTERED, DgLootGrade.DUSTY),
 
     // Tier 2
-    OAK("Oak", 1.0, DgLootGrade.MEDIOCRE, DgLootGrade.FINE),
-    CEDAR("Cedar", 1.2, DgLootGrade.MEDIOCRE, DgLootGrade.FINE),
+    OAK("oak", 1.0, DgLootGrade.MEDIOCRE, DgLootGrade.FINE),
+    CEDAR("cedar", 1.2, DgLootGrade.MEDIOCRE, DgLootGrade.FINE),
 
     // Tier 3
-    HORN("Horn", 1.3, DgLootGrade.EXCELLENT, DgLootGrade.SUPERB),
-    ASH("Ash", 1.5, DgLootGrade.EXCELLENT, DgLootGrade.SUPERB),
-    YEW("Yew", 1.6, DgLootGrade.EXCELLENT, DgLootGrade.SUPERB),
+    HORN("horn", 1.3, DgLootGrade.EXCELLENT, DgLootGrade.SUPERB),
+    ASH("ash", 1.5, DgLootGrade.EXCELLENT, DgLootGrade.SUPERB),
+    YEW("yew", 1.6, DgLootGrade.EXCELLENT, DgLootGrade.SUPERB),
 
     // Tier 4
-    KIRALIS("Kiralis", 1.8, DgLootGrade.LEGENDARY, DgLootGrade.MYTHICAL),
-    ERELIAN("Erelian", 2.2, DgLootGrade.LEGENDARY, DgLootGrade.MYTHICAL);
+    KIRALIS("kiralis", 1.8, DgLootGrade.LEGENDARY, DgLootGrade.MYTHICAL),
+    ERELIAN("erelian", 2.2, DgLootGrade.LEGENDARY, DgLootGrade.MYTHICAL);
 
-    public final String name;
+    public final String id;
     public double damageModifier;
     public DgLootGrade minGrade;
     public DgLootGrade maxGrade;
 
-    DgRangedWeaponMaterial(String name, double damageModifier, DgLootGrade minGrade, DgLootGrade maxGrade) {
-        this.name = name;
+    DgRangedWeaponMaterial(String id, double damageModifier, DgLootGrade minGrade, DgLootGrade maxGrade) {
+        this.id = id;
         this.damageModifier = damageModifier;
         this.minGrade = minGrade;
         this.maxGrade = maxGrade;

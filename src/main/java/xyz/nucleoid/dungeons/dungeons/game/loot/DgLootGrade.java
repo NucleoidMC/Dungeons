@@ -4,29 +4,31 @@ import java.util.Random;
 
 public enum DgLootGrade {
     // Tier 1
-    BATTERED("Battered", 1.0),
-    OLD("Old", 1.1),
-    DUSTY("Dusty", 1.2),
+    BATTERED("battered", 1.0, 0xD2D2D2),
+    OLD("old", 1.1, 0xE4E4E4),
+    DUSTY("dusty", 1.2, 0xFFFFFF),
 
     // Tier 2
-    MEDIOCRE("Mediocre", 1.0),
-    STURDY("Sturdy", 1.1),
-    FINE("Fine", 1.2),
+    MEDIOCRE("mediocre", 1.0, 0xFFCFD4),
+    STURDY("sturdy", 1.1, 0xFFFDCF),
+    FINE("fine", 1.2, 0xCFE3FF),
 
     // Tier 3
-    EXCELLENT("Excellent", 1.1),
-    SUPERB("Superb", 1.2),
+    EXCELLENT("excellent", 1.1, 0x81FF81),
+    SUPERB("superb", 1.2, 0xFFC66B),
 
     // Tier 4
-    LEGENDARY("Legendary", 1.0),
-    MYTHICAL("Mythical", 1.1);
+    LEGENDARY("legendary", 1.0, 0xC35BFF),
+    MYTHICAL("mythical", 1.1, 0x61FFFD);
 
-    public String name;
+    public String id;
     public double damageModifier;
+    public int color;
 
-    DgLootGrade(String name, double damageModifier) {
-        this.name = name;
+    DgLootGrade(String id, double damageModifier, int color) {
+        this.id = id;
         this.damageModifier = damageModifier;
+        this.color = color;
     }
 
     public static DgLootGrade chooseInRange(Random random, DgLootGrade min, DgLootGrade max) {

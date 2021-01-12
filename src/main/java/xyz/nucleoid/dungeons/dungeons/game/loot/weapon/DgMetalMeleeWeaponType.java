@@ -6,19 +6,19 @@ import net.minecraft.item.Items;
 import java.util.Random;
 
 public enum DgMetalMeleeWeaponType {
-    HAND_AXE("Handaxe", 6, 1.1),
-    BATTLE_AXE("Battleaxe", 7, 0.8),
-    SWORD("Sword", 5, 1.6),
-    GREAT_SWORD("Greatsword", 7, 0.8),
-    DAGGER("Dagger", 2.5, 3.2),
-    MACE("Mace", 4.5, 1.5);
+    HAND_AXE("hand_axe", 6, 1.1),
+    BATTLE_AXE("battle_axe", 7, 0.8),
+    SWORD("sword", 5, 1.6),
+    GREAT_SWORD("great_sword", 7, 0.8),
+    DAGGER("dagger", 2.5, 3.2),
+    MACE("mace", 4.5, 1.5);
 
-    public final String name;
+    public final String id;
     public final double baseDamage;
     public final double baseAttackSpeed;
 
-    DgMetalMeleeWeaponType(String name, double baseDamage, double baseAttackSpeed) {
-        this.name = name;
+    DgMetalMeleeWeaponType(String id, double baseDamage, double baseAttackSpeed) {
+        this.id = id;
         this.baseDamage = baseDamage;
         this.baseAttackSpeed = baseAttackSpeed;
     }
