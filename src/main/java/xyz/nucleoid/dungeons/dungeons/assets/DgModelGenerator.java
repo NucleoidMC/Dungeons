@@ -55,7 +55,7 @@ public class DgModelGenerator {
                 overrides.add(override);
             });
             JsonObject object = new JsonObject();
-            object.addProperty("parent", "minecraft:item/handheld");
+            object.addProperty("parent", "minecraft:item/handheld"); // Todo: Make work with bows and crossbows (this is ugly lol)
             JsonObject textures = new JsonObject();
             String proxyName = Registry.ITEM.getId(proxy).getPath();
             textures.addProperty("layer0", "minecraft:item/" + proxyName);

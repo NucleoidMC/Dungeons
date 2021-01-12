@@ -40,15 +40,25 @@ public class DgMetalMeleeWeapon {
     }
 
     public static DgMetalMeleeWeapon generate(Random random) {
-        DgMetalMeleeWeaponType type = DgMetalMeleeWeaponType.choose(random);
+        return create(null, null, null, random);
+    }
 
-        DgWeaponMetal skip = null;
-        if (type == DgMetalMeleeWeaponType.MACE) {
-            skip = DgWeaponMetal.DAMASCUS;
+    public static DgMetalMeleeWeapon create(DgMetalMeleeWeaponType type, DgWeaponMetal metal, DgLootGrade grade, Random random) {
+        if (type == null) {
+            type = DgMetalMeleeWeaponType.choose(random);
         }
-        DgWeaponMetal metal = DgWeaponMetal.choose(random, skip);
 
-        DgLootGrade grade = DgLootGrade.chooseInRange(random, metal.minGrade, metal.maxGrade);
+        if (metal == null) {
+            DgWeaponMetal skip = null;
+            if (type == DgMetalMeleeWeaponType.MACE) {
+                skip = DgWeaponMetal.DAMASCUS;
+            }
+            metal = DgWeaponMetal.choose(random, skip);
+        }
+
+        if (grade == null) {
+            grade = DgLootGrade.chooseInRange(random, metal.minGrade, metal.maxGrade);
+        }
         double attackDamage = (type.baseDamage + (random.nextDouble() / 2)) * metal.damageModifier * grade.damageModifier;
         String flavourText = DgMetalMeleeWeapon.generateFlavourText(random, grade, metal);
 
@@ -128,6 +138,7 @@ public class DgMetalMeleeWeapon {
         DgWeaponGenerator.addLoreWrapped(builder, this.flavourText);
         ItemStack stack = builder.build();
         DgWeaponGenerator.addCustomModel(stack, metal.id, type.id);
+        DgWeaponGenerator.formatName(stack, grade);
         return stack;
     }
 }

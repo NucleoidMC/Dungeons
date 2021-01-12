@@ -35,8 +35,17 @@ public class DgQuarterstaff {
 
     // TODO(weapons): flavour text
     public static DgQuarterstaff generate(Random random) {
-        DgQuarterstaffWood wood = DgQuarterstaffWood.choose(random);
-        DgLootGrade grade = DgLootGrade.chooseInRange(random, wood.minGrade, wood.maxGrade);
+        return create(null, null, random);
+    }
+
+    public static DgQuarterstaff create(DgQuarterstaffWood wood, DgLootGrade grade, Random random) {
+        if (wood == null) {
+            wood = DgQuarterstaffWood.choose(random);
+        }
+
+        if (grade == null) {
+            grade = DgLootGrade.chooseInRange(random, wood.minGrade, wood.maxGrade);
+        }
         double attackDamage = (BASE_DAMAGE + (random.nextDouble() / 2)) * wood.damageModifier * grade.damageModifier;
 
         return new DgQuarterstaff(grade, wood, attackDamage);
@@ -50,6 +59,7 @@ public class DgQuarterstaff {
         DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s quarterstaff made of %s.", this.grade.id.toLowerCase(), this.wood.id.toLowerCase()));
         ItemStack stack = builder.build();
         DgWeaponGenerator.addCustomModel(stack, wood.id, "quarterstaff");
+        DgWeaponGenerator.formatName(stack, grade);
         return stack;
     }
 }

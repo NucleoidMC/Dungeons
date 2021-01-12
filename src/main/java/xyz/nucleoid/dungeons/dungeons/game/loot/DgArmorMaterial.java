@@ -1,11 +1,11 @@
 package xyz.nucleoid.dungeons.dungeons.game.loot;
 
-public enum DgArmourMaterial {
+public enum DgArmorMaterial {
     LEATHER("leather");
 
     public String id;
 
-    DgArmourMaterial(String id) {
+    DgArmorMaterial(String id) {
         this.id = id;
     }
 }

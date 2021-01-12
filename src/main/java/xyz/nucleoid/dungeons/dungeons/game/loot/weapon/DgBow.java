@@ -36,11 +36,20 @@ public class DgBow {
 
     // TODO(weapons): flavour text
     public static DgBow generate(Random random) {
-        DgBowType type = DgBowType.choose(random);
-        DgBowMaterial material = DgBowMaterial.choose(random);
-        DgLootGrade grade = DgLootGrade.chooseInRange(random, material.minGrade, material.maxGrade);
-        double attackDamage = (type.baseDamage + (random.nextDouble() / 2)) * material.damageModifier * grade.damageModifier;
+        return create(null, null, null, random);
+    }
 
+    public static DgBow create(DgBowType type, DgBowMaterial material, DgLootGrade grade, Random random) {
+        if (type == null) {
+            type = DgBowType.choose(random);
+        }
+        if (material == null) {
+            material = DgBowMaterial.choose(random);
+        }
+        if (grade == null) {
+            grade = DgLootGrade.chooseInRange(random, material.minGrade, material.maxGrade);
+        }
+        double attackDamage = (type.baseDamage + (random.nextDouble() / 2)) * material.damageModifier * grade.damageModifier;
         return new DgBow(type, grade, material, attackDamage);
     }
 
@@ -52,6 +61,7 @@ public class DgBow {
         DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s %s made of %s.", this.grade.id.toLowerCase(), this.type.id.toLowerCase(), this.material.id.toLowerCase()));
         ItemStack stack = builder.build();
         DgWeaponGenerator.addCustomModel(stack, material.id, type.id);
+        DgWeaponGenerator.formatName(stack, grade);
         return stack;
     }
 }

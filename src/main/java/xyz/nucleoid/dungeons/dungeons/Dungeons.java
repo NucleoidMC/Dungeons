@@ -1,12 +1,14 @@
 package xyz.nucleoid.dungeons.dungeons;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import xyz.nucleoid.dungeons.dungeons.assets.DgModelGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.DgWaiting;
+import xyz.nucleoid.dungeons.dungeons.game.command.GiveWeaponCommand;
 import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgBow;
 import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgMetalMeleeWeapon;
 import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgQuarterstaff;
@@ -26,15 +28,16 @@ public class Dungeons implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        Dungeons.LOGGER.info("===============================================================================================");
+        Dungeons.LOGGER.info("DUNGEONS MODEL IDS:");
+        Dungeons.LOGGER.info("===============================================================================================");
+        DgBow.registerModels();
+        DgMetalMeleeWeapon.registerModels();
+        DgQuarterstaff.registerModels();
+        Dungeons.LOGGER.info("===============================================================================================");
         if (DOING_MODEL_STUFF) {
-            Dungeons.LOGGER.info("===============================================================================================");
-            Dungeons.LOGGER.info("DUNGEONS MODEL IDS:");
-            Dungeons.LOGGER.info("===============================================================================================");
-            DgBow.registerModels();
-            DgMetalMeleeWeapon.registerModels();
-            DgQuarterstaff.registerModels();
-            Dungeons.LOGGER.info("===============================================================================================");
             DgModelGenerator.generateModelsShittily();
         }
+        CommandRegistrationCallback.EVENT.register((dispatcher, b) -> GiveWeaponCommand.register(dispatcher));
     }
 }
