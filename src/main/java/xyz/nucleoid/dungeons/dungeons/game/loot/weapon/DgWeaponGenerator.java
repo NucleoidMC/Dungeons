@@ -15,14 +15,15 @@ public class DgWeaponGenerator {
     public static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("EBE5A195-79B6-4BDC-9B6C-1011FADF041D");
 
     public static ItemStack generate(Random random, double dungeonLevel) {
-        int rand = (int) Math.round(random.nextFloat() * 10.0);
+        double meanLevel = dungeonLevel - 0.5;
+        double rand = Math.round(random.nextFloat() * 10.0);
 
         if (rand <= 2) {
-            return DgBow.generate(random, dungeonLevel - 0.5).toItemStack();
-        } else if (rand <= 8) {
-            return DgMetalMeleeWeapon.generate(random, dungeonLevel - 0.5).toItemStack();
+            return DgRangedWeapon.generate(random, meanLevel).toItemStack();
+        } else if (rand <= 9.5) {
+            return DgMetalMeleeWeapon.generate(random, meanLevel).toItemStack();
         } else {
-            return DgQuarterstaff.generate(random, dungeonLevel - 0.5).toItemStack();
+            return DgQuarterstaff.generate(random, meanLevel).toItemStack();
         }
     }
 

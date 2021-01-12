@@ -116,7 +116,7 @@ public class DgMetalMeleeWeapon {
     }
 
     public ItemStack toItemStack() {
-        ItemStackBuilder builder = ItemStackBuilder.of(this.type.asVanillaItem())
+        ItemStackBuilder builder = ItemStackBuilder.of(this.type.asItem())
                 .setName(new LiteralText(String.format("%s %s %s", this.grade.name, this.metal.name, this.type.name)))
                 .setUnbreakable()
                 // modifier is based on empty hand, so some subtraction must be done

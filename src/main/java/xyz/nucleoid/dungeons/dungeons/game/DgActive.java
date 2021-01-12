@@ -3,6 +3,7 @@ package xyz.nucleoid.dungeons.dungeons.game;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -16,11 +17,13 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgWeaponGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
+import xyz.nucleoid.plasmid.game.GameCloseReason;
 import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.event.*;
 import xyz.nucleoid.plasmid.game.player.JoinResult;
 import xyz.nucleoid.plasmid.game.rule.GameRule;
 import xyz.nucleoid.plasmid.game.rule.RuleResult;
+import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 import xyz.nucleoid.plasmid.util.PlayerRef;
 
 import java.util.Set;
@@ -92,12 +95,10 @@ public class DgActive {
             ref.ifOnline(world, this::spawnParticipant);
         }
         this.idle.onOpen(world.getTime(), this.config);
-        // TODO setup logic
     }
 
     private void onClose() {
         this.timerBar.close();
-        // TODO teardown logic
     }
 
     private void addPlayer(ServerPlayerEntity player) {
@@ -113,7 +114,6 @@ public class DgActive {
     }
 
     private ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
-        // TODO handle damage
         return ActionResult.PASS;
     }
 
@@ -128,9 +128,11 @@ public class DgActive {
         this.spawnLogic.spawnPlayer(player);
 
         ServerWorld world = this.gameSpace.getWorld();
-        for (int i = 0; i < 32; i++) {
+        for (int i = 0; i < 30; i++) {
             player.inventory.offerOrDrop(world, DgWeaponGenerator.generate(player.getRandom(), 1.0));
         }
+
+        player.inventory.offerOrDrop(world, ItemStackBuilder.of(Items.ARROW).setCount(64).build());
     }
 
     private void spawnSpectator(ServerPlayerEntity player) {
@@ -153,13 +155,11 @@ public class DgActive {
                 this.broadcastWin(this.checkWinResult());
                 return;
             case GAME_CLOSED:
-                this.gameSpace.close();
+                this.gameSpace.close(GameCloseReason.FINISHED);
                 return;
         }
 
         this.timerBar.update(this.idle.finishTime - time, this.config.timeLimitSecs * 20);
-
-        // TODO tick logic
     }
 
     protected static void broadcastMessage(Text message, GameSpace world) {

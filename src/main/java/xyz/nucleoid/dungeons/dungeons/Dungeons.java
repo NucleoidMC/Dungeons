@@ -1,12 +1,13 @@
 package xyz.nucleoid.dungeons.dungeons;
 
 import net.fabricmc.api.ModInitializer;
-import xyz.nucleoid.plasmid.game.GameType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import xyz.nucleoid.dungeons.dungeons.fake.DgItems;
 import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.DgWaiting;
+import xyz.nucleoid.plasmid.game.GameType;
 
 public class Dungeons implements ModInitializer {
 
@@ -20,5 +21,7 @@ public class Dungeons implements ModInitializer {
     );
 
     @Override
-    public void onInitialize() {}
+    public void onInitialize() {
+        DgItems.register();
+    }
 }

@@ -6,7 +6,7 @@ import java.util.Random;
 
 // FIXME(restioson): I don't know enough about bows so I just came up with these on the spot
 // Can someone take a look?
-public enum DgBowMaterial {
+public enum DgRangedWeaponMaterial {
     // Tier 1
     PINE("Pine", 0.7, DgLootGrade.BATTERED, DgLootGrade.DUSTY),
     BALSA("Balsa", 0.8, DgLootGrade.BATTERED, DgLootGrade.DUSTY),
@@ -29,18 +29,18 @@ public enum DgBowMaterial {
     public DgLootGrade minGrade;
     public DgLootGrade maxGrade;
 
-    DgBowMaterial(String name, double damageModifier, DgLootGrade minGrade, DgLootGrade maxGrade) {
+    DgRangedWeaponMaterial(String name, double damageModifier, DgLootGrade minGrade, DgLootGrade maxGrade) {
         this.name = name;
         this.damageModifier = damageModifier;
         this.minGrade = minGrade;
         this.maxGrade = maxGrade;
     }
 
-    public static DgBowMaterial choose(Random random, double meanLevel) {
+    public static DgRangedWeaponMaterial choose(Random random, double meanLevel) {
         double number = random.nextGaussian() * 0.8 + meanLevel;
         int ord = (int) Math.round(number);
 
-        DgBowMaterial[] types = DgBowMaterial.values();
+        DgRangedWeaponMaterial[] types = DgRangedWeaponMaterial.values();
         return types[Math.max(0, Math.min(types.length, ord))];
     }
 }

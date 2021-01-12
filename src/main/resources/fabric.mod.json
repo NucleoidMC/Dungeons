@@ -7,6 +7,7 @@
   "authors": [
     "Nucleoid Developers"
   ],
+  "accessWidener": "dungeons.accesswidener",
   "license": "LGPLv3",
   "environment": "*",
   "entrypoints": {

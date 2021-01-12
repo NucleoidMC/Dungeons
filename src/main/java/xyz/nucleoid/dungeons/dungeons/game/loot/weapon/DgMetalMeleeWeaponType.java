@@ -29,7 +29,7 @@ public enum DgMetalMeleeWeaponType {
         return types[idx];
     }
 
-    public Item asVanillaItem() {
+    public Item asItem() {
         switch(this) {
             case BATTLE_AXE:
             case HAND_AXE:
