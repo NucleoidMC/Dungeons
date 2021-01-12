@@ -34,7 +34,7 @@ public class GiveWeaponCommand {
             LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal(type.id);
             for (DgBowMaterial material : DgBowMaterial.values()) {
                 node.then(CommandManager.literal(material.id).executes(context -> give(context.getSource(),
-                        DgBow.create(type, material, grade, context.getSource().getWorld().getRandom()).toItemStack())));
+                        new DgBow(type, material, grade, 0.0D, 1).toItemStack())));
             }
             builder.then(node);
         }
@@ -45,7 +45,7 @@ public class GiveWeaponCommand {
             LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal(type.id);
             for (DgWeaponMetal material : DgWeaponMetal.values()) {
                 node.then(CommandManager.literal(material.id).executes(context -> give(context.getSource(),
-                        DgMetalMeleeWeapon.create(type, material, grade, context.getSource().getWorld().getRandom()).toItemStack())));
+                        new DgMetalMeleeWeapon(type, material, grade, "Forged with /giveweapon", 0.0D, 0.0D).toItemStack())));
             }
             builder.then(node);
         }
@@ -55,13 +55,13 @@ public class GiveWeaponCommand {
         LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal("quarterstaff");
         for (DgQuarterstaffWood material : DgQuarterstaffWood.values()) {
             node.then(CommandManager.literal(material.id).executes(context -> give(context.getSource(),
-                    DgQuarterstaff.create(material, grade, context.getSource().getWorld().getRandom()).toItemStack())));
+                    new DgQuarterstaff(material, grade, 0.0D, 0.0D).toItemStack())));
         }
         builder.then(node);
     }
 
     private static int giveRandom(ServerCommandSource source) throws CommandSyntaxException {
-        return give(source, DgWeaponGenerator.generate(source.getWorld().random));
+        return give(source, DgWeaponGenerator.generate(source.getWorld().random, 1));
     }
 
     private static int give(ServerCommandSource source, ItemStack stack) throws CommandSyntaxException {

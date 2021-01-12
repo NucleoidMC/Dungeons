@@ -20,7 +20,7 @@ import java.util.Map;
 public class DgModelGenerator {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public static void generateModelsShittily() {
+    public static void generateModels() {
         File out = new File(FabricLoader.getInstance().getGameDir().toFile(), "out");
         File dungeonsItemModelOut = new File(out, "assets/dungeons/models/item");
         File minecraftItemModelOut = new File(out, "assets/minecraft/models/item");

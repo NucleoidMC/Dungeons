@@ -24,9 +24,9 @@ public class DgQuarterstaff {
     public static double BASE_DAMAGE = 4.7;
     public static double BASE_ATTACK_SPEED = 1.8;
 
-    public DgQuarterstaff(DgLootGrade grade, DgQuarterstaffWood wood, double attackDamage, double attackSpeed) {
-        this.grade = grade;
+    public DgQuarterstaff(DgQuarterstaffWood wood, DgLootGrade grade, double attackDamage, double attackSpeed) {
         this.wood = wood;
+        this.grade = grade;
         this.attackDamage = attackDamage;
         this.attackSpeed = attackSpeed;
     }
@@ -43,7 +43,7 @@ public class DgQuarterstaff {
         DgLootGrade grade = DgLootGrade.chooseInRange(random, wood.minGrade, wood.maxGrade);
         double attackDamage = (BASE_DAMAGE + (random.nextDouble() / 2)) * wood.damageModifier * grade.damageModifier;
 
-        return new DgQuarterstaff(grade, wood, attackDamage, BASE_ATTACK_SPEED);
+        return new DgQuarterstaff(wood, grade, attackDamage, BASE_ATTACK_SPEED);
     }
 
     public ItemStack toItemStack() {

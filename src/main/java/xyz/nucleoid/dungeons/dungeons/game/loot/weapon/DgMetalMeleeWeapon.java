@@ -27,15 +27,15 @@ public class DgMetalMeleeWeapon {
 
     public DgMetalMeleeWeapon(
             DgMetalMeleeWeaponType type,
-            DgLootGrade grade,
             DgWeaponMetal metal,
+            DgLootGrade grade,
             String flavourText,
             double attackDamage,
             double attackSpeed
     ) {
         this.type = type;
-        this.grade = grade;
         this.metal = metal;
+        this.grade = grade;
         this.flavourText = flavourText;
         this.attackDamage = attackDamage;
         this.attackSpeed = attackSpeed;
@@ -57,7 +57,7 @@ public class DgMetalMeleeWeapon {
         String flavourText = DgMetalMeleeWeapon.generateFlavourText(random, grade, metal);
         double attackSpeed = type.baseAttackSpeed;
 
-        return new DgMetalMeleeWeapon(type, grade, metal, flavourText, attackDamage, attackSpeed);
+        return new DgMetalMeleeWeapon(type, metal, grade, flavourText, attackDamage, attackSpeed);
     }
 
     private static String generateFlavourText(Random random, DgLootGrade grade, DgWeaponMetal metal) {

@@ -2,6 +2,7 @@ package xyz.nucleoid.dungeons.dungeons;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +19,7 @@ public class Dungeons implements ModInitializer {
 
     public static final String ID = "dungeons";
     public static final Logger LOGGER = LogManager.getLogger(ID);
-    private static final boolean DOING_MODEL_STUFF = false;
+    private static final boolean GENERATE_MODELS = false;
 
     public static final GameType<DgConfig> TYPE = GameType.register(
             new Identifier(ID, "dungeons"),
@@ -28,16 +29,18 @@ public class Dungeons implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Dungeons.LOGGER.info("===============================================================================================");
-        Dungeons.LOGGER.info("DUNGEONS MODEL IDS:");
-        Dungeons.LOGGER.info("===============================================================================================");
+        Dungeons.LOGGER.debug("===============================================================================================");
+        Dungeons.LOGGER.debug("DUNGEONS MODEL IDS:");
+        Dungeons.LOGGER.debug("===============================================================================================");
         DgBow.registerModels();
         DgMetalMeleeWeapon.registerModels();
         DgQuarterstaff.registerModels();
-        Dungeons.LOGGER.info("===============================================================================================");
-        if (DOING_MODEL_STUFF) {
-            DgModelGenerator.generateModelsShittily();
+        Dungeons.LOGGER.debug("===============================================================================================");
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            CommandRegistrationCallback.EVENT.register((dispatcher, b) -> GiveWeaponCommand.register(dispatcher));
+            if (GENERATE_MODELS) {
+                DgModelGenerator.generateModels();
+            }
         }
-        CommandRegistrationCallback.EVENT.register((dispatcher, b) -> GiveWeaponCommand.register(dispatcher));
     }
 }

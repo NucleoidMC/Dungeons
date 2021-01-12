@@ -18,7 +18,7 @@ public class DgModelRegistry {
         String modifiersString = String.join("/", modifiers);
         REGISTRY.computeIfAbsent(proxy, item -> new LinkedList<>()).add(modifiersString);
         IDS.put(modifiersString, REGISTRY.get(proxy).size() - 1 + 1);
-        Dungeons.LOGGER.info("Registering model: " + modifiersString + " as proxy " + Registry.ITEM.getId(proxy).toString() + " with id: " + IDS.getInt(modifiersString));
+        Dungeons.LOGGER.debug("Registering model: " + modifiersString + " as proxy " + Registry.ITEM.getId(proxy).toString() + " with id: " + IDS.getInt(modifiersString));
     }
 
     public static int getId(String... modifiers) {
