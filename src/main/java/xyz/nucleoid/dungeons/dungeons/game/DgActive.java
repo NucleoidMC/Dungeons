@@ -128,8 +128,8 @@ public class DgActive {
         this.spawnLogic.spawnPlayer(player);
 
         ServerWorld world = this.gameSpace.getWorld();
-        for (int i = 0; i < 10; i++) {
-            player.inventory.offerOrDrop(world, DgWeaponGenerator.generate(player.getRandom()));
+        for (int i = 0; i < 32; i++) {
+            player.inventory.offerOrDrop(world, DgWeaponGenerator.generate(player.getRandom(), 1.0));
         }
     }
 

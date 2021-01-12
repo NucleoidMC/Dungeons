@@ -23,9 +23,9 @@ public class DgBow {
     }
 
     // TODO(weapons): flavour text
-    public static DgBow generate(Random random) {
+    public static DgBow generate(Random random, double meanLevel) {
         DgBowType type = DgBowType.choose(random);
-        DgBowMaterial material = DgBowMaterial.choose(random);
+        DgBowMaterial material = DgBowMaterial.choose(random, meanLevel);
         DgLootGrade grade = DgLootGrade.chooseInRange(random, material.minGrade, material.maxGrade);
         double attackDamage = (type.baseDamage + (random.nextDouble() / 2)) * material.damageModifier * grade.damageModifier;
 

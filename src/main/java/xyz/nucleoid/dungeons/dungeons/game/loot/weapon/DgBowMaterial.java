@@ -36,9 +36,11 @@ public enum DgBowMaterial {
         this.maxGrade = maxGrade;
     }
 
-    public static DgBowMaterial choose(Random random) {
+    public static DgBowMaterial choose(Random random, double meanLevel) {
+        double number = random.nextGaussian() * 0.8 + meanLevel;
+        int ord = (int) Math.round(number);
+
         DgBowMaterial[] types = DgBowMaterial.values();
-        int idx = random.nextInt(types.length);
-        return types[idx];
+        return types[Math.max(0, Math.min(types.length, ord))];
     }
 }

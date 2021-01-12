@@ -1,10 +1,7 @@
 package xyz.nucleoid.dungeons.dungeons.game.loot.weapon;
 
-import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.dungeons.dungeons.game.loot.DgLootGrade;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
 public enum DgWeaponMetal {
@@ -36,15 +33,17 @@ public enum DgWeaponMetal {
         this.maxGrade = maxGrade;
     }
 
-    public static DgWeaponMetal choose(Random random, @Nullable DgWeaponMetal skip) {
-        if (skip == null) {
-            DgWeaponMetal[] types = DgWeaponMetal.values();
-            return types[random.nextInt(types.length)];
-        } else {
-            ArrayList<DgWeaponMetal> types = new ArrayList<>();
-            Collections.addAll(types, DgWeaponMetal.values());
-            types.remove(skip.ordinal());
-            return types.get(random.nextInt(types.size()));
+    public static DgWeaponMetal choose(Random random, double meanLevel, boolean isMace) {
+        double number = random.nextGaussian() * 0.8 + meanLevel;
+        int ord = (int) Math.round(number);
+
+        DgWeaponMetal[] types = DgWeaponMetal.values();
+        DgWeaponMetal type = types[Math.max(0, Math.min(types.length, ord))];
+
+        if (isMace && type == DgWeaponMetal.DAMASCUS) {
+            type = DgWeaponMetal.STEEL;
         }
+
+        return type;
     }
 }

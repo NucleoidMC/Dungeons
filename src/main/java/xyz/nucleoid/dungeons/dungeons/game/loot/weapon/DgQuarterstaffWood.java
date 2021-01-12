@@ -34,8 +34,11 @@ public enum DgQuarterstaffWood {
         this.maxGrade = maxGrade;
     }
 
-    public static DgQuarterstaffWood choose(Random random) {
+    public static DgQuarterstaffWood choose(Random random, double meanLevel) {
+        double number = random.nextGaussian() * 0.8 + meanLevel;
+        int ord = (int) Math.round(number);
+
         DgQuarterstaffWood[] types = DgQuarterstaffWood.values();
-        return types[random.nextInt(types.length)];
+        return types[Math.max(0, Math.min(types.length, ord))];
     }
 }

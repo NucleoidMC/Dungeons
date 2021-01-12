@@ -31,8 +31,8 @@ public class DgQuarterstaff {
     }
 
     // TODO(weapons): flavour text
-    public static DgQuarterstaff generate(Random random) {
-        DgQuarterstaffWood wood = DgQuarterstaffWood.choose(random);
+    public static DgQuarterstaff generate(Random random, double meanLevel) {
+        DgQuarterstaffWood wood = DgQuarterstaffWood.choose(random, meanLevel);
         DgLootGrade grade = DgLootGrade.chooseInRange(random, wood.minGrade, wood.maxGrade);
         double attackDamage = (BASE_DAMAGE + (random.nextDouble() / 2)) * wood.damageModifier * grade.damageModifier;
 

@@ -40,15 +40,9 @@ public class DgMetalMeleeWeapon {
         this.attackSpeed = attackSpeed;
     }
 
-    public static DgMetalMeleeWeapon generate(Random random) {
+    public static DgMetalMeleeWeapon generate(Random random, double meanLevel) {
         DgMetalMeleeWeaponType type = DgMetalMeleeWeaponType.choose(random);
-
-        DgWeaponMetal skip = null;
-        if (type == DgMetalMeleeWeaponType.MACE) {
-            skip = DgWeaponMetal.DAMASCUS;
-        }
-        DgWeaponMetal metal = DgWeaponMetal.choose(random, skip);
-
+        DgWeaponMetal metal = DgWeaponMetal.choose(random, meanLevel, type == DgMetalMeleeWeaponType.MACE);
         DgLootGrade grade = DgLootGrade.chooseInRange(random, metal.minGrade, metal.maxGrade);
         double attackDamage = (type.baseDamage + (random.nextDouble() / 2)) * metal.damageModifier * grade.damageModifier;
         String flavourText = DgMetalMeleeWeapon.generateFlavourText(random, grade, metal);
