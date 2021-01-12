@@ -129,10 +129,8 @@ public class DgMetalMeleeWeapon {
                 .addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Attack damage modifier", this.attackDamage - 0.5, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND)
                 .addModifier(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Attack speed modifier", this.attackSpeed - 4.0, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
 
-        DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.metal.name.toLowerCase()));
+        DgWeaponGenerator.addWeaponInfoWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.metal.name.toLowerCase()));
         DgWeaponGenerator.addLoreWrapped(builder, this.flavourText);
-        ItemStack stack = builder.build();
-        stack.getOrCreateTag().putByte("HideFlags", (byte) 2);
-        return stack;
+        return DgWeaponGenerator.fakeWeaponStats(builder, this.attackDamage, this.attackSpeed);
     }
 }

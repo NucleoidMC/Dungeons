@@ -35,7 +35,7 @@ public class DgBow {
                 .setUnbreakable()
                 .setName(new LiteralText(String.format("%s %s %s", this.grade.name, this.material.name, this.type.name)));
         // TODO handle damage
-        DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.material.name.toLowerCase()));
+        DgWeaponGenerator.addWeaponInfoWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.material.name.toLowerCase()));
         return builder.build();
     }
 }

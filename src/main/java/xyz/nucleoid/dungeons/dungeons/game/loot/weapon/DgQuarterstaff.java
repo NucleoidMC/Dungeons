@@ -47,9 +47,7 @@ public class DgQuarterstaff {
                 .addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", this.attackDamage - 0.5, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND)
                 .addModifier(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Attack speed modifier", this.attackSpeed - 4.0, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
 
-        DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s quarterstaff made of %s.", this.grade.name.toLowerCase(), this.wood.name.toLowerCase()));
-        ItemStack stack = builder.build();
-        stack.getOrCreateTag().putByte("HideFlags", (byte) 2);
-        return stack;
+        DgWeaponGenerator.addWeaponInfoWrapped(builder, String.format("A %s quarterstaff made of %s.", this.grade.name.toLowerCase(), this.wood.name.toLowerCase()));
+        return DgWeaponGenerator.fakeWeaponStats(builder, this.attackDamage, this.attackSpeed);
     }
 }
