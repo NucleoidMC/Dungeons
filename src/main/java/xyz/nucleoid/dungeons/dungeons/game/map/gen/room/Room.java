@@ -1,4 +1,4 @@
-package xyz.nucleoid.dungeons.dungeons.game.map.gen;
+package xyz.nucleoid.dungeons.dungeons.game.map.gen.room;
 
 import java.util.Random;
 

@@ -1,6 +1,5 @@
-package xyz.nucleoid.dungeons.dungeons.game.map.gen;
+package xyz.nucleoid.dungeons.dungeons.game.map.gen.room;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
