@@ -1,16 +1,11 @@
 package xyz.nucleoid.dungeons.dungeons.game.loot.weapon;
 
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import xyz.nucleoid.dungeons.dungeons.game.loot.DgLootGrade;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 
 import java.util.Random;
-
-import static xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgWeaponGenerator.ATTACK_DAMAGE_MODIFIER_ID;
 
 public class DgBow {
     public DgBowType type;
@@ -37,9 +32,9 @@ public class DgBow {
 
     public ItemStack toItemStack() {
         ItemStackBuilder builder = ItemStackBuilder.of(this.type.asVanillaItem())
-                .setName(new LiteralText(String.format("%s %s %s", this.grade.name, this.material.name, this.type.name)))
-                .addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", this.attackDamage, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
-
+                .setUnbreakable()
+                .setName(new LiteralText(String.format("%s %s %s", this.grade.name, this.material.name, this.type.name)));
+        // TODO handle damage
         DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.material.name.toLowerCase()));
         return builder.build();
     }

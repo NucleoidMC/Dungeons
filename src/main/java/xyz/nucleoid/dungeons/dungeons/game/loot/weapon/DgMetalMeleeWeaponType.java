@@ -6,24 +6,21 @@ import net.minecraft.item.Items;
 import java.util.Random;
 
 public enum DgMetalMeleeWeaponType {
-    HAND_AXE("Handaxe", 6),
-    BATTLE_AXE("Battleaxe", 7),
-    SWORD("Sword", 5),
-    GREAT_SWORD("Greatsword", 7),
-    DAGGER("Dagger", 2.5),
-    MACE("Mace", 4),
-    // TODO(restioson): how to handle these having different materials?
-//    QUARTERSTAFF("Quarterstaff"),
-//    BOW("Bow"),
-//    CROSSBOW("Crossbow");
-    ;
+    HAND_AXE("Handaxe", 6, 1.1),
+    BATTLE_AXE("Battleaxe", 7, 0.8),
+    SWORD("Sword", 5, 1.6),
+    GREAT_SWORD("Greatsword", 7, 0.8),
+    DAGGER("Dagger", 2.5, 3.2),
+    MACE("Mace", 4.5, 1.5);
 
     public final String name;
     public final double baseDamage;
+    public final double baseAttackSpeed;
 
-    DgMetalMeleeWeaponType(String name, double baseDamage) {
+    DgMetalMeleeWeaponType(String name, double baseDamage, double baseAttackSpeed) {
         this.name = name;
         this.baseDamage = baseDamage;
+        this.baseAttackSpeed = baseAttackSpeed;
     }
 
     public static DgMetalMeleeWeaponType choose(Random random) {

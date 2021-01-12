@@ -14,20 +14,30 @@ import java.util.List;
 import java.util.Random;
 
 import static xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgWeaponGenerator.ATTACK_DAMAGE_MODIFIER_ID;
+import static xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgWeaponGenerator.ATTACK_SPEED_MODIFIER_ID;
 
 public class DgMetalMeleeWeapon {
     public DgMetalMeleeWeaponType type;
     public DgLootGrade grade;
-    public DgWeaponMetal metal; // TODO(restioson): how to do other weapons?
+    public DgWeaponMetal metal;
     public String flavourText;
     public double attackDamage;
+    public double attackSpeed;
 
-    public DgMetalMeleeWeapon(DgMetalMeleeWeaponType type, DgLootGrade grade, DgWeaponMetal metal, String flavourText, double attackDamage) {
+    public DgMetalMeleeWeapon(
+            DgMetalMeleeWeaponType type,
+            DgLootGrade grade,
+            DgWeaponMetal metal,
+            String flavourText,
+            double attackDamage,
+            double attackSpeed
+    ) {
         this.type = type;
         this.grade = grade;
         this.metal = metal;
         this.flavourText = flavourText;
         this.attackDamage = attackDamage;
+        this.attackSpeed = attackSpeed;
     }
 
     public static DgMetalMeleeWeapon generate(Random random) {
@@ -42,8 +52,9 @@ public class DgMetalMeleeWeapon {
         DgLootGrade grade = DgLootGrade.chooseInRange(random, metal.minGrade, metal.maxGrade);
         double attackDamage = (type.baseDamage + (random.nextDouble() / 2)) * metal.damageModifier * grade.damageModifier;
         String flavourText = DgMetalMeleeWeapon.generateFlavourText(random, grade, metal);
+        double attackSpeed = type.baseAttackSpeed;
 
-        return new DgMetalMeleeWeapon(type, grade, metal, flavourText, attackDamage);
+        return new DgMetalMeleeWeapon(type, grade, metal, flavourText, attackDamage, attackSpeed);
     }
 
     private static String generateFlavourText(Random random, DgLootGrade grade, DgWeaponMetal metal) {
@@ -113,11 +124,15 @@ public class DgMetalMeleeWeapon {
     public ItemStack toItemStack() {
         ItemStackBuilder builder = ItemStackBuilder.of(this.type.asVanillaItem())
                 .setName(new LiteralText(String.format("%s %s %s", this.grade.name, this.metal.name, this.type.name)))
-                .addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", this.attackDamage, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
+                .setUnbreakable()
+                // modifier is based on empty hand, so some subtraction must be done
+                .addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Attack damage modifier", this.attackDamage - 0.5, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND)
+                .addModifier(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Attack speed modifier", this.attackSpeed - 4.0, EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
 
         DgWeaponGenerator.addLoreWrapped(builder, String.format("A %s %s made of %s.", this.grade.name.toLowerCase(), this.type.name.toLowerCase(), this.metal.name.toLowerCase()));
         DgWeaponGenerator.addLoreWrapped(builder, this.flavourText);
-
-        return builder.build();
+        ItemStack stack = builder.build();
+        stack.getOrCreateTag().putByte("HideFlags", (byte) 2);
+        return stack;
     }
 }
