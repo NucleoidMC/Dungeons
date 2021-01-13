@@ -3,7 +3,7 @@ package xyz.nucleoid.dungeons.dungeons.game;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -15,7 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
-import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.DgWeaponGenerator;
+import xyz.nucleoid.dungeons.dungeons.game.loot.DgEnemyDropGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 import xyz.nucleoid.plasmid.game.GameCloseReason;
 import xyz.nucleoid.plasmid.game.GameSpace;
@@ -23,7 +23,6 @@ import xyz.nucleoid.plasmid.game.event.*;
 import xyz.nucleoid.plasmid.game.player.JoinResult;
 import xyz.nucleoid.plasmid.game.rule.GameRule;
 import xyz.nucleoid.plasmid.game.rule.RuleResult;
-import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 import xyz.nucleoid.plasmid.util.PlayerRef;
 
 import java.util.Set;
@@ -129,10 +128,14 @@ public class DgActive {
 
         ServerWorld world = this.gameSpace.getWorld();
         for (int i = 0; i < 30; i++) {
-            player.inventory.offerOrDrop(world, DgWeaponGenerator.generate(player.getRandom(), 1.0));
+            ItemStack stack = DgEnemyDropGenerator.generate(player.getRandom(), 1.0);
+
+            if (stack != null) {
+                player.inventory.offerOrDrop(world, stack);
+            }
         }
 
-        player.inventory.offerOrDrop(world, ItemStackBuilder.of(Items.ARROW).setCount(64).build());
+        //player.inventory.offerOrDrop(world, ItemStackBuilder.of(Items.ARROW).setCount(64).build());
     }
 
     private void spawnSpectator(ServerPlayerEntity player) {
