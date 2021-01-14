@@ -1,0 +1,56 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/iron_sword"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "dungeons:item/copper/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2
+      },
+      "model": "dungeons:item/bronze/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3
+      },
+      "model": "dungeons:item/iron/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4
+      },
+      "model": "dungeons:item/steel/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5
+      },
+      "model": "dungeons:item/damascus_steel/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6
+      },
+      "model": "dungeons:item/netherite/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 7
+      },
+      "model": "dungeons:item/viarite/great_sword"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 8
+      },
+      "model": "dungeons:item/greystone/great_sword"
+    }
+  ]
+}

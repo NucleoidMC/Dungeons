@@ -2,15 +2,9 @@ package xyz.nucleoid.dungeons.dungeons.game;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.util.ActionResult;
-
-import xyz.nucleoid.plasmid.game.GameSpace;
-import xyz.nucleoid.plasmid.game.event.*;
-import xyz.nucleoid.plasmid.game.player.JoinResult;
-import xyz.nucleoid.plasmid.game.rule.GameRule;
-import xyz.nucleoid.plasmid.game.rule.RuleResult;
-import xyz.nucleoid.plasmid.util.PlayerRef;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -19,17 +13,27 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
+import xyz.nucleoid.dungeons.dungeons.util.item.loot.DgEnemyDropGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
+import xyz.nucleoid.plasmid.game.GameCloseReason;
+import xyz.nucleoid.plasmid.game.GameSpace;
+import xyz.nucleoid.plasmid.game.event.*;
+import xyz.nucleoid.plasmid.game.player.JoinResult;
+import xyz.nucleoid.plasmid.game.rule.GameRule;
+import xyz.nucleoid.plasmid.game.rule.RuleResult;
+import xyz.nucleoid.plasmid.util.ItemStackBuilder;
+import xyz.nucleoid.plasmid.util.PlayerRef;
 
-import java.util.*;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DgActive {
     private final DgConfig config;
 
-    public final GameSpace gameWorld;
+    public final GameSpace gameSpace;
     private final DgMap gameMap;
 
     // TODO replace with ServerPlayerEntity if players are removed upon leaving
@@ -39,11 +43,11 @@ public class DgActive {
     private final boolean ignoreWinState;
     private final DgTimerBar timerBar;
 
-    private DgActive(GameSpace gameWorld, DgMap map, DgConfig config, Set<PlayerRef> participants) {
-        this.gameWorld = gameWorld;
+    private DgActive(GameSpace gameSpace, DgMap map, DgConfig config, Set<PlayerRef> participants) {
+        this.gameSpace = gameSpace;
         this.config = config;
         this.gameMap = map;
-        this.spawnLogic = new DgSpawnLogic(gameWorld, map);
+        this.spawnLogic = new DgSpawnLogic(gameSpace, map);
         this.participants = new Object2ObjectOpenHashMap<>();
 
         for (PlayerRef player : participants) {
@@ -87,17 +91,15 @@ public class DgActive {
     }
 
     private void onOpen() {
-        ServerWorld world = this.gameWorld.getWorld();
+        ServerWorld world = this.gameSpace.getWorld();
         for (PlayerRef ref : this.participants.keySet()) {
             ref.ifOnline(world, this::spawnParticipant);
         }
         this.idle.onOpen(world.getTime(), this.config);
-        // TODO setup logic
     }
 
     private void onClose() {
         this.timerBar.close();
-        // TODO teardown logic
     }
 
     private void addPlayer(ServerPlayerEntity player) {
@@ -113,7 +115,6 @@ public class DgActive {
     }
 
     private ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
-        // TODO handle damage
         return ActionResult.PASS;
     }
 
@@ -126,6 +127,17 @@ public class DgActive {
     private void spawnParticipant(ServerPlayerEntity player) {
         this.spawnLogic.resetPlayer(player, GameMode.ADVENTURE);
         this.spawnLogic.spawnPlayer(player);
+
+        ServerWorld world = this.gameSpace.getWorld();
+        for (int i = 0; i < 30; i++) {
+            ItemStack stack = DgEnemyDropGenerator.generate(player.getRandom(), 1.0);
+
+            if (stack != null) {
+                player.inventory.offerOrDrop(world, stack);
+            }
+        }
+
+        player.inventory.offerOrDrop(world, ItemStackBuilder.of(Items.ARROW).setCount(1).build());
     }
 
     private void spawnSpectator(ServerPlayerEntity player) {
@@ -134,10 +146,10 @@ public class DgActive {
     }
 
     private void tick() {
-        ServerWorld world = this.gameWorld.getWorld();
+        ServerWorld world = this.gameSpace.getWorld();
         long time = world.getTime();
 
-        DgIdle.IdleTickResult result = this.idle.tick(time, gameWorld);
+        DgIdle.IdleTickResult result = this.idle.tick(time, gameSpace);
 
         switch (result) {
             case CONTINUE_TICK:
@@ -148,13 +160,11 @@ public class DgActive {
                 this.broadcastWin(this.checkWinResult());
                 return;
             case GAME_CLOSED:
-                this.gameWorld.close();
+                this.gameSpace.close(GameCloseReason.FINISHED);
                 return;
         }
 
         this.timerBar.update(this.idle.finishTime - time, this.config.timeLimitSecs * 20);
-
-        // TODO tick logic
     }
 
     protected static void broadcastMessage(Text message, GameSpace world) {
@@ -190,8 +200,8 @@ public class DgActive {
             message = new LiteralText("The game ended, but nobody won!").formatted(Formatting.GOLD);
         }
 
-        broadcastMessage(message, this.gameWorld);
-        broadcastSound(SoundEvents.ENTITY_VILLAGER_YES, this.gameWorld);
+        broadcastMessage(message, this.gameSpace);
+        broadcastSound(SoundEvents.ENTITY_VILLAGER_YES, this.gameSpace);
     }
 
     private WinResult checkWinResult() {
@@ -200,7 +210,7 @@ public class DgActive {
             return WinResult.no();
         }
 
-        ServerWorld world = this.gameWorld.getWorld();
+        ServerWorld world = this.gameSpace.getWorld();
         ServerPlayerEntity winningPlayer = null;
 
         // TODO win result logic

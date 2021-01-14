@@ -1,0 +1,158 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/stick"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "dungeons:item/copper/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2
+      },
+      "model": "dungeons:item/bronze/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3
+      },
+      "model": "dungeons:item/iron/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4
+      },
+      "model": "dungeons:item/steel/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5
+      },
+      "model": "dungeons:item/damascus_steel/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6
+      },
+      "model": "dungeons:item/netherite/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 7
+      },
+      "model": "dungeons:item/viarite/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 8
+      },
+      "model": "dungeons:item/greystone/dagger"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 9
+      },
+      "model": "dungeons:item/copper/morning_star"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 10
+      },
+      "model": "dungeons:item/bronze/morning_star"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 11
+      },
+      "model": "dungeons:item/iron/morning_star"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 12
+      },
+      "model": "dungeons:item/steel/morning_star"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 13
+      },
+      "model": "dungeons:item/damascus_steel/morning_star"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 14
+      },
+      "model": "dungeons:item/netherite/morning_star"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 15
+      },
+      "model": "dungeons:item/viarite/morning_star"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 16
+      },
+      "model": "dungeons:item/greystone/morning_star"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 17
+      },
+      "model": "dungeons:item/cork/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 18
+      },
+      "model": "dungeons:item/balsa/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 19
+      },
+      "model": "dungeons:item/hickory/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 20
+      },
+      "model": "dungeons:item/ash/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 21
+      },
+      "model": "dungeons:item/yew/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 22
+      },
+      "model": "dungeons:item/ebony/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 23
+      },
+      "model": "dungeons:item/ironwood/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 24
+      },
+      "model": "dungeons:item/kiralis/quarterstaff"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 25
+      },
+      "model": "dungeons:item/arantew/quarterstaff"
+    }
+  ]
+}

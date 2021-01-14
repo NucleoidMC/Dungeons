@@ -1,0 +1,11 @@
+accessWidener v1 named
+
+accessible method net/minecraft/item/CrossbowItem loadProjectiles (Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;)Z
+accessible method net/minecraft/item/CrossbowItem getSpeed (Lnet/minecraft/item/ItemStack;)F
+accessible method net/minecraft/item/CrossbowItem getProjectiles (Lnet/minecraft/item/ItemStack;)Ljava/util/List;
+accessible method net/minecraft/item/CrossbowItem getSoundPitches (Ljava/util/Random;)[F
+accessible method net/minecraft/item/CrossbowItem postShoot (Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;)V
+accessible method net/minecraft/item/CrossbowItem getPullProgress (ILnet/minecraft/item/ItemStack;)F
+accessible method net/minecraft/item/CrossbowItem putProjectile (Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)V
+accessible field net/minecraft/item/CrossbowItem charged Z
+accessible field net/minecraft/item/CrossbowItem loaded Z
