@@ -7,10 +7,10 @@ import xyz.nucleoid.dungeons.dungeons.fake.DgItems;
 import java.util.Random;
 
 public enum DgRangedWeaponType {
-    // TODO shortbow range?
-    SHORTBOW("shortbow", 3.0, 15),
-    LONGBOW("longbow", 6.2, 30),
-    CROSSBOW("crossbow", 7, 35);
+    SHORTBOW("shortbow", 4.6, 15),
+    LONGBOW("longbow", 6.2, 20),
+    // baseDrawTicks doesn't do anything for crossbow - it breaks client
+    CROSSBOW("crossbow", 7, 25);
 
     public String id;
     public double baseDamage;

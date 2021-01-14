@@ -7,6 +7,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -22,24 +25,24 @@ public class DgBowItem extends BowItem implements FakeItem {
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsing(ItemStack bowStack, World world, LivingEntity user, int remainingUseTicks) {
         // From BowItem.onStoppedUsing
 
         if (user instanceof PlayerEntity) {
-            PlayerEntity playerEntity = (PlayerEntity)user;
-            boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
-            ItemStack itemStack = playerEntity.getArrowType(stack);
-            if (!itemStack.isEmpty() || bl) {
-                if (itemStack.isEmpty()) {
-                    itemStack = new ItemStack(Items.ARROW);
+            PlayerEntity player = (PlayerEntity)user;
+            boolean bl = player.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0;
+            ItemStack arrowStack = player.getArrowType(bowStack);
+            if (!arrowStack.isEmpty() || bl) {
+                if (arrowStack.isEmpty()) {
+                    arrowStack = new ItemStack(Items.ARROW);
                 }
 
-                int i = this.getMaxUseTime(stack) - remainingUseTicks;
+                int i = this.getMaxUseTime(bowStack) - remainingUseTicks;
 
                 // BEGIN MODIFICATIONS
 
                 int fullDrawTicks = 20;
-                CompoundTag tag = stack.getOrCreateTag();
+                CompoundTag tag = bowStack.getOrCreateTag();
                 if (tag.contains(DgRangedWeapon.DRAW_TICKS_TAG)) {
                     fullDrawTicks = tag.getInt(DgRangedWeapon.DRAW_TICKS_TAG);
                 }
@@ -49,11 +52,11 @@ public class DgBowItem extends BowItem implements FakeItem {
                 // END MODIFICATIONS
 
                 if ((double)f >= 0.1D) {
-                    boolean bl2 = bl && itemStack.getItem() == Items.ARROW;
+                    boolean bl2 = bl && arrowStack.getItem() == Items.ARROW;
                     if (!world.isClient) {
-                        ArrowItem arrowItem = (ArrowItem)((ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW));
-                        PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(world, itemStack, playerEntity);
-                        persistentProjectileEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);
+                        ArrowItem arrowItem = (ArrowItem)((ArrowItem)(arrowStack.getItem() instanceof ArrowItem ? arrowStack.getItem() : Items.ARROW));
+                        PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(world, arrowStack, player);
+                        persistentProjectileEntity.setProperties(player, player.pitch, player.yaw, 0.0F, f * 3.0F, 1.0F);
 
                         // BEGIN MODIFICATIONS
 
@@ -65,7 +68,7 @@ public class DgBowItem extends BowItem implements FakeItem {
 
                         double vanillaDamage = 6.0;
                         double targetDamage = vanillaDamage;
-                        if (tag.contains(DgRangedWeapon.DRAW_TICKS_TAG)) {
+                        if (tag.contains(DgRangedWeapon.DAMAGE_TAG)) {
                             targetDamage = tag.getInt(DgRangedWeapon.DAMAGE_TAG);
                         }
 
@@ -77,39 +80,50 @@ public class DgBowItem extends BowItem implements FakeItem {
                             persistentProjectileEntity.setCritical(true);
                         }
 
-                        int j = EnchantmentHelper.getLevel(Enchantments.POWER, stack);
+                        int j = EnchantmentHelper.getLevel(Enchantments.POWER, bowStack);
                         if (j > 0) {
                             persistentProjectileEntity.setDamage(persistentProjectileEntity.getDamage() + (double)j * 0.5D + 0.5D);
                         }
 
-                        int k = EnchantmentHelper.getLevel(Enchantments.PUNCH, stack);
+                        int k = EnchantmentHelper.getLevel(Enchantments.PUNCH, bowStack);
                         if (k > 0) {
                             persistentProjectileEntity.setPunch(k);
                         }
 
-                        if (EnchantmentHelper.getLevel(Enchantments.FLAME, stack) > 0) {
+                        if (EnchantmentHelper.getLevel(Enchantments.FLAME, bowStack) > 0) {
                             persistentProjectileEntity.setOnFireFor(100);
                         }
 
-                        stack.damage(1, (LivingEntity)playerEntity, (Consumer<LivingEntity>)((p) -> {
-                            p.sendToolBreakStatus(playerEntity.getActiveHand());
+                        bowStack.damage(1, (LivingEntity)player, (Consumer<LivingEntity>)((p) -> {
+                            p.sendToolBreakStatus(player.getActiveHand());
                         }));
-                        if (bl2 || playerEntity.abilities.creativeMode && (itemStack.getItem() == Items.SPECTRAL_ARROW || itemStack.getItem() == Items.TIPPED_ARROW)) {
+                        if (bl2 || player.abilities.creativeMode && (arrowStack.getItem() == Items.SPECTRAL_ARROW || arrowStack.getItem() == Items.TIPPED_ARROW)) {
                             persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
                         }
 
                         world.spawnEntity(persistentProjectileEntity);
                     }
 
-                    world.playSound((PlayerEntity)null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
-                    if (!bl2 && !playerEntity.abilities.creativeMode) {
-                        itemStack.decrement(1);
-                        if (itemStack.isEmpty()) {
-                            playerEntity.inventory.removeOne(itemStack);
+                    world.playSound((PlayerEntity)null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+
+                    // BEGIN MODIFICATIONS
+                    boolean isPotionArrow = arrowStack.getItem() == Items.TIPPED_ARROW ||
+                            !PotionUtil.getCustomPotionEffects(arrowStack).isEmpty() ||
+                            !PotionUtil.getPotionEffects(arrowStack).isEmpty();
+                    if (!bl2 && !player.abilities.creativeMode) {
+                        if (isPotionArrow) {
+                            arrowStack.decrement(1);
+                            if (arrowStack.isEmpty()) {
+                                player.inventory.removeOne(arrowStack);
+                            }
+                        } else if (player instanceof ServerPlayerEntity) {
+                            int slot = player.inventory.getSlotWithStack(arrowStack);
+                            ((ServerPlayerEntity) player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, slot, arrowStack));
                         }
                     }
+                    // END MODIFICATIONS
 
-                    playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+                    player.incrementStat(Stats.USED.getOrCreateStat(this));
                 }
             }
         }

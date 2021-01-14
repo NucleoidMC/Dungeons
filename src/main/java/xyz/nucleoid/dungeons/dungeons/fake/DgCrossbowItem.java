@@ -11,6 +11,9 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -27,6 +30,78 @@ public class DgCrossbowItem extends CrossbowItem implements FakeItem {
     public DgCrossbowItem(Settings settings) {
         super(settings);
     }
+    // arrow removal code removed
+
+    @Override
+    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+        int i = this.getMaxUseTime(stack) - remainingUseTicks;
+        float f = CrossbowItem.getPullProgress(i, stack);
+        if (f >= 1.0F && !isCharged(stack) && DgCrossbowItem.dgLoadProjectiles(user, stack)) {
+            setCharged(stack, true);
+            SoundCategory soundCategory = user instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE;
+            world.playSound((PlayerEntity)null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_CROSSBOW_LOADING_END, soundCategory, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.5F + 1.0F) + 0.2F);
+        }
+    }
+
+    public static boolean dgLoadProjectiles(LivingEntity shooter, ItemStack projectile) {
+        int i = EnchantmentHelper.getLevel(Enchantments.MULTISHOT, projectile);
+        int j = i == 0 ? 1 : 3;
+        boolean bl = shooter instanceof PlayerEntity && ((PlayerEntity)shooter).abilities.creativeMode;
+        ItemStack itemStack = shooter.getArrowType(projectile);
+        ItemStack itemStack2 = itemStack.copy();
+
+        for(int k = 0; k < j; ++k) {
+            if (k > 0) {
+                itemStack = itemStack2.copy();
+            }
+
+            if (itemStack.isEmpty() && bl) {
+                itemStack = new ItemStack(Items.ARROW);
+                itemStack2 = itemStack.copy();
+            }
+
+            if (!dgLoadProjectile(shooter, projectile, itemStack, k > 0, bl)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean dgLoadProjectile(LivingEntity shooter, ItemStack crossbow, ItemStack projectile, boolean simulated, boolean creative) {
+        if (projectile.isEmpty()) {
+            return false;
+        } else {
+            boolean bl = creative && projectile.getItem() instanceof ArrowItem;
+
+            // BEGIN MODIFICATIONS
+            boolean isPotionArrow = projectile.getItem() == Items.TIPPED_ARROW ||
+                    !PotionUtil.getCustomPotionEffects(projectile).isEmpty() ||
+                    !PotionUtil.getPotionEffects(projectile).isEmpty();
+            ItemStack itemStack2;
+            if (!bl && !creative && !simulated) {
+                if (isPotionArrow) {
+                    itemStack2 = projectile.split(1);
+                    if (projectile.isEmpty() && shooter instanceof PlayerEntity) {
+                        ((PlayerEntity)shooter).inventory.removeOne(projectile);
+                    }
+                } else if (shooter instanceof ServerPlayerEntity) {
+                    itemStack2 = projectile.copy();
+                    int slot = ((ServerPlayerEntity) shooter).inventory.getSlotWithStack(projectile);
+                    ((ServerPlayerEntity) shooter).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, slot, projectile));
+                } else { // should never trigger
+                    itemStack2 = projectile.copy();
+                }
+            } else {
+                itemStack2 = projectile.copy();
+            }
+            // END MODIFICATIONS
+
+            CrossbowItem.putProjectile(crossbow, itemStack2);
+            return true;
+        }
+    }
+
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -117,7 +192,7 @@ public class DgCrossbowItem extends CrossbowItem implements FakeItem {
 
         double vanillaDamage = 6.0;
         double targetDamage = vanillaDamage;
-        if (tag.contains(DgRangedWeapon.DRAW_TICKS_TAG)) {
+        if (tag.contains(DgRangedWeapon.DAMAGE_TAG)) {
             targetDamage = tag.getInt(DgRangedWeapon.DAMAGE_TAG);
         }
 
@@ -137,38 +212,6 @@ public class DgCrossbowItem extends CrossbowItem implements FakeItem {
         }
 
         return persistentProjectileEntity;
-    }
-
-    @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        int i = this.getMaxUseTime(stack) - remainingUseTicks;
-        float f = dgGetPullProgress(i, stack);
-        if (f >= 1.0F && !isCharged(stack) && CrossbowItem.loadProjectiles(user, stack)) {
-            CrossbowItem.setCharged(stack, true);
-            SoundCategory soundCategory = user instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE;
-            world.playSound((PlayerEntity)null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_CROSSBOW_LOADING_END, soundCategory, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.5F + 1.0F) + 0.2F);
-        }
-    }
-
-    // from vanilla
-    public static int dgGetPullTime(ItemStack stack) {
-        int fullDrawTicks = 25; // vanilla
-        CompoundTag tag = stack.getOrCreateTag();
-        if (tag.contains(DgRangedWeapon.DRAW_TICKS_TAG)) {
-            fullDrawTicks = tag.getInt(DgRangedWeapon.DRAW_TICKS_TAG);
-        }
-
-        int i = EnchantmentHelper.getLevel(Enchantments.QUICK_CHARGE, stack);
-        return i == 0 ? fullDrawTicks : fullDrawTicks - 5 * i;
-    }
-
-    private static float dgGetPullProgress(int useTicks, ItemStack stack) {
-        float f = (float)useTicks / (float) dgGetPullTime(stack);
-        if (f > 1.0F) {
-            f = 1.0F;
-        }
-
-        return f;
     }
 
     @Override
