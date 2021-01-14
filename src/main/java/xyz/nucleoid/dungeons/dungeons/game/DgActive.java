@@ -16,7 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
-import xyz.nucleoid.dungeons.dungeons.game.loot.DgEnemyDropGenerator;
+import xyz.nucleoid.dungeons.dungeons.util.item.loot.DgEnemyDropGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 import xyz.nucleoid.plasmid.game.GameCloseReason;
 import xyz.nucleoid.plasmid.game.GameSpace;

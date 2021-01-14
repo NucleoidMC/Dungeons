@@ -1,9 +1,11 @@
 package xyz.nucleoid.dungeons.dungeons.game.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -11,57 +13,44 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
-import xyz.nucleoid.dungeons.dungeons.game.loot.DgLootGrade;
-import xyz.nucleoid.dungeons.dungeons.game.loot.weapon.*;
+import xyz.nucleoid.dungeons.dungeons.item.DgItems;
+import xyz.nucleoid.dungeons.dungeons.item.base.DgMaterialItem;
+import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
+import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
+import xyz.nucleoid.dungeons.dungeons.util.item.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.loot.DgWeaponLoot;
 
 public class GiveWeaponCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> root = CommandManager.literal("giveweapon")
                 .requires(source -> source.hasPermissionLevel(2))
-                .then(CommandManager.literal("random").executes(context -> giveRandom(context.getSource())));
-        for (DgLootGrade grade : DgLootGrade.values()) {
-            LiteralArgumentBuilder<ServerCommandSource> gradeNode = CommandManager.literal(grade.id);
-            addBows(grade, gradeNode);
-            addMetalMeleeWeapons(grade, gradeNode);
-            addQuarterstaves(grade, gradeNode);
-            root.then(gradeNode);
+                .then(CommandManager.literal("random").then(CommandManager.argument("dungeonLevel", DoubleArgumentType.doubleArg()).executes(context -> giveRandom(context.getSource(), DoubleArgumentType.getDouble(context, "dungeonLevel")))));
+        for (DgItemQuality quality : DgItemQuality.values()) {
+            LiteralArgumentBuilder<ServerCommandSource> qualityNode = CommandManager.literal(quality.getId());
+            addRegistryItems(quality, qualityNode);
+            root.then(qualityNode);
         }
         dispatcher.register(root);
     }
 
-    private static void addBows(DgLootGrade grade, LiteralArgumentBuilder<ServerCommandSource> builder) {
-        for (DgRangedWeaponType type : DgRangedWeaponType.values()) {
-            LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal(type.id);
-            for (DgRangedWeaponMaterial material : DgRangedWeaponMaterial.values()) {
-                node.then(CommandManager.literal(material.id).executes(context -> give(context.getSource(),
-                        new DgRangedWeapon(type, grade, material,1.0D, 1).toItemStack())));
+    private static void addRegistryItems(DgItemQuality quality, LiteralArgumentBuilder<ServerCommandSource> builder) {
+        for (Item item : DgItems.getItems()) {
+            if (item instanceof DgMaterialItem) {
+                LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal(DgItemUtil.idPathOf(item));
+                DgMaterialComponent<?> materialComponent = ((DgMaterialItem<?>) item).getMaterialComponent();
+                materialComponent.streamMaterials().forEach(material -> {
+                    if (quality.ordinal() >= material.getMinQuality().ordinal() && quality.ordinal() <= material.getMaxQuality().ordinal()) {
+                        node.then(CommandManager.literal(material.getId()).executes(context -> give(context.getSource(),
+                                ((DgMaterialItem<?>) item).createStackInternal(material, quality))));
+                    }
+                });
+                builder.then(node);
             }
-            builder.then(node);
         }
     }
 
-    private static void addMetalMeleeWeapons(DgLootGrade grade, LiteralArgumentBuilder<ServerCommandSource> builder) {
-        for (DgMetalMeleeWeaponType type : DgMetalMeleeWeaponType.values()) {
-            LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal(type.id);
-            for (DgWeaponMetal material : DgWeaponMetal.values()) {
-                node.then(CommandManager.literal(material.id).executes(context -> give(context.getSource(),
-                        new DgMetalMeleeWeapon(type, material, grade, "Forged with /giveweapon", 1.0D, 1.0D).toItemStack())));
-            }
-            builder.then(node);
-        }
-    }
-
-    private static void addQuarterstaves(DgLootGrade grade, LiteralArgumentBuilder<ServerCommandSource> builder) {
-        LiteralArgumentBuilder<ServerCommandSource> node = CommandManager.literal("quarterstaff");
-        for (DgQuarterstaffWood material : DgQuarterstaffWood.values()) {
-            node.then(CommandManager.literal(material.id).executes(context -> give(context.getSource(),
-                    new DgQuarterstaff(material, grade, 1.0D, 1.0D).toItemStack())));
-        }
-        builder.then(node);
-    }
-
-    private static int giveRandom(ServerCommandSource source) throws CommandSyntaxException {
-        return give(source, DgWeaponGenerator.generate(source.getWorld().random, 1));
+    private static int giveRandom(ServerCommandSource source, double dungeonLevel) throws CommandSyntaxException {
+        return give(source, DgWeaponLoot.generate(source.getWorld().getRandom(), dungeonLevel));
     }
 
     private static int give(ServerCommandSource source, ItemStack stack) throws CommandSyntaxException {

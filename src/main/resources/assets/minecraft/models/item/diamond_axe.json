@@ -1,56 +1,56 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "minecraft:item/iron_sword"
+    "layer0": "minecraft:item/diamond_axe"
   },
   "overrides": [
     {
       "predicate": {
         "custom_model_data": 1
       },
-      "model": "dungeons:item/copper/great_sword"
+      "model": "dungeons:item/copper/battle_axe"
     },
     {
       "predicate": {
         "custom_model_data": 2
       },
-      "model": "dungeons:item/bronze/great_sword"
+      "model": "dungeons:item/bronze/battle_axe"
     },
     {
       "predicate": {
         "custom_model_data": 3
       },
-      "model": "dungeons:item/iron/great_sword"
+      "model": "dungeons:item/iron/battle_axe"
     },
     {
       "predicate": {
         "custom_model_data": 4
       },
-      "model": "dungeons:item/steel/great_sword"
+      "model": "dungeons:item/steel/battle_axe"
     },
     {
       "predicate": {
         "custom_model_data": 5
       },
-      "model": "dungeons:item/damascus_steel/great_sword"
+      "model": "dungeons:item/damascus_steel/battle_axe"
     },
     {
       "predicate": {
         "custom_model_data": 6
       },
-      "model": "dungeons:item/netherite/great_sword"
+      "model": "dungeons:item/netherite/battle_axe"
     },
     {
       "predicate": {
         "custom_model_data": 7
       },
-      "model": "dungeons:item/viarite/great_sword"
+      "model": "dungeons:item/viarite/battle_axe"
     },
     {
       "predicate": {
         "custom_model_data": 8
       },
-      "model": "dungeons:item/greystone/great_sword"
+      "model": "dungeons:item/greystone/battle_axe"
     }
   ]
 }

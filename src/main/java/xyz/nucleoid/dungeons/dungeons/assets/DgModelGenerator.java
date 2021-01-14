@@ -7,7 +7,8 @@ import com.google.gson.JsonObject;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
-import xyz.nucleoid.dungeons.dungeons.game.loot.DgModelRegistry;
+import xyz.nucleoid.dungeons.dungeons.util.item.DgItemModelRegistry;
+import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,7 +25,7 @@ public class DgModelGenerator {
         File out = new File(FabricLoader.getInstance().getGameDir().toFile(), "out");
         File dungeonsItemModelOut = new File(out, "assets/dungeons/models/item");
         File minecraftItemModelOut = new File(out, "assets/minecraft/models/item");
-        Map<Item, LinkedList<String>> registry = DgModelRegistry.getRegistry();
+        Map<Item, LinkedList<String>> registry = DgItemModelRegistry.getRegistry();
         registry.forEach((proxy, items) -> {
             JsonArray overrides = new JsonArray();
             items.forEach(modifiersString -> {
@@ -49,7 +50,7 @@ public class DgModelGenerator {
                 }
                 JsonObject override = new JsonObject();
                 JsonObject predicate = new JsonObject();
-                predicate.addProperty("custom_model_data", DgModelRegistry.getId(modifiersString));
+                predicate.addProperty("custom_model_data", DgItemModelRegistry.getId(modifiersString));
                 override.add("predicate", predicate);
                 override.addProperty("model", "dungeons:item/" + modifiersString);
                 overrides.add(override);
@@ -62,13 +63,25 @@ public class DgModelGenerator {
             object.add("textures", textures);
             object.add("overrides", overrides);
             minecraftItemModelOut.mkdirs();
-            File modelFile = new File(minecraftItemModelOut, proxyName + ".json");
+            File minecraftModelFile = new File(minecraftItemModelOut, proxyName + ".json");
             try {
-                BufferedWriter writer = Files.newBufferedWriter(modelFile.toPath());
+                BufferedWriter writer = Files.newBufferedWriter(minecraftModelFile.toPath());
                 writer.write(GSON.toJson(object));
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+
+            // These are added for debug purposes to view in the creative menu (when viewing the real item)
+            for (Item dungeonsItem : DgItemModelRegistry.getItemsWithProxy(proxy)) {
+                File dungeonsModelFile = new File(dungeonsItemModelOut, DgItemUtil.idPathOf(dungeonsItem) + ".json");
+                try {
+                    BufferedWriter writer = Files.newBufferedWriter(dungeonsModelFile.toPath());
+                    writer.write(GSON.toJson(object));
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
