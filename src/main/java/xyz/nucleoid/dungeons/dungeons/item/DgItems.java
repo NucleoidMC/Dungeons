@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DgItems {
-    // TODO(restioson): vanilla sets a max damage?
     private static final Map<Identifier, Item> REGISTRY = new HashMap<>();
 
     public static final DgMetalMeleeWeaponItem HAND_AXE = add("hand_axe", new DgMetalMeleeWeaponItem(6, 1.1, Items.IRON_AXE, new FabricItemSettings()));
