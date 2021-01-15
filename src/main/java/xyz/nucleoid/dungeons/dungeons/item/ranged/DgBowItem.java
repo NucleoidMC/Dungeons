@@ -42,8 +42,11 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
                 // BEGIN MODIFICATIONS
 
                 int fullDrawTicks = DgItemUtil.drawTimeOf(bowStack);
-
                 float f = dgGetPullProgress(i, fullDrawTicks);
+
+                boolean isPotionArrow = arrowStack.getItem() == Items.TIPPED_ARROW ||
+                        !PotionUtil.getCustomPotionEffects(arrowStack).isEmpty() ||
+                        !PotionUtil.getPotionEffects(arrowStack).isEmpty();
 
                 // END MODIFICATIONS
 
@@ -90,6 +93,15 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
                         bowStack.damage(1, (LivingEntity) player, (Consumer<LivingEntity>) ((p) -> {
                             p.sendToolBreakStatus(player.getActiveHand());
                         }));
+
+                        // BEGIN MODIFICATIONS
+                        if (isPotionArrow) {
+                            arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
+                        } else {
+                            arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED;
+                        }
+                        // END MODIFICATIONS
+
                         if (bl2 || player.abilities.creativeMode && (arrowStack.getItem() == Items.SPECTRAL_ARROW || arrowStack.getItem() == Items.TIPPED_ARROW)) {
                             arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
                         }
@@ -100,9 +112,6 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
                     world.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 
                     // BEGIN MODIFICATIONS
-                    boolean isPotionArrow = arrowStack.getItem() == Items.TIPPED_ARROW ||
-                            !PotionUtil.getCustomPotionEffects(arrowStack).isEmpty() ||
-                            !PotionUtil.getPotionEffects(arrowStack).isEmpty();
                     if (!bl2 && !player.abilities.creativeMode) {
                         if (isPotionArrow) {
                             arrowStack.decrement(1);

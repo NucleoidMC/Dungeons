@@ -26,10 +26,8 @@ import xyz.nucleoid.dungeons.dungeons.util.item.material.DgRangedWeaponMaterial;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
 import java.util.function.BiFunction;
 
 public class DgItemUtil {
@@ -139,8 +137,12 @@ public class DgItemUtil {
             if (!stats.isEmpty()) {
                 addLore(stack, new LiteralText(""));
             }
+
+            DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
+            otherSymbols.setDecimalSeparator('.');
+            DecimalFormat format = new DecimalFormat("0.#", otherSymbols);
+
             for (DgWeaponStat stat : stats) {
-                DecimalFormat format = new DecimalFormat("0.#");
                 double value = stat.getValue();
                 addLore(stack, new TranslatableText(stat.getTranslationKey(), (value >= 0 ? "+" : "") + format.format(value)).styled(style -> style.withItalic(false).withColor(Formatting.BLUE)));
             }

@@ -154,6 +154,18 @@ public abstract class DgCrossbowItem extends CrossbowItem implements FakeItem, D
                 projectileEntity2 = new FireworkRocketEntity(world, projectile, shooter, shooter.getX(), shooter.getEyeY() - 0.15000000596046448D, shooter.getZ(), true);
             } else {
                 projectileEntity2 = dgCreateArrow(world, shooter, crossbow, projectile);
+
+                // BEGIN MODIFICATIONS
+                boolean isPotionArrow = projectile.getItem() == Items.TIPPED_ARROW ||
+                        !PotionUtil.getCustomPotionEffects(projectile).isEmpty() ||
+                        !PotionUtil.getPotionEffects(projectile).isEmpty();
+                if (isPotionArrow) {
+                    ((PersistentProjectileEntity) projectileEntity2).pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
+                } else {
+                    ((PersistentProjectileEntity) projectileEntity2).pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED;
+                }
+                // END MODIFICATIONS
+
                 if (creative || simulated != 0.0F) {
                     ((PersistentProjectileEntity) projectileEntity2).pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
                 }
