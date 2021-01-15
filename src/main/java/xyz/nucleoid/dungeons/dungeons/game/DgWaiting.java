@@ -13,19 +13,19 @@ import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 
 public class DgWaiting {
     private final GameSpace gameWorld;
-    private final DgMap map;
     private final DgConfig config;
     private final DgSpawnLogic spawnLogic;
+    private final DgMap map;
 
     private DgWaiting(GameSpace gameWorld, DgMap map, DgConfig config) {
         this.gameWorld = gameWorld;
-        this.map = map;
         this.config = config;
         this.spawnLogic = new DgSpawnLogic(gameWorld, map);
+        this.map = map;
     }
 
-    public static GameOpenProcedure open(GameOpenContext<DgConfig> context) {
-        DgMap map = new DgMap();
+    public static GameOpenProcedure open(GameOpenContext<DgConfig> context) throws GameOpenException {
+        DgMap map = DgMap.create(context.getConfig());
 
         BubbleWorldConfig worldConfig = new BubbleWorldConfig()
                 .setGenerator(map.asGenerator(context.getServer()))

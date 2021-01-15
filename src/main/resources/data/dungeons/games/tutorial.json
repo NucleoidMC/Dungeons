@@ -1,5 +1,6 @@
 {
   "type": "dungeons:dungeons",
+  "map": "dungeons:tutorial",
   "players": {
     "min": 1,
     "max": 100
