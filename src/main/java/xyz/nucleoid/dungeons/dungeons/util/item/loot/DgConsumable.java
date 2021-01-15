@@ -10,27 +10,24 @@ import java.util.Random;
 
 // TODO(restioson): use loot tables? how do they work?
 public enum DgConsumable {
-    INSTANT_HEALTH(5),
+    INSTANT_HEALTH(3),
     GOLDEN_APPLE(1);
+
+    public int weight;
 
     public final static WeightedList<DgConsumable> LIST = new WeightedList<>();
 
-    public int weight;
+    static {
+        for (DgConsumable value : DgConsumable.values()) {
+            LIST.add(value, value.weight);
+        }
+    }
 
     DgConsumable(int weight) {
         this.weight = weight;
     }
 
-    static void lazyGenerateList() {
-        if (LIST.isEmpty()) {
-            for (DgConsumable value : DgConsumable.values()) {
-                LIST.add(value, value.weight);
-            }
-        }
-    }
-
     public static DgConsumable choose(Random random) {
-        DgConsumable.lazyGenerateList();
         return LIST.pickRandom(random);
     }
 
