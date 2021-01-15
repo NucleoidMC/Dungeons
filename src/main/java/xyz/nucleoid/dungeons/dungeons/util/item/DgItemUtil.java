@@ -1,5 +1,8 @@
 package xyz.nucleoid.dungeons.dungeons.util.item;
 
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -26,6 +29,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.function.BiFunction;
 
 public class DgItemUtil {
@@ -37,6 +41,8 @@ public class DgItemUtil {
     private static final String DRAW_TIME = "dungeons:draw_time";
 
     public static final Random RANDOM = new Random();
+    private static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("da3f4761-b0ef-4fdb-a55f-b4269c804055");
+    private static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("ad949c2b-e696-4e50-b98e-325978db25f9");
 
     public static Identifier idOf(Item item) {
         return Registry.ITEM.getId(item);
@@ -159,15 +165,33 @@ public class DgItemUtil {
     public static <M extends Enum<M> & DgMeleeWeaponMaterial> ItemStack initMeleeMaterialWeapon(ItemStack stack, M material, DgItemQuality quality, double baseMeleeDamage, double baseSwingSpeed) {
         stack.getOrCreateTag().putDouble(MELEE_DAMAGE, (baseMeleeDamage + (RANDOM.nextDouble() / 2)) * material.getMeleeDamageMultiplier() * quality.getDamageMultiplier());
         stack.getOrCreateTag().putDouble(SWING_SPEED, baseSwingSpeed);
-        initMaterialWeapon(stack, material, quality);
-        return stack;
+
+        // Modifier is based on empty hand, so some subtraction must be done
+        stack.addAttributeModifier(
+                EntityAttributes.GENERIC_ATTACK_DAMAGE, 
+                new EntityAttributeModifier(
+                        ATTACK_DAMAGE_MODIFIER_ID,
+                        "Attack damage modifier",
+                        baseMeleeDamage - 0.5, EntityAttributeModifier.Operation.ADDITION
+                ),
+                EquipmentSlot.MAINHAND
+        );
+        stack.addAttributeModifier(
+                EntityAttributes.GENERIC_ATTACK_SPEED, 
+                new EntityAttributeModifier(
+                        ATTACK_SPEED_MODIFIER_ID, "Attack speed modifier",
+                        baseSwingSpeed - 4.0,
+                        EntityAttributeModifier.Operation.ADDITION
+                ), EquipmentSlot.MAINHAND
+        );
+
+        return initMaterialWeapon(stack, material, quality);
     }
 
     public static <M extends Enum<M> & DgRangedWeaponMaterial> ItemStack initRangedMaterialWeapon(ItemStack stack, M material, DgItemQuality quality, double baseRangedDamage, int baseDrawTime) {
         stack.getOrCreateTag().putDouble(RANGED_DAMAGE, (baseRangedDamage + (RANDOM.nextDouble() / 2)) * material.getRangedDamageMultiplier() * quality.getDamageMultiplier());
         stack.getOrCreateTag().putInt(DRAW_TIME, baseDrawTime);
-        initMaterialWeapon(stack, material, quality);
-        return stack;
+        return initMaterialWeapon(stack, material, quality);
     }
 
     public static void addCustomModel(ItemStack stack, String... modifiers) {
