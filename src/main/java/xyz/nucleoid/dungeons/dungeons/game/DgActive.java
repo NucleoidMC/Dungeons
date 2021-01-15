@@ -164,7 +164,7 @@ public class DgActive {
                 return;
         }
 
-        this.timerBar.update(this.idle.finishTime - time, this.config.timeLimitSecs * 20);
+        this.timerBar.update(this.idle.finishTime - time, this.config.timeLimitSecs * 20L );
     }
 
     protected static void broadcastMessage(Text message, GameSpace world) {
@@ -215,6 +215,10 @@ public class DgActive {
 
         // TODO win result logic
         return WinResult.no();
+    }
+
+    public DgMap getGameMap() {
+        return gameMap;
     }
 
     static class WinResult {
