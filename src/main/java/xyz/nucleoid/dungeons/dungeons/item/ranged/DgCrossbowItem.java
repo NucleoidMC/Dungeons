@@ -21,6 +21,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import xyz.nucleoid.dungeons.dungeons.item.DgItems;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgRangedWeapon;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
 import xyz.nucleoid.plasmid.fake.FakeItem;
@@ -210,6 +211,11 @@ public abstract class DgCrossbowItem extends CrossbowItem implements FakeItem, D
         }
 
         return persistentProjectileEntity;
+    }
+
+    @Override
+    public boolean isUsedOnRelease(ItemStack stack) {
+        return stack.getItem() == DgItems.CROSSBOW;
     }
 
     @Override
