@@ -3,6 +3,7 @@ package xyz.nucleoid.dungeons.dungeons.game;
 import net.minecraft.util.ActionResult;
 
 import xyz.nucleoid.fantasy.BubbleWorldConfig;
+import xyz.nucleoid.fantasy.BubbleWorldSpawner;
 import xyz.nucleoid.plasmid.game.*;
 import xyz.nucleoid.plasmid.game.event.*;
 
@@ -34,6 +35,7 @@ public class DgWaiting {
         return context.createOpenProcedure(worldConfig, (game) -> {
             DgWaiting waiting = new DgWaiting(game.getSpace(), map, context.getConfig());
             GameWaitingLobby.applyTo(game, context.getConfig().playerConfig);
+            // TODO: Set resource pack, worldConfig.setResourcePack(  )
 
             game.on(RequestStartListener.EVENT, waiting::requestStart);
             game.on(PlayerAddListener.EVENT, waiting::addPlayer);
