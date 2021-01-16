@@ -11,7 +11,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import sun.jvm.hotspot.opto.Block;
 import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.map.gen.DgChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
