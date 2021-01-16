@@ -7,7 +7,8 @@ import net.minecraft.util.collection.DefaultedList;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgMaterialItem;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.DgWeaponItemUtil;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgRangedWeaponMaterial;
 
 public class DgMaterialBowItem<M extends Enum<M> & DgRangedWeaponMaterial> extends DgBowItem implements DgMaterialItem<M> {
@@ -33,7 +34,7 @@ public class DgMaterialBowItem<M extends Enum<M> & DgRangedWeaponMaterial> exten
     }
 
     public ItemStack createStack(M material, DgItemQuality quality) {
-        return DgItemUtil.initRangedMaterialWeapon(DgItemUtil.weaponBuilder(this).build(), material, quality, baseRangedDamage, baseDrawTime);
+        return DgWeaponItemUtil.initRangedMaterialWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), material, quality, baseRangedDamage, baseDrawTime);
     }
 
     @Override
@@ -43,11 +44,11 @@ public class DgMaterialBowItem<M extends Enum<M> & DgRangedWeaponMaterial> exten
 
     @Override
     public double getRangedDamage(ItemStack stack) {
-        return DgItemUtil.rangedDamageOf(stack);
+        return DgWeaponItemUtil.rangedDamageOf(stack);
     }
 
     @Override
     public int getDrawTime(ItemStack stack) {
-        return DgItemUtil.drawTimeOf(stack);
+        return DgWeaponItemUtil.drawTimeOf(stack);
     }
 }

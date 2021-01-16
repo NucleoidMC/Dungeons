@@ -7,10 +7,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgMaterialItem;
+import xyz.nucleoid.dungeons.dungeons.util.item.DgWeaponItemUtil;
 import xyz.nucleoid.dungeons.dungeons.util.item.model.DgItemModelRegistry;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMeleeWeaponMaterial;
 
 public class DgMaterialMeleeWeaponItem<M extends Enum<M> & DgMeleeWeaponMaterial> extends DgMeleeWeaponItem implements DgMaterialItem<M> {
@@ -31,7 +32,7 @@ public class DgMaterialMeleeWeaponItem<M extends Enum<M> & DgMeleeWeaponMaterial
 
     @Override
     public ItemStack createStack(M material, DgItemQuality quality) {
-        return DgItemUtil.initMeleeMaterialWeapon(DgItemUtil.weaponBuilder(this).build(), material, quality, baseAttackDamage, baseAttackSpeed);
+        return DgWeaponItemUtil.initMeleeMaterialWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), material, quality, baseAttackDamage, baseAttackSpeed);
     }
 
     @Override
@@ -53,11 +54,11 @@ public class DgMaterialMeleeWeaponItem<M extends Enum<M> & DgMeleeWeaponMaterial
 
     @Override
     public double getMeleeDamage(ItemStack stack) {
-        return DgItemUtil.meleeDamageOf(stack);
+        return DgWeaponItemUtil.meleeDamageOf(stack);
     }
 
     @Override
     public double getSwingSpeed(ItemStack stack) {
-        return DgItemUtil.swingSpeedOf(stack);
+        return DgWeaponItemUtil.swingSpeedOf(stack);
     }
 }

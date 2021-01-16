@@ -14,7 +14,7 @@ import xyz.nucleoid.dungeons.dungeons.item.ranged.DgMaterialBowItem;
 import xyz.nucleoid.dungeons.dungeons.item.ranged.DgMaterialCrossbowItem;
 import xyz.nucleoid.dungeons.dungeons.item.ranged.DgWoodBowItem;
 import xyz.nucleoid.dungeons.dungeons.item.ranged.DgWoodCrossbowItem;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgQuarterstaffWood;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgRangedWeaponWood;
 

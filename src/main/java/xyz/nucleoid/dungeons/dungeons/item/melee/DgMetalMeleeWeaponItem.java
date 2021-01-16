@@ -6,7 +6,7 @@ import xyz.nucleoid.dungeons.dungeons.item.base.DgFlavorTextProvider;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgFlavorText;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMeleeWeaponMetal;
 
 import java.util.ArrayList;

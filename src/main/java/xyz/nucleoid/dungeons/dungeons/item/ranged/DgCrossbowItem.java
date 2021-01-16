@@ -23,7 +23,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import xyz.nucleoid.dungeons.dungeons.item.DgItems;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgRangedWeapon;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
+import xyz.nucleoid.dungeons.dungeons.util.item.DgWeaponItemUtil;
 import xyz.nucleoid.plasmid.fake.FakeItem;
 
 import java.util.List;
@@ -205,7 +205,7 @@ public abstract class DgCrossbowItem extends CrossbowItem implements FakeItem, D
         // Hopefully, it will work. - Restioson
 
         double vanillaDamage = 6.0;
-        double targetDamage = DgItemUtil.rangedDamageOf(crossbow);
+        double targetDamage = DgWeaponItemUtil.rangedDamageOf(crossbow);
 
         persistentProjectileEntity.setDamage(damage * (targetDamage / vanillaDamage));
 

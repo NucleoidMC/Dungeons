@@ -1,4 +1,4 @@
-package xyz.nucleoid.dungeons.dungeons.util.item;
+package xyz.nucleoid.dungeons.dungeons.util.item.material;
 
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterial;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialPicker;

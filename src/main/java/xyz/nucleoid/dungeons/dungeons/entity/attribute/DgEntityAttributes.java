@@ -20,7 +20,7 @@ public class DgEntityAttributes {
 
     private static <T extends EntityAttribute> T register(String id, T attribute) {
         Registry.register(Registry.ATTRIBUTE, new Identifier(Dungeons.ID, id), attribute);
-        return attribute;
+        return attribute;   
     }
 
     public static String translationKeyOf(String name) {
