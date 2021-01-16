@@ -7,8 +7,8 @@ import com.google.gson.JsonObject;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemModelRegistry;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
+import xyz.nucleoid.dungeons.dungeons.util.item.model.DgItemModelRegistry;
 
 import java.io.BufferedWriter;
 import java.io.File;

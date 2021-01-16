@@ -1,4 +1,4 @@
-package xyz.nucleoid.dungeons.dungeons.util.item;
+package xyz.nucleoid.dungeons.dungeons.util.item.model;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;

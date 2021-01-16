@@ -124,10 +124,10 @@
   "flavor_text.dungeons.metal_melee_weapon.gram.2": "of this metal in their lives",
   "flavor_text.dungeons.metal_melee_weapon.gram.3": "let alone an entire blade.",
 
-  "stat.dungeons.melee_damage": "%s Melee Damage",
-  "stat.dungeons.swing_speed": "%s Swing Speed",
-  "stat.dungeons.ranged_damage": "%s Ranged Damage",
-  "stat.dungeons.draw_time": "%ss Draw Time",
+  "attribute.dungeons.generic.melee_damage": "Melee Damage",
+  "attribute.dungeons.generic.swing_speed": "Swing Speed",
+  "attribute.dungeons.generic.ranged_damage": "Ranged Damage",
+  "attribute.dungeons.generic.draw_time": "Draw Time",
 
   "": ""
 }

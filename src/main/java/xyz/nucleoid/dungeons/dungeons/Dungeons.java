@@ -7,6 +7,7 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import xyz.nucleoid.dungeons.dungeons.assets.DgModelGenerator;
+import xyz.nucleoid.dungeons.dungeons.entity.attribute.DgEntityAttributes;
 import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.DgWaiting;
 import xyz.nucleoid.dungeons.dungeons.game.command.GiveWeaponCommand;
@@ -28,6 +29,7 @@ public class Dungeons implements ModInitializer {
     @Override
     public void onInitialize() {
         DgItems.register();
+        DgEntityAttributes.register();
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             CommandRegistrationCallback.EVENT.register((dispatcher, b) -> GiveWeaponCommand.register(dispatcher));
             if (GENERATE_MODELS) {

@@ -7,12 +7,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgMaterialItem;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemModelRegistry;
+import xyz.nucleoid.dungeons.dungeons.util.item.model.DgItemModelRegistry;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgMaterialComponent;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMeleeWeaponMaterial;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMeleeWeaponMetal;
 
 public class DgMaterialMeleeWeaponItem<M extends Enum<M> & DgMeleeWeaponMaterial> extends DgMeleeWeaponItem implements DgMaterialItem<M> {
     protected DgMaterialComponent<M> materialComponent;
