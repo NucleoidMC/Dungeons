@@ -32,7 +32,7 @@ public class GiveEffectAction implements Action {
 
         Identifier id = Identifier.tryParse(data.getString("effect"));
 
-        if (id == null || !Registry.STATUS_EFFECT.containsId(id)) {
+        if (id == null || !Registry.STATUS_EFFECT.getOrEmpty(id).isPresent()) {
             throw new TriggerInstantiationError("Invalid effect `" + data.getString("effect") + "`");
         }
 

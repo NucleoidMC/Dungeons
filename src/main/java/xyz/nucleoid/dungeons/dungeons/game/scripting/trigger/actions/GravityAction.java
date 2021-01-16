@@ -61,7 +61,7 @@ public class GravityAction implements Action {
             for (int i = 0; i < list.size(); i++) {
                 Identifier id = Identifier.tryParse(list.getString(i));
 
-                if (id == null || !Registry.BLOCK.containsId(id)) {
+                if (id == null || !Registry.BLOCK.getOrEmpty(id).isPresent()) {
                     throw new TriggerInstantiationError("Invalid block `" + list.getString(i) + "`");
                 }
 

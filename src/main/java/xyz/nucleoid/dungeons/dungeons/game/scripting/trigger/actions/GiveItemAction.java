@@ -30,7 +30,7 @@ public class GiveItemAction implements Action {
 
         Identifier id = Identifier.tryParse(data.getString("item"));
 
-        if (id == null || !Registry.ITEM.containsId(id)) {
+        if (id == null || !Registry.ITEM.getOrEmpty(id).isPresent()) {
             throw new TriggerInstantiationError("Invalid item `" + data.getString("item") + "`");
         }
 
