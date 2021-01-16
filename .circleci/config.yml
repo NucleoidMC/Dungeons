@@ -1,8 +1,30 @@
-orbs:
-  gradle: circleci/gradle@2.2.0
-version: 2.1
-workflows:
-  checkout-build-test:
-    jobs:
-      - gradle/test:
-          store_artifacts: build/lib/
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/repo
+
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - run: echo $(date)
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            - v1-dependencies-
+
+      - run: 
+          command: gradle dependencies
+          name: Gather gradle dependencies
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+          
+      - run: gradle remapJar
+      - store_artifacts:
+          path: ./build/lib/
