@@ -23,6 +23,7 @@ import java.util.function.BiFunction;
 public class DgItemUtil {
     public static final String QUALITY = "dungeons:quality";
     public static final String MATERIAL = "dungeons:material";
+    public static final String ROLL = "dungeons:roll";
 
     public static final Random RANDOM = new Random();
 
@@ -40,6 +41,10 @@ public class DgItemUtil {
 
     public static <M extends Enum<M> & DgMaterial> M materialOf(ItemStack stack, DgMaterialComponent<M> materialComponent) {
         return materialComponent.getMaterial(stack.getOrCreateTag().getString(MATERIAL));
+    }
+
+    public static double rollOf(ItemStack stack) {
+        return stack.getOrCreateTag().getDouble(ROLL);
     }
 
     public static <M extends Enum<M> & DgMaterial> Text nameOf(ItemStack stack, DgMaterialComponent<M> materialComponent) {

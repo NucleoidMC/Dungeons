@@ -2,6 +2,7 @@ package xyz.nucleoid.dungeons.dungeons.util.item;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
@@ -13,32 +14,11 @@ import xyz.nucleoid.dungeons.dungeons.item.base.DgMeleeWeapon;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgRangedWeapon;
 import xyz.nucleoid.dungeons.dungeons.util.DgTranslationUtil;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterial;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMeleeWeaponMaterial;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgRangedWeaponMaterial;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgWeaponMaterial;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 
 public class DgWeaponItemUtil {
-    private static final String MELEE_DAMAGE = "dungeons:melee_damage";
-    private static final String SWING_SPEED = "dungeons:swing_speed";
-    private static final String RANGED_DAMAGE = "dungeons:ranged_damage";
-    private static final String DRAW_TIME = "dungeons:draw_time";
-
-    public static double meleeDamageOf(ItemStack stack) {
-        return stack.getOrCreateTag().getDouble(MELEE_DAMAGE);
-    }
-
-    public static double swingSpeedOf(ItemStack stack) {
-        return stack.getOrCreateTag().getDouble(SWING_SPEED);
-    }
-
-    public static double rangedDamageOf(ItemStack stack) {
-        return stack.getOrCreateTag().getDouble(RANGED_DAMAGE);
-    }
-
-    public static int drawTimeOf(ItemStack stack) {
-        return stack.getOrCreateTag().getInt(DRAW_TIME);
-    }
-
     public static ItemStackBuilder weaponBuilder(Item item) {
         return ItemStackBuilder.of(item);
     }
@@ -49,7 +29,11 @@ public class DgWeaponItemUtil {
         // https://minecraft.gamepedia.com/Tutorials/Command_NBT_tags#Items
         // hide all, any tooltip info will be added ourselves
         byte flags = 1 + 2 + 4 + 8 + 16 + 32 + 64;
-        stack.getOrCreateTag().putByte("HideFlags", flags);
+        CompoundTag nbt = stack.getOrCreateTag();
+        nbt.putByte("HideFlags", flags);
+        if (!nbt.contains(DgItemUtil.ROLL)) {
+            nbt.putDouble(DgItemUtil.ROLL, DgItemUtil.RANDOM.nextDouble());
+        }
         DgItemQuality quality = DgItemUtil.qualityOf(stack);
         Text qualityText = quality == null ? new LiteralText("!! Null Quality !!").formatted(Formatting.RED) : new TranslatableText(quality.getTranslationKey()).styled(style -> style.withItalic(false).withColor(TextColor.fromRgb(quality.getTier().getColor())));
         DgItemUtil.addLore(stack, new TranslatableText(DgTranslationUtil.translationKeyOf("quality", "prefix")).styled(style -> style.withColor(Formatting.GRAY).withItalic(false)).append(qualityText));
@@ -86,15 +70,18 @@ public class DgWeaponItemUtil {
         return stack;
     }
 
-    public static <M extends Enum<M> & DgMeleeWeaponMaterial> ItemStack initMeleeMaterialWeapon(ItemStack stack, M material, DgItemQuality quality, double baseMeleeDamage, double baseSwingSpeed) {
-        stack.getOrCreateTag().putDouble(MELEE_DAMAGE, (baseMeleeDamage + (DgItemUtil.RANDOM.nextDouble() / 2)) * material.getMeleeDamageMultiplier() * quality.getDamageMultiplier());
-        stack.getOrCreateTag().putDouble(SWING_SPEED, baseSwingSpeed);
+    public static <M extends Enum<M> & DgWeaponMaterial> ItemStack initMeleeMaterialWeapon(ItemStack stack, M material, DgItemQuality quality, double baseMeleeDamage, double baseSwingSpeed) {
         return initMaterialWeapon(stack, material, quality);
     }
 
-    public static <M extends Enum<M> & DgRangedWeaponMaterial> ItemStack initRangedMaterialWeapon(ItemStack stack, M material, DgItemQuality quality, double baseRangedDamage, int baseDrawTime) {
-        stack.getOrCreateTag().putDouble(RANGED_DAMAGE, (baseRangedDamage + (DgItemUtil.RANDOM.nextDouble() / 2)) * material.getRangedDamageMultiplier() * quality.getDamageMultiplier());
-        stack.getOrCreateTag().putInt(DRAW_TIME, baseDrawTime);
-        return initMaterialWeapon(stack, material, quality);
+    public static double calculateDamage(double base, double roll, double materialMultiplier, double qualityMultiplier) {
+        return (base + (roll / 2)) * materialMultiplier * qualityMultiplier;
+    }
+
+    public static <M extends Enum<M> & DgWeaponMaterial> double getDamage(ItemStack stack, double base, DgMaterialComponent<M> materialComponent) {
+        M material = DgItemUtil.materialOf(stack, materialComponent);
+        DgItemQuality quality = DgItemUtil.qualityOf(stack);
+        double roll = DgItemUtil.rollOf(stack);
+        return DgWeaponItemUtil.calculateDamage(base, roll, material.getDamageMultiplier(), quality.getDamageMultiplier());
     }
 }
