@@ -29,7 +29,7 @@ public interface DgAttributeProvider {
             if (!multimap.isEmpty()) {
                 DgItemUtil.addLore(stack, LiteralText.EMPTY);
                 if (slots.size() > 1) {
-                    DgItemUtil.addLore(stack, new TranslatableText("item.modifiers." + slot.getName()).formatted(Formatting.GRAY));
+                    DgItemUtil.addLore(stack, new TranslatableText("item.modifiers." + slot.getName()).styled(style -> style.withItalic(false).withColor(Formatting.GRAY)));
                 }
 
                 for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : multimap.entries()) {
@@ -56,11 +56,13 @@ public interface DgAttributeProvider {
                         g = value * 100.0D;
                     }
 
-                    if (value > 0.0D) {
-                        DgItemUtil.addLore(stack, (new LiteralText(" ")).append(new TranslatableText("attribute.modifier.equals." + modifier.getOperation().getId(), MODIFIER_FORMAT.format(g), new TranslatableText(translationKey))).styled(style -> style.withItalic(false)).formatted(Formatting.BLUE));
+                    if (slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) {
+                        DgItemUtil.addLore(stack, (new LiteralText(" ")).append(new TranslatableText("attribute.modifier.equals." + modifier.getOperation().getId(), MODIFIER_FORMAT.format(g), new TranslatableText(translationKey))).styled(style -> style.withItalic(false).withColor(Formatting.DARK_GREEN)));
+                    } else if (value > 0.0D) {
+                        DgItemUtil.addLore(stack, new TranslatableText("attribute.modifier.plus." + modifier.getOperation().getId(), MODIFIER_FORMAT.format(g), new TranslatableText(translationKey)).styled(style -> style.withItalic(false).withColor(Formatting.BLUE)));
                     } else if (value < 0.0D) {
                         g *= -1.0D;
-                        DgItemUtil.addLore(stack, (new TranslatableText("attribute.modifier.take." + modifier.getOperation().getId(), MODIFIER_FORMAT.format(g), new TranslatableText(translationKey))).styled(style -> style.withItalic(false)).formatted(Formatting.RED));
+                        DgItemUtil.addLore(stack, (new TranslatableText("attribute.modifier.take." + modifier.getOperation().getId(), MODIFIER_FORMAT.format(g), new TranslatableText(translationKey))).styled(style -> style.withItalic(false).withColor(Formatting.RED)));
                     }
                 }
             }
