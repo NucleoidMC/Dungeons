@@ -9,3 +9,4 @@ accessible method net/minecraft/item/CrossbowItem getPullProgress (ILnet/minecra
 accessible method net/minecraft/item/CrossbowItem putProjectile (Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)V
 accessible field net/minecraft/item/CrossbowItem charged Z
 accessible field net/minecraft/item/CrossbowItem loaded Z
+accessible field net/minecraft/entity/FallingBlockEntity destroyedOnLanding Z
