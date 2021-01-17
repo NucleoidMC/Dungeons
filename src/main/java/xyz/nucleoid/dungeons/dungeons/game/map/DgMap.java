@@ -20,17 +20,24 @@ import xyz.nucleoid.plasmid.map.template.*;
 import xyz.nucleoid.plasmid.util.BlockBounds;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DgMap {
     public final BlockBounds spawn;
     public final float spawnAngle;
     public final Either<MapTemplate, DgProcgenMapConfig> templateOrGenerator;
+    public List<BlockBounds> explosionAllowRegions;
+    public List<BlockBounds> fallDamageReduceRegions;
 
     private DgMap(BlockBounds spawn, float spawnAngle, Either<MapTemplate, DgProcgenMapConfig> templateOrGenerator) {
         this.spawn = spawn;
         this.spawnAngle = spawnAngle;
         this.templateOrGenerator = templateOrGenerator;
+        this.explosionAllowRegions = new ArrayList<>();
+        this.fallDamageReduceRegions = new ArrayList<>();
     }
 
     public static DgMap create(DgConfig config) throws GameOpenException {
@@ -66,7 +73,11 @@ public class DgMap {
             throw new GameOpenException(new LiteralText("No `spawn` region is present but it is required"));
         }
 
-        return new DgMap(spawnRegion.getBounds(), spawnRegion.getData().getFloat("yaw"), Either.left(template));
+        DgMap map = new DgMap(spawnRegion.getBounds(), spawnRegion.getData().getFloat("yaw"), Either.left(template));
+        map.explosionAllowRegions = meta.getRegionBounds("explodable").collect(Collectors.toList());
+        map.fallDamageReduceRegions = meta.getRegionBounds("fall_damage_reduced").collect(Collectors.toList());
+
+        return map;
     }
 
     private static DgMap fromGenerator(DgProcgenMapConfig config) {

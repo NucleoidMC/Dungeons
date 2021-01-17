@@ -34,6 +34,8 @@ public class GiveItemAction implements Action {
             throw new TriggerInstantiationError("Invalid item `" + data.getString("item") + "`");
         }
 
+        System.out.println(id);
+
         Item item = Registry.ITEM.get(id);
 
         CompoundTag customData = new CompoundTag();

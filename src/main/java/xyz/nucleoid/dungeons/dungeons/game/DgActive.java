@@ -2,15 +2,15 @@ package xyz.nucleoid.dungeons.dungeons.game;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
-import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.Action;
-import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerCriterion;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerManager;
-import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 import xyz.nucleoid.plasmid.game.GameOpenException;
 import xyz.nucleoid.plasmid.game.GameSpace;
@@ -18,30 +18,29 @@ import xyz.nucleoid.plasmid.game.event.*;
 import xyz.nucleoid.plasmid.game.player.JoinResult;
 import xyz.nucleoid.plasmid.game.rule.GameRule;
 import xyz.nucleoid.plasmid.game.rule.RuleResult;
+import xyz.nucleoid.plasmid.util.BlockBounds;
 import xyz.nucleoid.plasmid.util.PlayerRef;
+import xyz.nucleoid.plasmid.util.Scheduler;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DgActive {
     private final DgConfig config;
-    private final DgMap gameMap;
+    private final DgMap map;
     public final GameSpace gameSpace;
-    private final Object2ObjectMap<PlayerRef, DgPlayer> participants;
+    public final Object2ObjectMap<PlayerRef, DgPlayer> participants;
     private final DgSpawnLogic spawnLogic;
     private final TriggerManager triggerManager;
 
     private DgActive(GameSpace gameSpace, DgMap map, TriggerManager manager, DgConfig config, Set<PlayerRef> participants) {
         this.gameSpace = gameSpace;
         this.config = config;
-        this.gameMap = map;
+        this.map = map;
         this.spawnLogic = new DgSpawnLogic(gameSpace, map);
         this.participants = new Object2ObjectOpenHashMap<>();
         this.triggerManager = manager;
-
         for (PlayerRef player : participants) {
             this.participants.put(player, new DgPlayer());
         }
@@ -62,7 +61,7 @@ public class DgActive {
             builder.setRule(GameRule.INTERACTION, RuleResult.DENY);
             builder.setRule(GameRule.BLOCK_DROPS, RuleResult.DENY);
             builder.setRule(GameRule.THROW_ITEMS, RuleResult.DENY);
-            builder.setRule(GameRule.UNSTABLE_TNT, RuleResult.DENY);
+            builder.setRule(GameRule.UNSTABLE_TNT, RuleResult.ALLOW);
 
             builder.on(GameOpenListener.EVENT, active::onOpen);
             builder.on(GameCloseListener.EVENT, active::onClose);
@@ -75,6 +74,7 @@ public class DgActive {
 
             builder.on(PlayerDamageListener.EVENT, active::onPlayerDamage);
             builder.on(PlayerDeathListener.EVENT, active::onPlayerDeath);
+            builder.on(ExplosionListener.EVENT, active::onExplosion);
         });
     }
 
@@ -85,7 +85,7 @@ public class DgActive {
         }
     }
 
-    private void onClose() { }
+    private void onClose() {}
 
     private void addPlayer(ServerPlayerEntity player) {
         if (!this.participants.containsKey(PlayerRef.of(player))) {
@@ -97,14 +97,46 @@ public class DgActive {
         this.participants.remove(PlayerRef.of(player));
     }
 
+    private boolean reduceFallDamage(ServerPlayerEntity player) {
+        for (BlockBounds region : this.map.fallDamageReduceRegions) {
+            if (region.contains(player.getBlockPos())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
         return ActionResult.PASS;
     }
 
     private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
-        // TODO handle death
-        this.spawnParticipant(player);
+        if (source == DamageSource.FALL && this.reduceFallDamage(player)) {
+            // TODO(plasmid): plasmid should only set to 20hp iff health == 0
+            Scheduler.INSTANCE.submit((MinecraftServer server) -> player.setHealth(1.0f));
+            player.setHealth(1.0f);
+            // TODO(antibody): when antibody/scoped events exist this can be made less jank
+            // Before then I cba because any solution I do will be temporary and bad anyway - Restioson.
+        } else {
+            this.spawnParticipant(player);
+        }
+
         return ActionResult.FAIL;
+    }
+
+    // TODO(antibody)
+    private void onExplosion(List<BlockPos> blockPos) {
+        ServerWorld world = this.gameSpace.getWorld();
+        blockPos.removeIf(pos -> {
+            for (BlockBounds region : this.map.explosionAllowRegions) {
+                if (region.contains(pos) && world.getBlockState(pos).getBlock() == Blocks.INFESTED_COBBLESTONE) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
     }
 
     private void spawnParticipant(ServerPlayerEntity player) {
@@ -118,38 +150,6 @@ public class DgActive {
     }
 
     private void tick() {
-        ServerWorld world = this.gameSpace.getWorld();
-
-        this.triggerManager.triggers.removeIf(trigger -> {
-            List<OnlineParticipant> inside = new ArrayList<>();
-
-            for (Map.Entry<PlayerRef, DgPlayer> entry : this.participants.entrySet()) {
-                ServerPlayerEntity player = entry.getKey().getEntity(world);
-
-                if (
-                        player == null ||
-                        !trigger.region.contains(player.getBlockPos()) ||
-                        player.interactionManager.getGameMode() != GameMode.ADVENTURE
-                ) {
-                    continue;
-                }
-
-                inside.add(new OnlineParticipant(entry.getValue(), player));
-            }
-
-            if (inside.isEmpty()) {
-                return false;
-            }
-
-            TriggerCriterion.TestResult result = trigger.criterion.testForPlayers(inside);
-
-            if (!result.runsFor.isEmpty()) {
-                for (Action action : trigger.actions) {
-                    action.execute(this, result.runsFor);
-                }
-            }
-
-            return result.removeTrigger;
-        });
+        this.triggerManager.tick(this);
     }
 }
