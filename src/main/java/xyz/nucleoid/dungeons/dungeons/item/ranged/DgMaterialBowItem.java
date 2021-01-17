@@ -34,7 +34,9 @@ public class DgMaterialBowItem<M extends Enum<M> & DgWeaponMaterial> extends DgB
     }
 
     public ItemStack createStack(M material, DgItemQuality quality) {
-        return DgWeaponItemUtil.initMaterialWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), material, quality);
+        ItemStack stack = DgWeaponItemUtil.initMaterialWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), material, quality);
+        stack.getOrCreateTag().putInt("CustomModelData", 1);
+        return stack;
     }
 
     @Override

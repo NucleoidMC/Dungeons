@@ -18,7 +18,9 @@ import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgQuarterstaffWood;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgRangedWeaponWood;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DgItems {
     private static final Map<Identifier, Item> REGISTRY = new HashMap<>();
@@ -33,6 +35,7 @@ public class DgItems {
 
     public static final DgMaterialBowItem<DgRangedWeaponWood> SHORTBOW = add("shortbow", new DgWoodBowItem(4.6, 15, new FabricItemSettings()));
     public static final DgMaterialBowItem<DgRangedWeaponWood> LONGBOW = add("longbow", new DgWoodBowItem(6.2, 20, new FabricItemSettings()));
+    public static final DgMaterialBowItem<DgRangedWeaponWood> SHITBOW = add("shitbow", new DgWoodBowItem(0.69, 69, new FabricItemSettings()));
     public static final DgMaterialCrossbowItem<DgRangedWeaponWood> CROSSBOW = add("crossbow", new DgWoodCrossbowItem(7, 25, new FabricItemSettings()));
 
     private static <I extends Item> I add(String id, I item) {

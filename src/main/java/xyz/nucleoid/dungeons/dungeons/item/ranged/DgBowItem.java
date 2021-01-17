@@ -2,6 +2,7 @@ package xyz.nucleoid.dungeons.dungeons.item.ranged;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -23,6 +24,21 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
     }
 
     @Override
+    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        super.usageTick(world, user, stack, remainingUseTicks);
+        float pull = user.getActiveItem() != stack ? 0.0F : (float) (stack.getMaxUseTime() - user.getItemUseTimeLeft()) / (int) user.getAttributeValue(DgEntityAttributes.GENERIC_DRAW_TIME);
+        if (pull == 0) {
+            stack.getOrCreateTag().putInt("CustomModelData", 1);
+        } else if (pull > 0 && pull < 0.65) {
+            stack.getOrCreateTag().putInt("CustomModelData", 2);
+        } else if (pull >= 0.65 && pull < 0.90) {
+            stack.getOrCreateTag().putInt("CustomModelData", 3);
+        } else if (pull >= 0.90) {
+            stack.getOrCreateTag().putInt("CustomModelData", 4);
+        }
+    }
+
+    @Override
     public void onStoppedUsing(ItemStack bowStack, World world, LivingEntity user, int remainingUseTicks) {
         // From BowItem.onStoppedUsing
 
@@ -35,12 +51,13 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
                     arrowStack = new ItemStack(Items.ARROW);
                 }
 
-                int i = this.getMaxUseTime(bowStack) - remainingUseTicks;
+                int useTicks = this.getMaxUseTime(bowStack) - remainingUseTicks;
 
                 // BEGIN MODIFICATIONS
 
                 int fullDrawTicks = (int) player.getAttributeValue(DgEntityAttributes.GENERIC_DRAW_TIME);
-                float f = dgGetPullProgress(i, fullDrawTicks);
+                float pullProgress = dgGetPullProgress(useTicks, fullDrawTicks);
+                bowStack.getOrCreateTag().putInt("CustomModelData", 1);
 
                 boolean isPotionArrow = arrowStack.getItem() == Items.TIPPED_ARROW ||
                         !PotionUtil.getCustomPotionEffects(arrowStack).isEmpty() ||
@@ -48,12 +65,12 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
 
                 // END MODIFICATIONS
 
-                if ((double) f >= 0.1D) {
+                if ((double) pullProgress >= 0.1D) {
                     boolean bl2 = bl && arrowStack.getItem() == Items.ARROW;
                     if (!world.isClient) {
                         ArrowItem arrowItem = (ArrowItem) (arrowStack.getItem() instanceof ArrowItem ? arrowStack.getItem() : Items.ARROW);
                         PersistentProjectileEntity arrowEntity = arrowItem.createArrow(world, arrowStack, player);
-                        arrowEntity.setProperties(player, player.pitch, player.yaw, 0.0F, f * 3.0F, 1.0F);
+                        arrowEntity.setProperties(player, player.pitch, player.yaw, 0.0F, pullProgress * 3.0F, 1.0F);
 
                         // BEGIN MODIFICATIONS
 
@@ -70,7 +87,7 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
 
                         // END MODIFICATIONS
 
-                        if (f == 1.0F) {
+                        if (pullProgress == 1.0F) {
                             arrowEntity.setCritical(true);
                         }
 
@@ -105,7 +122,7 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
                         world.spawnEntity(arrowEntity);
                     }
 
-                    world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+                    world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + pullProgress * 0.5F);
 
                     // BEGIN MODIFICATIONS
                     if (!bl2 && !player.abilities.creativeMode) {
@@ -125,6 +142,15 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
                 }
             }
         }
+    }
+
+    @Override
+    public int getMaxUseTime(ItemStack stack) {
+        Entity holder = stack.getHolder();
+        if (holder instanceof PlayerEntity) {
+            return (int) ((PlayerEntity) holder).getAttributeValue(DgEntityAttributes.GENERIC_DRAW_TIME);
+        }
+        return super.getMaxUseTime(stack);
     }
 
     public static float dgGetPullProgress(int useTicks, int fullDrawTicks) {
