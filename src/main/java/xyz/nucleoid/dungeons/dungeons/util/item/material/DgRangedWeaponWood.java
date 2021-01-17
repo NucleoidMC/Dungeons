@@ -6,7 +6,7 @@ import java.util.Random;
 
 // FIXME(restioson): I don't know enough about bows so I just came up with these on the spot
 // Can someone take a look?
-public enum DgRangedWeaponWood implements DgRangedWeaponMaterial {
+public enum DgRangedWeaponWood implements DgWeaponMaterial {
     // Tier 1
     PINE("pine", 0.7, DgItemQuality.BATTERED, DgItemQuality.DUSTY),
     BALSA("balsa", 0.8, DgItemQuality.BATTERED, DgItemQuality.DUSTY),
@@ -25,13 +25,13 @@ public enum DgRangedWeaponWood implements DgRangedWeaponMaterial {
     ERELIAN("erelian", 2.2, DgItemQuality.LEGENDARY, DgItemQuality.MYTHICAL);
 
     public final String id;
-    public double rangedDamageMultiplier;
+    public double damageMultiplier;
     public DgItemQuality minQuality;
     public DgItemQuality maxQuality;
 
-    DgRangedWeaponWood(String id, double rangedDamageMultiplier, DgItemQuality minQuality, DgItemQuality maxQuality) {
+    DgRangedWeaponWood(String id, double damageMultiplier, DgItemQuality minQuality, DgItemQuality maxQuality) {
         this.id = id;
-        this.rangedDamageMultiplier = rangedDamageMultiplier;
+        this.damageMultiplier = damageMultiplier;
         this.minQuality = minQuality;
         this.maxQuality = maxQuality;
     }
@@ -45,8 +45,8 @@ public enum DgRangedWeaponWood implements DgRangedWeaponMaterial {
     }
 
     @Override
-    public double getRangedDamageMultiplier() {
-        return rangedDamageMultiplier;
+    public double getDamageMultiplier() {
+        return damageMultiplier;
     }
 
     @Override

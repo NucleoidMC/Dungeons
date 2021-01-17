@@ -1,7 +1,7 @@
 package xyz.nucleoid.dungeons.dungeons.item.melee;
 
 import net.minecraft.item.Item;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMeleeWeaponMetal;
 
 public class DgMorningStarItem extends DgMetalMeleeWeaponItem {

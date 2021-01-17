@@ -4,7 +4,7 @@ import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
 
 import java.util.Random;
 
-public enum DgQuarterstaffWood implements DgMeleeWeaponMaterial {
+public enum DgQuarterstaffWood implements DgWeaponMaterial {
     // Tier 1
     CORK("cork", 0.5, DgItemQuality.BATTERED, DgItemQuality.DUSTY),
     BALSA("balsa", 0.7, DgItemQuality.BATTERED, DgItemQuality.DUSTY),
@@ -23,13 +23,13 @@ public enum DgQuarterstaffWood implements DgMeleeWeaponMaterial {
     ARANTEW("arantew", 2.0, DgItemQuality.LEGENDARY, DgItemQuality.MYTHICAL);
 
     public String id;
-    public double meleeDamageMultiplier;
+    public double damageMultiplier;
     public final DgItemQuality minQuality;
     public final DgItemQuality maxQuality;
 
-    DgQuarterstaffWood(String id, double meleeDamageMultiplier, DgItemQuality minQuality, DgItemQuality maxQuality) {
+    DgQuarterstaffWood(String id, double damageMultiplier, DgItemQuality minQuality, DgItemQuality maxQuality) {
         this.id = id;
-        this.meleeDamageMultiplier = meleeDamageMultiplier;
+        this.damageMultiplier = damageMultiplier;
         this.minQuality = minQuality;
         this.maxQuality = maxQuality;
     }
@@ -40,11 +40,6 @@ public enum DgQuarterstaffWood implements DgMeleeWeaponMaterial {
 
         DgQuarterstaffWood[] types = DgQuarterstaffWood.values();
         return types[Math.max(0, Math.min(types.length, ord))];
-    }
-
-    @Override
-    public double getMeleeDamageMultiplier() {
-        return meleeDamageMultiplier;
     }
 
     @Override
@@ -60,5 +55,10 @@ public enum DgQuarterstaffWood implements DgMeleeWeaponMaterial {
     @Override
     public DgItemQuality getMaxQuality() {
         return maxQuality;
+    }
+
+    @Override
+    public double getDamageMultiplier() {
+        return damageMultiplier;
     }
 }

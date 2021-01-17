@@ -3,7 +3,7 @@ package xyz.nucleoid.dungeons.dungeons.item.base;
 import net.minecraft.item.ItemStack;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterial;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
 
 public interface DgMaterialItem<M extends Enum<M> & DgMaterial> {
     DgMaterialComponent<M> getMaterialComponent();

@@ -14,13 +14,11 @@ import xyz.nucleoid.dungeons.dungeons.item.ranged.DgMaterialBowItem;
 import xyz.nucleoid.dungeons.dungeons.item.ranged.DgMaterialCrossbowItem;
 import xyz.nucleoid.dungeons.dungeons.item.ranged.DgWoodBowItem;
 import xyz.nucleoid.dungeons.dungeons.item.ranged.DgWoodCrossbowItem;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgQuarterstaffWood;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgRangedWeaponWood;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DgItems {
     private static final Map<Identifier, Item> REGISTRY = new HashMap<>();

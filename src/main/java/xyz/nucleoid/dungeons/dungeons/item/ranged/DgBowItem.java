@@ -13,11 +13,9 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.world.World;
+import xyz.nucleoid.dungeons.dungeons.entity.attribute.DgEntityAttributes;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgRangedWeapon;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
 import xyz.nucleoid.plasmid.fake.FakeItem;
-
-import java.util.function.Consumer;
 
 public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWeapon {
     public DgBowItem(Settings settings) {
@@ -41,7 +39,7 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
 
                 // BEGIN MODIFICATIONS
 
-                int fullDrawTicks = DgItemUtil.drawTimeOf(bowStack);
+                int fullDrawTicks = (int) player.getAttributeValue(DgEntityAttributes.GENERIC_DRAW_TIME);
                 float f = dgGetPullProgress(i, fullDrawTicks);
 
                 boolean isPotionArrow = arrowStack.getItem() == Items.TIPPED_ARROW ||
@@ -66,7 +64,7 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
                         // Hopefully, it will work. - Restioson
 
                         double vanillaDamage = 6.0;
-                        double targetDamage = DgItemUtil.rangedDamageOf(bowStack);
+                        double targetDamage = player.getAttributeValue(DgEntityAttributes.GENERIC_RANGED_DAMAGE);
 
                         arrowEntity.setDamage(damage * (targetDamage / vanillaDamage));
 
@@ -90,9 +88,7 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
                             arrowEntity.setOnFireFor(100);
                         }
 
-                        bowStack.damage(1, (LivingEntity) player, (Consumer<LivingEntity>) ((p) -> {
-                            p.sendToolBreakStatus(player.getActiveHand());
-                        }));
+                        bowStack.damage(1, player, p -> p.sendToolBreakStatus(player.getActiveHand()));
 
                         // BEGIN MODIFICATIONS
                         if (isPotionArrow) {
@@ -109,7 +105,7 @@ public abstract class DgBowItem extends BowItem implements FakeItem, DgRangedWea
                         world.spawnEntity(arrowEntity);
                     }
 
-                    world.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+                    world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 
                     // BEGIN MODIFICATIONS
                     if (!bl2 && !player.abilities.creativeMode) {

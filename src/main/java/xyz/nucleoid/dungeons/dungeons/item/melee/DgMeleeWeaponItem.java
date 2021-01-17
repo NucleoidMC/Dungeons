@@ -14,6 +14,7 @@ import xyz.nucleoid.dungeons.dungeons.item.base.DgMeleeWeapon;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgModelProvider;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
+import xyz.nucleoid.dungeons.dungeons.util.item.DgWeaponItemUtil;
 import xyz.nucleoid.plasmid.fake.FakeItem;
 
 public abstract class DgMeleeWeaponItem extends Item implements FakeItem, DgMeleeWeapon, DgModelProvider {
@@ -25,7 +26,7 @@ public abstract class DgMeleeWeaponItem extends Item implements FakeItem, DgMele
     }
 
     public ItemStack createStack(DgItemQuality quality) {
-        return DgItemUtil.initWeapon(DgItemUtil.weaponBuilder(this).build(), quality);
+        return DgWeaponItemUtil.initWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), quality);
     }
 
     @Override

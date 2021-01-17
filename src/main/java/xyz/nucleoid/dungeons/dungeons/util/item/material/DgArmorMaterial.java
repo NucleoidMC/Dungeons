@@ -1,7 +1,6 @@
 package xyz.nucleoid.dungeons.dungeons.util.item.material;
 
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterial;
 
 public enum DgArmorMaterial implements DgMaterial {
 

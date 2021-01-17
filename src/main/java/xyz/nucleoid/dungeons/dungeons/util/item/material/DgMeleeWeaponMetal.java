@@ -4,7 +4,7 @@ import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
 
 import java.util.Random;
 
-public enum DgMeleeWeaponMetal implements DgMeleeWeaponMaterial {
+public enum DgMeleeWeaponMetal implements DgWeaponMaterial {
     // Tier 1,
     COPPER("copper", 0.9, DgItemQuality.BATTERED, DgItemQuality.DUSTY),
     BRONZE("bronze", 1.0, DgItemQuality.BATTERED, DgItemQuality.DUSTY),
@@ -20,15 +20,15 @@ public enum DgMeleeWeaponMetal implements DgMeleeWeaponMaterial {
     GREYSTONE("greystone", 2.2, DgItemQuality.EXCELLENT, DgItemQuality.MYTHICAL);
 
     public final String id;
-    public final double meleeDamageMultiplier;
+    public final double damageMultiplier;
     // You wouldn't waste netherite on a piece of trash sword
     public final DgItemQuality minQuality;
     // Similarly, you wouldn't use copper for a legendary axe
     public final DgItemQuality maxQuality;
 
-    DgMeleeWeaponMetal(String id, double meleeDamageMultiplier, DgItemQuality minQuality, DgItemQuality maxQuality) {
+    DgMeleeWeaponMetal(String id, double damageMultiplier, DgItemQuality minQuality, DgItemQuality maxQuality) {
         this.id = id;
-        this.meleeDamageMultiplier = meleeDamageMultiplier;
+        this.damageMultiplier = damageMultiplier;
         this.minQuality = minQuality;
         this.maxQuality = maxQuality;
     }
@@ -63,7 +63,7 @@ public enum DgMeleeWeaponMetal implements DgMeleeWeaponMaterial {
     }
 
     @Override
-    public double getMeleeDamageMultiplier() {
-        return meleeDamageMultiplier;
+    public double getDamageMultiplier() {
+        return damageMultiplier;
     }
 }

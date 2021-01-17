@@ -7,21 +7,21 @@ import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgMaterialItem;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemModelRegistry;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgMaterialComponent;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMeleeWeaponMaterial;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMeleeWeaponMetal;
+import xyz.nucleoid.dungeons.dungeons.util.item.DgWeaponItemUtil;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgWeaponMaterial;
+import xyz.nucleoid.dungeons.dungeons.util.item.model.DgItemModelRegistry;
 
-public class DgMaterialMeleeWeaponItem<M extends Enum<M> & DgMeleeWeaponMaterial> extends DgMeleeWeaponItem implements DgMaterialItem<M> {
+public class DgMaterialMeleeWeaponItem<M extends Enum<M> & DgWeaponMaterial> extends DgMeleeWeaponItem implements DgMaterialItem<M> {
     protected DgMaterialComponent<M> materialComponent;
-    private final double baseAttackDamage, baseAttackSpeed;
+    private final double baseMeleeDamage, baseSwingSpeed;
 
-    public DgMaterialMeleeWeaponItem(double baseAttackDamage, double baseAttackSpeed, DgMaterialComponent<M> materialComponent, Item proxy, Settings settings) {
+    public DgMaterialMeleeWeaponItem(double baseMeleeDamage, double baseSwingSpeed, DgMaterialComponent<M> materialComponent, Item proxy, Settings settings) {
         super(proxy, settings);
-        this.baseAttackDamage = baseAttackDamage;
-        this.baseAttackSpeed = baseAttackSpeed;
+        this.baseMeleeDamage = baseMeleeDamage;
+        this.baseSwingSpeed = baseSwingSpeed;
         this.materialComponent = materialComponent;
     }
 
@@ -32,7 +32,7 @@ public class DgMaterialMeleeWeaponItem<M extends Enum<M> & DgMeleeWeaponMaterial
 
     @Override
     public ItemStack createStack(M material, DgItemQuality quality) {
-        return DgItemUtil.initMeleeMaterialWeapon(DgItemUtil.weaponBuilder(this).build(), material, quality, baseAttackDamage, baseAttackSpeed);
+        return DgWeaponItemUtil.initMeleeMaterialWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), material, quality, baseMeleeDamage, baseSwingSpeed);
     }
 
     @Override
@@ -54,11 +54,11 @@ public class DgMaterialMeleeWeaponItem<M extends Enum<M> & DgMeleeWeaponMaterial
 
     @Override
     public double getMeleeDamage(ItemStack stack) {
-        return DgItemUtil.meleeDamageOf(stack);
+        return DgWeaponItemUtil.getDamage(stack, baseMeleeDamage, materialComponent);
     }
 
     @Override
     public double getSwingSpeed(ItemStack stack) {
-        return DgItemUtil.swingSpeedOf(stack);
+        return baseSwingSpeed;
     }
 }

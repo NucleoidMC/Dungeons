@@ -2,7 +2,7 @@ package xyz.nucleoid.dungeons.dungeons.item.melee;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemModelRegistry;
+import xyz.nucleoid.dungeons.dungeons.util.item.model.DgItemModelRegistry;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
 
 public class DgSimpleMeleeWeaponItem extends DgMeleeWeaponItem {
