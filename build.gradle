@@ -17,7 +17,7 @@ minecraft {
 repositories {
     mavenLocal()
     maven { url = "https://jitpack.io/" }
-    maven { url = "https://maven.gegy.dev/" }
+    maven { url = "https://maven.nucleoid.xyz/" }
 }
 
 dependencies {
@@ -33,9 +33,9 @@ dependencies {
     include "kdotjpg:open-simplex:2.0"
 
     // Plasmid
-    modImplementation "xyz.nucleoid:plasmid:0.4.81"
+    modImplementation "xyz.nucleoid:plasmid:${project.plasmid_version}"
 
-    modImplementation "xyz.nucleoid:substrate:0.1.1"
+    modImplementation "xyz.nucleoid:substrate:${project.substrate_version}"
 
     modRuntime("com.github.SuperCoder7979:databreaker:0.2.6") {
         exclude module: "fabric-loader"
