@@ -1,7 +1,10 @@
 package xyz.nucleoid.dungeons.dungeons.game.map;
 
 import com.mojang.datafixers.util.Either;
+import net.fabricmc.fabric.api.util.NbtType;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 
 import net.minecraft.text.LiteralText;
@@ -15,6 +18,7 @@ import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.map.gen.DgChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.map.gen.DgProcgenMapConfig;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.behavior.ExplodableRegion;
 import xyz.nucleoid.plasmid.game.GameOpenException;
 import xyz.nucleoid.plasmid.map.template.*;
 import xyz.nucleoid.plasmid.util.BlockBounds;
@@ -29,14 +33,14 @@ public class DgMap {
     public final BlockBounds spawn;
     public final float spawnAngle;
     public final Either<MapTemplate, DgProcgenMapConfig> templateOrGenerator;
-    public List<BlockBounds> explosionAllowRegions;
+    public List<ExplodableRegion> explodableRegions;
     public List<BlockBounds> fallDamageReduceRegions;
 
     private DgMap(BlockBounds spawn, float spawnAngle, Either<MapTemplate, DgProcgenMapConfig> templateOrGenerator) {
         this.spawn = spawn;
         this.spawnAngle = spawnAngle;
         this.templateOrGenerator = templateOrGenerator;
-        this.explosionAllowRegions = new ArrayList<>();
+        this.explodableRegions = new ArrayList<>();
         this.fallDamageReduceRegions = new ArrayList<>();
     }
 
@@ -74,7 +78,32 @@ public class DgMap {
         }
 
         DgMap map = new DgMap(spawnRegion.getBounds(), spawnRegion.getData().getFloat("yaw"), Either.left(template));
-        map.explosionAllowRegions = meta.getRegionBounds("explodable").collect(Collectors.toList());
+
+        List<TemplateRegion> rawExplodableRegions = meta.getRegions("explodable").collect(Collectors.toList());
+        map.explodableRegions = new ArrayList<>();
+
+        for (TemplateRegion region : rawExplodableRegions) {
+            CompoundTag data = region.getData();
+            List<Block> affectedBlocks = null;
+
+            if (data.contains("affected_blocks")) {
+                ListTag list = data.getList("affected_blocks", NbtType.STRING);
+                affectedBlocks = new ArrayList<>();
+
+                for (int i = 0; i < list.size(); i++) {
+                    Identifier id = Identifier.tryParse(list.getString(i));
+                    Optional<Block> opt = Registry.BLOCK.getOrEmpty(id);
+                    if (opt.isPresent()) {
+                        affectedBlocks.add(opt.get());
+                    } else {
+                        throw new GameOpenException(new LiteralText("Invalid explodable block id `" + id + "`"));
+                    }
+                }
+            }
+
+            map.explodableRegions.add(new ExplodableRegion(region.getBounds(), affectedBlocks));
+        }
+
         map.fallDamageReduceRegions = meta.getRegionBounds("fall_damage_reduced").collect(Collectors.toList());
 
         return map;

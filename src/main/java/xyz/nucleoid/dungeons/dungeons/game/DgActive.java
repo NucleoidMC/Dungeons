@@ -7,19 +7,18 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.dungeons.dungeons.entity.enemy.DgEnemy;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.behavior.ExplodableRegion;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.SpawnerManager;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerManager;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
@@ -200,8 +199,8 @@ public class DgActive {
     private void onExplosion(List<BlockPos> blockPos) {
         ServerWorld world = this.gameSpace.getWorld();
         blockPos.removeIf(pos -> {
-            for (BlockBounds region : this.map.explosionAllowRegions) {
-                if (region.contains(pos) && world.getBlockState(pos).getBlock() == Blocks.INFESTED_COBBLESTONE) {
+            for (ExplodableRegion region: this.map.explodableRegions) {
+                if (region.region.contains(pos) && region.isExplodable(world.getBlockState(pos).getBlock())) {
                     return false;
                 }
             }
