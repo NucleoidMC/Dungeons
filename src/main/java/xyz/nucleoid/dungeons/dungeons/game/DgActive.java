@@ -2,79 +2,91 @@ package xyz.nucleoid.dungeons.dungeons.game;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
-import xyz.nucleoid.dungeons.dungeons.util.item.loot.DgEnemyDropGenerator;
+import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.dungeons.dungeons.entity.enemy.DgEnemy;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.SpawnerManager;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerManager;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
-import xyz.nucleoid.plasmid.game.GameCloseReason;
+import xyz.nucleoid.plasmid.game.GameOpenException;
 import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.event.*;
 import xyz.nucleoid.plasmid.game.player.JoinResult;
 import xyz.nucleoid.plasmid.game.rule.GameRule;
 import xyz.nucleoid.plasmid.game.rule.RuleResult;
-import xyz.nucleoid.plasmid.util.ItemStackBuilder;
+import xyz.nucleoid.plasmid.util.BlockBounds;
 import xyz.nucleoid.plasmid.util.PlayerRef;
+import xyz.nucleoid.plasmid.util.Scheduler;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DgActive {
     private final DgConfig config;
-
+    private final DgMap map;
     public final GameSpace gameSpace;
-    private final DgMap gameMap;
-
-    // TODO replace with ServerPlayerEntity if players are removed upon leaving
-    private final Object2ObjectMap<PlayerRef, DgPlayer> participants;
+    public final Object2ObjectMap<PlayerRef, DgPlayer> participants;
     private final DgSpawnLogic spawnLogic;
-    private final DgIdle idle;
-    private final boolean ignoreWinState;
-    private final DgTimerBar timerBar;
+    private final TriggerManager triggerManager;
 
-    private DgActive(GameSpace gameSpace, DgMap map, DgConfig config, Set<PlayerRef> participants) {
+    private DgActive(
+            GameSpace gameSpace,
+            DgMap map,
+            TriggerManager triggerManager,
+            SpawnerManager spawnerManager,
+            DgConfig config,
+            Set<PlayerRef> participants
+    ) {
         this.gameSpace = gameSpace;
         this.config = config;
-        this.gameMap = map;
+        this.map = map;
         this.spawnLogic = new DgSpawnLogic(gameSpace, map);
         this.participants = new Object2ObjectOpenHashMap<>();
-
+        this.triggerManager = triggerManager;
         for (PlayerRef player : participants) {
             this.participants.put(player, new DgPlayer());
         }
-
-        this.idle = new DgIdle();
-        this.ignoreWinState = this.participants.size() <= 1;
-        this.timerBar = new DgTimerBar();
+        spawnerManager.spawnAll(gameSpace.getWorld());
     }
 
-    public static void open(GameSpace gameWorld, DgMap map, DgConfig config) {
+    public static void open(
+            GameSpace gameWorld,
+            DgMap map,
+            TriggerManager triggerManager,
+            SpawnerManager spawnerManager,
+            DgConfig config
+    ) throws GameOpenException {
         Set<PlayerRef> participants = gameWorld.getPlayers().stream()
                 .map(PlayerRef::of)
                 .collect(Collectors.toSet());
-        DgActive active = new DgActive(gameWorld, map, config, participants);
+        DgActive active = new DgActive(gameWorld, map, triggerManager, spawnerManager, config, participants);
 
         gameWorld.openGame(builder -> {
             builder.setRule(GameRule.CRAFTING, RuleResult.DENY);
             builder.setRule(GameRule.PORTALS, RuleResult.DENY);
             builder.setRule(GameRule.PVP, RuleResult.DENY);
             builder.setRule(GameRule.HUNGER, RuleResult.DENY);
-            builder.setRule(GameRule.FALL_DAMAGE, RuleResult.DENY);
-            builder.setRule(GameRule.INTERACTION, RuleResult.DENY);
+            builder.setRule(GameRule.FALL_DAMAGE, RuleResult.ALLOW);
+            builder.setRule(GameRule.INTERACTION, RuleResult.ALLOW);
             builder.setRule(GameRule.BLOCK_DROPS, RuleResult.DENY);
             builder.setRule(GameRule.THROW_ITEMS, RuleResult.DENY);
-            builder.setRule(GameRule.UNSTABLE_TNT, RuleResult.DENY);
+            builder.setRule(GameRule.UNSTABLE_TNT, RuleResult.ALLOW);
 
             builder.on(GameOpenListener.EVENT, active::onOpen);
             builder.on(GameCloseListener.EVENT, active::onClose);
@@ -87,31 +99,83 @@ public class DgActive {
 
             builder.on(PlayerDamageListener.EVENT, active::onPlayerDamage);
             builder.on(PlayerDeathListener.EVENT, active::onPlayerDeath);
+            builder.on(ExplosionListener.EVENT, active::onExplosion);
+
+            builder.on(AttackEntityListener.EVENT, active::onAttackEntity);
+            builder.on(EntityHitListener.EVENT, active::onHitEntity);
+            builder.on(UseBlockListener.EVENT, active::onUseBlock);
         });
     }
+
+    private @Nullable DgPlayer participant(ServerPlayerEntity player) {
+        return this.participants.get(PlayerRef.of(player));
+    }
+
+    private @Nullable DgPlayer participant(PlayerRef ref) {
+        return this.participants.get(ref);
+    }
+
+    private ActionResult onUseBlock(ServerPlayerEntity player, Hand hand, BlockHitResult hitResult) {
+        DgPlayer participant = this.participant(player);
+
+        if (participant == null) {
+            return ActionResult.FAIL;
+        }
+
+        ServerWorld world = this.gameSpace.getWorld();
+        Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
+
+        if (block == Blocks.LEVER) {
+            return ActionResult.PASS;
+        } else {
+            return ActionResult.FAIL;
+        }
+    }
+
+    private ActionResult onHitEntity(ProjectileEntity projectileEntity, EntityHitResult hitResult) {
+        if (hitResult.getEntity() instanceof DgEnemy) {
+            return ActionResult.PASS;
+        } else {
+            return ActionResult.FAIL;
+        }
+    }
+
+    private ActionResult onAttackEntity(ServerPlayerEntity playerEntity, Hand hand, Entity entity, EntityHitResult hitResult) {
+        if (entity instanceof DgEnemy) {
+            return ActionResult.PASS;
+        } else {
+            return ActionResult.FAIL;
+        }
+    }
+
 
     private void onOpen() {
         ServerWorld world = this.gameSpace.getWorld();
         for (PlayerRef ref : this.participants.keySet()) {
             ref.ifOnline(world, this::spawnParticipant);
         }
-        this.idle.onOpen(world.getTime(), this.config);
     }
 
-    private void onClose() {
-        this.timerBar.close();
-    }
+    private void onClose() {}
 
     private void addPlayer(ServerPlayerEntity player) {
         if (!this.participants.containsKey(PlayerRef.of(player))) {
             this.spawnSpectator(player);
         }
-        this.timerBar.addPlayer(player);
     }
 
     private void removePlayer(ServerPlayerEntity player) {
         this.participants.remove(PlayerRef.of(player));
-        this.timerBar.removePlayer(player);
+    }
+
+    private boolean reduceFallDamage(ServerPlayerEntity player) {
+        for (BlockBounds region : this.map.fallDamageReduceRegions) {
+            if (region.contains(player.getBlockPos())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
@@ -119,25 +183,36 @@ public class DgActive {
     }
 
     private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
-        // TODO handle death
-        this.spawnParticipant(player);
+        if (source == DamageSource.FALL && this.reduceFallDamage(player)) {
+            // TODO(plasmid): plasmid should only set to 20hp iff health == 0
+            Scheduler.INSTANCE.submit((MinecraftServer server) -> player.setHealth(1.0f));
+            player.setHealth(1.0f);
+            // TODO(antibody): when antibody/scoped events exist this can be made less jank
+            // Before then I cba because any solution I do will be temporary and bad anyway - Restioson.
+        } else {
+            this.spawnParticipant(player);
+        }
+
         return ActionResult.FAIL;
+    }
+
+    // TODO(antibody)
+    private void onExplosion(List<BlockPos> blockPos) {
+        ServerWorld world = this.gameSpace.getWorld();
+        blockPos.removeIf(pos -> {
+            for (BlockBounds region : this.map.explosionAllowRegions) {
+                if (region.contains(pos) && world.getBlockState(pos).getBlock() == Blocks.INFESTED_COBBLESTONE) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
     }
 
     private void spawnParticipant(ServerPlayerEntity player) {
         this.spawnLogic.resetPlayer(player, GameMode.ADVENTURE);
         this.spawnLogic.spawnPlayer(player);
-
-        ServerWorld world = this.gameSpace.getWorld();
-        for (int i = 0; i < 30; i++) {
-            ItemStack stack = DgEnemyDropGenerator.generate(player.getRandom(), 1.0);
-
-            if (stack != null) {
-                player.inventory.offerOrDrop(world, stack);
-            }
-        }
-
-        player.inventory.offerOrDrop(world, ItemStackBuilder.of(Items.ARROW).setCount(1).build());
     }
 
     private void spawnSpectator(ServerPlayerEntity player) {
@@ -146,104 +221,6 @@ public class DgActive {
     }
 
     private void tick() {
-        ServerWorld world = this.gameSpace.getWorld();
-        long time = world.getTime();
-
-        DgIdle.IdleTickResult result = this.idle.tick(time, gameSpace);
-
-        switch (result) {
-            case CONTINUE_TICK:
-                break;
-            case TICK_FINISHED:
-                return;
-            case GAME_FINISHED:
-                this.broadcastWin(this.checkWinResult());
-                return;
-            case GAME_CLOSED:
-                this.gameSpace.close(GameCloseReason.FINISHED);
-                return;
-        }
-
-        this.timerBar.update(this.idle.finishTime - time, this.config.timeLimitSecs * 20L );
-    }
-
-    protected static void broadcastMessage(Text message, GameSpace world) {
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            player.sendMessage(message, false);
-        }
-    }
-
-    protected static void broadcastSound(SoundEvent sound, float pitch, GameSpace world) {
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            player.playSound(sound, SoundCategory.PLAYERS, 1.0F, pitch);
-        }
-    }
-
-    protected static void broadcastSound(SoundEvent sound,  GameSpace world) {
-        broadcastSound(sound, 1.0f, world);
-    }
-
-    protected static void broadcastTitle(Text message, GameSpace world) {
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            TitleS2CPacket packet = new TitleS2CPacket(TitleS2CPacket.Action.TITLE, message, 1, 5,  3);
-            player.networkHandler.sendPacket(packet);
-        }
-    }
-
-    private void broadcastWin(WinResult result) {
-        ServerPlayerEntity winningPlayer = result.getWinningPlayer();
-
-        Text message;
-        if (winningPlayer != null) {
-            message = winningPlayer.getDisplayName().shallowCopy().append(" has won the game!").formatted(Formatting.GOLD);
-        } else {
-            message = new LiteralText("The game ended, but nobody won!").formatted(Formatting.GOLD);
-        }
-
-        broadcastMessage(message, this.gameSpace);
-        broadcastSound(SoundEvents.ENTITY_VILLAGER_YES, this.gameSpace);
-    }
-
-    private WinResult checkWinResult() {
-        // for testing purposes: don't end the game if we only ever had one participant
-        if (this.ignoreWinState) {
-            return WinResult.no();
-        }
-
-        ServerWorld world = this.gameSpace.getWorld();
-        ServerPlayerEntity winningPlayer = null;
-
-        // TODO win result logic
-        return WinResult.no();
-    }
-
-    public DgMap getGameMap() {
-        return gameMap;
-    }
-
-    static class WinResult {
-        final ServerPlayerEntity winningPlayer;
-        final boolean win;
-
-        private WinResult(ServerPlayerEntity winningPlayer, boolean win) {
-            this.winningPlayer = winningPlayer;
-            this.win = win;
-        }
-
-        static WinResult no() {
-            return new WinResult(null, false);
-        }
-
-        static WinResult win(ServerPlayerEntity player) {
-            return new WinResult(player, true);
-        }
-
-        public boolean isWin() {
-            return this.win;
-        }
-
-        public ServerPlayerEntity getWinningPlayer() {
-            return this.winningPlayer;
-        }
+        this.triggerManager.tick(this);
     }
 }
