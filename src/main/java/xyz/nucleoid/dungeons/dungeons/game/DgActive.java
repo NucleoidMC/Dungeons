@@ -2,14 +2,24 @@ package xyz.nucleoid.dungeons.dungeons.game;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
+import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.dungeons.dungeons.entity.enemy.DgEnemy;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.SpawnerManager;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerManager;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
@@ -73,7 +83,7 @@ public class DgActive {
             builder.setRule(GameRule.PVP, RuleResult.DENY);
             builder.setRule(GameRule.HUNGER, RuleResult.DENY);
             builder.setRule(GameRule.FALL_DAMAGE, RuleResult.ALLOW);
-            builder.setRule(GameRule.INTERACTION, RuleResult.DENY);
+            builder.setRule(GameRule.INTERACTION, RuleResult.ALLOW);
             builder.setRule(GameRule.BLOCK_DROPS, RuleResult.DENY);
             builder.setRule(GameRule.THROW_ITEMS, RuleResult.DENY);
             builder.setRule(GameRule.UNSTABLE_TNT, RuleResult.ALLOW);
@@ -90,8 +100,54 @@ public class DgActive {
             builder.on(PlayerDamageListener.EVENT, active::onPlayerDamage);
             builder.on(PlayerDeathListener.EVENT, active::onPlayerDeath);
             builder.on(ExplosionListener.EVENT, active::onExplosion);
+
+            builder.on(AttackEntityListener.EVENT, active::onAttackEntity);
+            builder.on(EntityHitListener.EVENT, active::onHitEntity);
+            builder.on(UseBlockListener.EVENT, active::onUseBlock);
         });
     }
+
+    private @Nullable DgPlayer participant(ServerPlayerEntity player) {
+        return this.participants.get(PlayerRef.of(player));
+    }
+
+    private @Nullable DgPlayer participant(PlayerRef ref) {
+        return this.participants.get(ref);
+    }
+
+    private ActionResult onUseBlock(ServerPlayerEntity player, Hand hand, BlockHitResult hitResult) {
+        DgPlayer participant = this.participant(player);
+
+        if (participant == null) {
+            return ActionResult.FAIL;
+        }
+
+        ServerWorld world = this.gameSpace.getWorld();
+        Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
+
+        if (block == Blocks.LEVER) {
+            return ActionResult.PASS;
+        } else {
+            return ActionResult.FAIL;
+        }
+    }
+
+    private ActionResult onHitEntity(ProjectileEntity projectileEntity, EntityHitResult hitResult) {
+        if (hitResult.getEntity() instanceof DgEnemy) {
+            return ActionResult.PASS;
+        } else {
+            return ActionResult.FAIL;
+        }
+    }
+
+    private ActionResult onAttackEntity(ServerPlayerEntity playerEntity, Hand hand, Entity entity, EntityHitResult hitResult) {
+        if (entity instanceof DgEnemy) {
+            return ActionResult.PASS;
+        } else {
+            return ActionResult.FAIL;
+        }
+    }
+
 
     private void onOpen() {
         ServerWorld world = this.gameSpace.getWorld();
