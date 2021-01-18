@@ -10,6 +10,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.SpawnerManager;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerManager;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 import xyz.nucleoid.plasmid.game.GameOpenException;
@@ -34,23 +35,37 @@ public class DgActive {
     private final DgSpawnLogic spawnLogic;
     private final TriggerManager triggerManager;
 
-    private DgActive(GameSpace gameSpace, DgMap map, TriggerManager manager, DgConfig config, Set<PlayerRef> participants) {
+    private DgActive(
+            GameSpace gameSpace,
+            DgMap map,
+            TriggerManager triggerManager,
+            SpawnerManager spawnerManager,
+            DgConfig config,
+            Set<PlayerRef> participants
+    ) {
         this.gameSpace = gameSpace;
         this.config = config;
         this.map = map;
         this.spawnLogic = new DgSpawnLogic(gameSpace, map);
         this.participants = new Object2ObjectOpenHashMap<>();
-        this.triggerManager = manager;
+        this.triggerManager = triggerManager;
         for (PlayerRef player : participants) {
             this.participants.put(player, new DgPlayer());
         }
+        spawnerManager.spawnAll(gameSpace.getWorld());
     }
 
-    public static void open(GameSpace gameWorld, DgMap map, TriggerManager triggerManager, DgConfig config) throws GameOpenException {
+    public static void open(
+            GameSpace gameWorld,
+            DgMap map,
+            TriggerManager triggerManager,
+            SpawnerManager spawnerManager,
+            DgConfig config
+    ) throws GameOpenException {
         Set<PlayerRef> participants = gameWorld.getPlayers().stream()
                 .map(PlayerRef::of)
                 .collect(Collectors.toSet());
-        DgActive active = new DgActive(gameWorld, map, triggerManager, config, participants);
+        DgActive active = new DgActive(gameWorld, map, triggerManager, spawnerManager, config, participants);
 
         gameWorld.openGame(builder -> {
             builder.setRule(GameRule.CRAFTING, RuleResult.DENY);

@@ -10,6 +10,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.dungeons.dungeons.game.DgActive;
 import xyz.nucleoid.dungeons.dungeons.game.DgPlayer;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptingUtil;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.GiveEffectAction;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.GiveItemAction;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.GravityAction;
@@ -30,22 +32,16 @@ public class TriggerManager {
     public final List<Trigger> triggers = new LinkedList<>();
 
     static {
-        ACTION_BUILDERS.register(new Identifier("dungeons", "gravity"), GravityAction::create);
-        ACTION_BUILDERS.register(new Identifier("dungeons", "effect"), GiveEffectAction::create);
-        ACTION_BUILDERS.register(new Identifier("dungeons", "give"), GiveItemAction::create);
+        register("gravity", GravityAction::create);
+        register("effect", GiveEffectAction::create);
+        register("give", GiveItemAction::create);
     }
 
-    private static Identifier tryParseIdentifier(String str) {
-        String[] split = str.split(":");
-
-        if (split.length == 2) {
-            return new Identifier(split[0], split[1]);
-        } else {
-            return new Identifier("dungeons", split[0]);
-        }
+    private static void register(String id, ActionBuilder builder) {
+        ACTION_BUILDERS.register(new Identifier("dungeons", id), builder);
     }
 
-    public void parseAll(MapTemplate template) throws TriggerInstantiationError {
+    public void parseAll(MapTemplate template) throws ScriptTemplateInstantiationError {
         for (TemplateRegion region : template.getMetadata().getRegions("trigger").collect(Collectors.toList())) {
             CompoundTag data = region.getData();
             if (data.contains("actions")) {
@@ -54,10 +50,10 @@ public class TriggerManager {
                 List<Action> actions = new ArrayList<>();
                 for (int i = 0; i < actionList.size(); i++) {
                     CompoundTag tag = actionList.getCompound(i);
-                    Identifier id = TriggerManager.tryParseIdentifier(tag.getString("type"));
+                    Identifier id = ScriptingUtil.parseDungeonsDefaultId(tag.getString("type"));
 
                     if (!ACTION_BUILDERS.containsKey(id)) {
-                        throw new TriggerInstantiationError("Invalid action `" + tag.getString("type") + "`");
+                        throw new ScriptTemplateInstantiationError("Invalid action `" + tag.getString("type") + "`");
                     }
 
                     Action action = Objects.requireNonNull(ACTION_BUILDERS.get(id)).create(template, region, tag);
@@ -75,7 +71,7 @@ public class TriggerManager {
                             criterion = new OncePerPlayer();
                             break;
                         default:
-                            throw new TriggerInstantiationError("Invalid run criterion `" + criterionName + "`");
+                            throw new ScriptTemplateInstantiationError("Invalid run criterion `" + criterionName + "`");
                     }
                 }
 

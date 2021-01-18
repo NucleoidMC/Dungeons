@@ -16,8 +16,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.dungeons.dungeons.game.DgActive;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptingUtil;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.Action;
-import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerInstantiationError;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
 import xyz.nucleoid.plasmid.map.template.MapTemplate;
 import xyz.nucleoid.plasmid.map.template.TemplateRegion;
@@ -40,18 +41,8 @@ public class GravityAction implements Action {
         this.destroyItemFrames = destroyItemFrames;
     }
 
-    public static GravityAction create(MapTemplate template, TemplateRegion trigger, CompoundTag data) throws TriggerInstantiationError {
-        BlockBounds target;
-        if (data.contains("target_region")) {
-            String marker = data.getString("target_region");
-            target = template.getMetadata().getFirstRegionBounds(marker);
-
-            if (target == null) {
-                throw new TriggerInstantiationError("Invalid target region `" + marker + "`");
-            }
-        } else {
-            target = trigger.getBounds();
-        }
+    public static GravityAction create(MapTemplate template, TemplateRegion trigger, CompoundTag data) throws ScriptTemplateInstantiationError {
+        BlockBounds target = ScriptingUtil.getTargetOrDefault(template, trigger, data);
 
         List<Block> affectedBlocks = null;
         if (data.contains("affected_blocks")) {
@@ -62,7 +53,7 @@ public class GravityAction implements Action {
                 Identifier id = Identifier.tryParse(list.getString(i));
 
                 if (id == null || !Registry.BLOCK.getOrEmpty(id).isPresent()) {
-                    throw new TriggerInstantiationError("Invalid block `" + list.getString(i) + "`");
+                    throw new ScriptTemplateInstantiationError("Invalid block `" + list.getString(i) + "`");
                 }
 
                 affectedBlocks.add(Registry.BLOCK.get(id));
@@ -81,7 +72,7 @@ public class GravityAction implements Action {
                 case "disappear":
                     break;
                 default:
-                    throw new TriggerInstantiationError("Invalid drop behaviour `" + data.getString("drop_behaviour") + "`");
+                    throw new ScriptTemplateInstantiationError("Invalid drop behaviour `" + data.getString("drop_behaviour") + "`");
             }
         }
 

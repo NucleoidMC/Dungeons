@@ -7,7 +7,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import xyz.nucleoid.dungeons.dungeons.game.DgActive;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.Action;
-import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerInstantiationError;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
 import xyz.nucleoid.plasmid.map.template.MapTemplate;
 import xyz.nucleoid.plasmid.map.template.TemplateRegion;
@@ -25,15 +25,15 @@ public class GiveEffectAction implements Action {
         this.duration_secs = duration_secs;
     }
 
-    public static GiveEffectAction create(MapTemplate template, TemplateRegion trigger, CompoundTag data) throws TriggerInstantiationError {
+    public static GiveEffectAction create(MapTemplate template, TemplateRegion trigger, CompoundTag data) throws ScriptTemplateInstantiationError {
         if (!data.contains("effect")) {
-            throw new TriggerInstantiationError("Effect is a required argument for dungeons:effect");
+            throw new ScriptTemplateInstantiationError("Effect is a required argument for dungeons:effect");
         }
 
         Identifier id = Identifier.tryParse(data.getString("effect"));
 
         if (id == null || !Registry.STATUS_EFFECT.getOrEmpty(id).isPresent()) {
-            throw new TriggerInstantiationError("Invalid effect `" + data.getString("effect") + "`");
+            throw new ScriptTemplateInstantiationError("Invalid effect `" + data.getString("effect") + "`");
         }
 
         StatusEffect effect = Registry.STATUS_EFFECT.get(id);
