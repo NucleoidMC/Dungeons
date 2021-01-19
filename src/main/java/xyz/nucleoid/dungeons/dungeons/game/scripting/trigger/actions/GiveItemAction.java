@@ -19,7 +19,7 @@ public class GiveItemAction implements Action {
     private final int count;
     private final CompoundTag customData;
 
-    public GiveItemAction(Item item, int count, CompoundTag customData) {
+    private GiveItemAction(Item item, int count, CompoundTag customData) {
         this.item = item;
         this.count = count;
         this.customData = customData;

@@ -12,9 +12,7 @@ import xyz.nucleoid.dungeons.dungeons.game.DgActive;
 import xyz.nucleoid.dungeons.dungeons.game.DgPlayer;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptingUtil;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
-import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.GiveEffectAction;
-import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.GiveItemAction;
-import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.GravityAction;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.*;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.criteria.Once;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.criteria.OncePerPlayer;
 import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
@@ -35,6 +33,8 @@ public class TriggerManager {
         register("gravity", GravityAction::create);
         register("effect", GiveEffectAction::create);
         register("give", GiveItemAction::create);
+        register("set_quest", SetNewQuestAction::create);
+        register("advance_objective", AdvanceObjectiveAction::create);
     }
 
     private static void register(String id, ActionBuilder builder) {
@@ -64,6 +64,7 @@ public class TriggerManager {
                 if (data.contains("criterion")) {
                     String criterionName = data.getString("criterion");
 
+                    // TODO(criteria): custom criteria
                     switch (criterionName) {
                         case "once":
                             break;

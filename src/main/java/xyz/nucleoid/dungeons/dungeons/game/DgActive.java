@@ -10,6 +10,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -20,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.dungeons.dungeons.entity.enemy.DgEnemy;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.behavior.ExplodableRegion;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.SpawnerManager;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.quest.QuestManager;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerManager;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 import xyz.nucleoid.plasmid.game.GameOpenException;
@@ -31,6 +33,8 @@ import xyz.nucleoid.plasmid.game.rule.RuleResult;
 import xyz.nucleoid.plasmid.util.BlockBounds;
 import xyz.nucleoid.plasmid.util.PlayerRef;
 import xyz.nucleoid.plasmid.util.Scheduler;
+import xyz.nucleoid.plasmid.widget.GlobalWidgets;
+import xyz.nucleoid.plasmid.widget.SidebarWidget;
 
 import java.util.List;
 import java.util.Set;
@@ -43,6 +47,8 @@ public class DgActive {
     public final Object2ObjectMap<PlayerRef, DgPlayer> participants;
     private final DgSpawnLogic spawnLogic;
     private final TriggerManager triggerManager;
+    public final GlobalWidgets widgets;
+    public final QuestManager questManager;
 
     private DgActive(
             GameSpace gameSpace,
@@ -50,17 +56,22 @@ public class DgActive {
             TriggerManager triggerManager,
             SpawnerManager spawnerManager,
             DgConfig config,
-            Set<PlayerRef> participants
+            Set<PlayerRef> participants,
+            GlobalWidgets widgets
     ) {
         this.gameSpace = gameSpace;
         this.config = config;
         this.map = map;
         this.spawnLogic = new DgSpawnLogic(gameSpace, map);
         this.participants = new Object2ObjectOpenHashMap<>();
+        this.questManager = new QuestManager();
         this.triggerManager = triggerManager;
+        this.widgets = widgets;
+
         for (PlayerRef player : participants) {
             this.participants.put(player, new DgPlayer());
         }
+
         spawnerManager.spawnAll(gameSpace.getWorld());
     }
 
@@ -74,9 +85,10 @@ public class DgActive {
         Set<PlayerRef> participants = gameWorld.getPlayers().stream()
                 .map(PlayerRef::of)
                 .collect(Collectors.toSet());
-        DgActive active = new DgActive(gameWorld, map, triggerManager, spawnerManager, config, participants);
 
         gameWorld.openGame(builder -> {
+            GlobalWidgets widgets = new GlobalWidgets(builder);
+            DgActive active = new DgActive(gameWorld, map, triggerManager, spawnerManager, config, participants, widgets);
             builder.setRule(GameRule.CRAFTING, RuleResult.DENY);
             builder.setRule(GameRule.PORTALS, RuleResult.DENY);
             builder.setRule(GameRule.PVP, RuleResult.DENY);
@@ -183,7 +195,7 @@ public class DgActive {
 
     private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {
         if (source == DamageSource.FALL && this.reduceFallDamage(player)) {
-            // TODO(plasmid): plasmid should only set to 20hp iff health == 0
+            // TODO(plasmid): plasmid should set to 20hp iff health == 0
             Scheduler.INSTANCE.submit((MinecraftServer server) -> player.setHealth(1.0f));
             player.setHealth(1.0f);
             // TODO(antibody): when antibody/scoped events exist this can be made less jank
@@ -220,6 +232,10 @@ public class DgActive {
     }
 
     private void tick() {
-        this.triggerManager.tick(this);
+        // arbitrary interval to avoid ticking too often for performance
+        if (this.gameSpace.getWorld().getTime() % 5 == 0) {
+            this.triggerManager.tick(this);
+            this.questManager.tick(this);
+        }
     }
 }

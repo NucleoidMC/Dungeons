@@ -19,7 +19,7 @@ public class GiveEffectAction implements Action {
     private final int level;
     private final int duration_secs;
 
-    public GiveEffectAction(StatusEffect effect, int level, int duration_secs) {
+    private GiveEffectAction(StatusEffect effect, int level, int duration_secs) {
         this.effect = effect;
         this.level = level;
         this.duration_secs = duration_secs;

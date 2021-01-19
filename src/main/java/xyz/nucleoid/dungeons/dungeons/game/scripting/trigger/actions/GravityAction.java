@@ -34,7 +34,7 @@ public class GravityAction implements Action {
     private final DropBehaviour dropBehaviour;
     private final boolean destroyItemFrames;
 
-    public GravityAction(BlockBounds targetRegion, @Nullable List<Block> affectedBlocks, boolean destroyItemFrames, DropBehaviour dropBehaviour) {
+    private GravityAction(BlockBounds targetRegion, @Nullable List<Block> affectedBlocks, boolean destroyItemFrames, DropBehaviour dropBehaviour) {
         this.targetRegion = targetRegion;
         this.affectedBlocks = affectedBlocks;
         this.dropBehaviour = dropBehaviour;
