@@ -4,7 +4,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.world.World;
 
-public class DgZombieEntity extends ZombieEntity {
+public class DgZombieEntity extends ZombieEntity implements DgEnemy {
     public DgZombieEntity(EntityType<? extends ZombieEntity> entityType, World world) {
         super(entityType, world);
     }

@@ -15,6 +15,8 @@ import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.map.gen.DgChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.map.gen.DgProcgenMapConfig;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.behavior.ExplodableRegion;
 import xyz.nucleoid.plasmid.game.GameOpenException;
 import xyz.nucleoid.plasmid.map.template.*;
 import xyz.nucleoid.plasmid.util.BlockBounds;
@@ -29,14 +31,14 @@ public class DgMap {
     public final BlockBounds spawn;
     public final float spawnAngle;
     public final Either<MapTemplate, DgProcgenMapConfig> templateOrGenerator;
-    public List<BlockBounds> explosionAllowRegions;
+    public List<ExplodableRegion> explodableRegions;
     public List<BlockBounds> fallDamageReduceRegions;
 
     private DgMap(BlockBounds spawn, float spawnAngle, Either<MapTemplate, DgProcgenMapConfig> templateOrGenerator) {
         this.spawn = spawn;
         this.spawnAngle = spawnAngle;
         this.templateOrGenerator = templateOrGenerator;
-        this.explosionAllowRegions = new ArrayList<>();
+        this.explodableRegions = new ArrayList<>();
         this.fallDamageReduceRegions = new ArrayList<>();
     }
 
@@ -74,7 +76,29 @@ public class DgMap {
         }
 
         DgMap map = new DgMap(spawnRegion.getBounds(), spawnRegion.getData().getFloat("yaw"), Either.left(template));
-        map.explosionAllowRegions = meta.getRegionBounds("explodable").collect(Collectors.toList());
+
+        List<TemplateRegion> rawExplodableRegions = meta.getRegions("explodable").collect(Collectors.toList());
+        map.explodableRegions = new ArrayList<>();
+
+        for (TemplateRegion region : rawExplodableRegions) {
+            try {
+                map.explodableRegions.add(ExplodableRegion.parse(region));
+            } catch (ScriptTemplateInstantiationError e) {
+                throw new GameOpenException(new LiteralText(e.reason));
+            }
+        }
+
+        List<TemplateRegion> rawReplacementRegions = meta.getRegions("replace_blocks").collect(Collectors.toList());
+
+        for (TemplateRegion region : rawReplacementRegions) {
+            try {
+                BlockReplacementRegion blockReplacementRegion = BlockReplacementRegion.parse(region);
+                blockReplacementRegion.replaceAll(template);
+            } catch (ScriptTemplateInstantiationError e) {
+                throw new GameOpenException(new LiteralText(e.reason));
+            }
+        }
+
         map.fallDamageReduceRegions = meta.getRegionBounds("fall_damage_reduced").collect(Collectors.toList());
 
         return map;

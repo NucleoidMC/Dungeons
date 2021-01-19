@@ -5,7 +5,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.lwjgl.system.CallbackI;
 import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgModelProvider;
 import xyz.nucleoid.dungeons.dungeons.item.melee.DgMaterialMeleeWeaponItem;
