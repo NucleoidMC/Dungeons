@@ -1,10 +1,7 @@
 package xyz.nucleoid.dungeons.dungeons.game.map;
 
 import com.mojang.datafixers.util.Either;
-import net.fabricmc.fabric.api.util.NbtType;
-import net.minecraft.block.Block;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 
 import net.minecraft.text.LiteralText;
@@ -18,6 +15,7 @@ import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.map.gen.DgChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.map.gen.DgProcgenMapConfig;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.behavior.ExplodableRegion;
 import xyz.nucleoid.plasmid.game.GameOpenException;
 import xyz.nucleoid.plasmid.map.template.*;
@@ -83,25 +81,22 @@ public class DgMap {
         map.explodableRegions = new ArrayList<>();
 
         for (TemplateRegion region : rawExplodableRegions) {
-            CompoundTag data = region.getData();
-            List<Block> affectedBlocks = null;
-
-            if (data.contains("affected_blocks")) {
-                ListTag list = data.getList("affected_blocks", NbtType.STRING);
-                affectedBlocks = new ArrayList<>();
-
-                for (int i = 0; i < list.size(); i++) {
-                    Identifier id = Identifier.tryParse(list.getString(i));
-                    Optional<Block> opt = Registry.BLOCK.getOrEmpty(id);
-                    if (opt.isPresent()) {
-                        affectedBlocks.add(opt.get());
-                    } else {
-                        throw new GameOpenException(new LiteralText("Invalid explodable block id `" + id + "`"));
-                    }
-                }
+            try {
+                map.explodableRegions.add(ExplodableRegion.parse(region));
+            } catch (ScriptTemplateInstantiationError e) {
+                throw new GameOpenException(new LiteralText(e.reason));
             }
+        }
 
-            map.explodableRegions.add(new ExplodableRegion(region.getBounds(), affectedBlocks));
+        List<TemplateRegion> rawReplacementRegions = meta.getRegions("replace_blocks").collect(Collectors.toList());
+
+        for (TemplateRegion region : rawReplacementRegions) {
+            try {
+                BlockReplacementRegion blockReplacementRegion = BlockReplacementRegion.parse(region);
+                blockReplacementRegion.replaceAll(template);
+            } catch (ScriptTemplateInstantiationError e) {
+                throw new GameOpenException(new LiteralText(e.reason));
+            }
         }
 
         map.fallDamageReduceRegions = meta.getRegionBounds("fall_damage_reduced").collect(Collectors.toList());
