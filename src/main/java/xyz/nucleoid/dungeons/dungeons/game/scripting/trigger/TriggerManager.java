@@ -12,6 +12,7 @@ import xyz.nucleoid.dungeons.dungeons.game.DgActive;
 import xyz.nucleoid.dungeons.dungeons.game.DgPlayer;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptingUtil;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.DialogTrackAction;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.GiveEffectAction;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.GiveItemAction;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.GravityAction;
@@ -35,6 +36,7 @@ public class TriggerManager {
         register("gravity", GravityAction::create);
         register("effect", GiveEffectAction::create);
         register("give", GiveItemAction::create);
+        register("dialogtrack", DialogTrackAction::create);
     }
 
     private static void register(String id, ActionBuilder builder) {

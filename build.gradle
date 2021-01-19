@@ -37,6 +37,8 @@ dependencies {
 
     modImplementation "xyz.nucleoid:substrate:${project.substrate_version}"
 
+    modImplementation "cal.codes:larynx:0.1.0"
+
     modRuntime("com.github.SuperCoder7979:databreaker:0.2.6") {
         exclude module: "fabric-loader"
     }
