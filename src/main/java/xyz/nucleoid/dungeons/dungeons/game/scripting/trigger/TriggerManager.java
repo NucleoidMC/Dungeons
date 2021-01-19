@@ -36,7 +36,7 @@ public class TriggerManager {
         register("gravity", GravityAction::create);
         register("effect", GiveEffectAction::create);
         register("give", GiveItemAction::create);
-        register("dialogtrack", DialogTrackAction::create);
+        register("dialog_track", DialogTrackAction::create);
     }
 
     private static void register(String id, ActionBuilder builder) {
