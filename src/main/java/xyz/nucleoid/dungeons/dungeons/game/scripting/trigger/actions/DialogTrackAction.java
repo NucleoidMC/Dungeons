@@ -27,7 +27,7 @@ public class DialogTrackAction implements Action {
     }
 
     public static DialogTrackAction create(MapTemplate template, TemplateRegion trigger, CompoundTag data) throws ScriptTemplateInstantiationError {
-        if(!data.contains("id")) throw new ScriptTemplateInstantiationError("id is required for dungeons:dialogtrack");
+        if (!data.contains("id")) throw new ScriptTemplateInstantiationError("id is required for dungeons:dialogtrack");
         Identifier id = ScriptingUtil.parseDungeonsDefaultId(data.getString("id"));
         if(id == null) throw new ScriptTemplateInstantiationError("id must be a valid Identifier for dungeons:dialogtrack");
         return new DialogTrackAction(id);
