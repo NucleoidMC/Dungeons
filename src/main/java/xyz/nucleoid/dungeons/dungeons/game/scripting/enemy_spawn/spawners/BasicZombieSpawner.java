@@ -42,8 +42,7 @@ public class BasicZombieSpawner implements EnemySpawner {
         for (int i = 0; i < this.count; i++) {
             DgZombieEntity zombie = new DgZombieEntity(world);
             Vec3d pos = ScriptingUtil.pickRandomBottomCoord(this.targetRegion, world.getRandom());
-            zombie.teleport(pos.x, pos.y, pos.z);
-            world.spawnEntity(zombie);
+            ScriptingUtil.loadChunkAndSpawn(world, zombie, pos);
         }
     }
 }

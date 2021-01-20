@@ -1,11 +1,12 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.trigger;
 
+import xyz.nucleoid.dungeons.dungeons.game.DgActive;
 import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
 
 import java.util.List;
 
 public interface TriggerCriterion {
-    TestResult testForPlayers(List<OnlineParticipant> playersInside);
+    TestResult testForPlayers(DgActive active, List<OnlineParticipant> playersInside);
 
     class TestResult {
         public final List<OnlineParticipant> runsFor;

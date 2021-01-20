@@ -7,6 +7,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptingUtil;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.spawners.BasicZombieSpawner;
@@ -28,7 +29,7 @@ public class SpawnerManager {
     }
 
     private static void register(String id, EnemySpawnerBuilder builder) {
-        SPAWNER_BUILDERS.register(new Identifier("dungeons", id), builder);
+        SPAWNER_BUILDERS.register(new Identifier(Dungeons.ID, id), builder);
     }
 
     public void parseAll(MapTemplate template, double dungeonLevel) throws ScriptTemplateInstantiationError {

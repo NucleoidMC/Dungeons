@@ -1,6 +1,9 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.criteria;
 
 
+import net.minecraft.nbt.CompoundTag;
+import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.dungeons.dungeons.game.DgActive;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerCriterion;
 import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
 import xyz.nucleoid.plasmid.util.PlayerRef;
@@ -12,8 +15,12 @@ import java.util.List;
 public class OncePerPlayer implements TriggerCriterion {
     private final HashSet<PlayerRef> hasRun = new HashSet<>();
 
+    public static OncePerPlayer create(@Nullable CompoundTag data) {
+        return new OncePerPlayer();
+    }
+
     @Override
-    public TestResult testForPlayers(List<OnlineParticipant> playersInside) {
+    public TestResult testForPlayers(DgActive active, List<OnlineParticipant> playersInside) {
         List<OnlineParticipant> runsFor = new ArrayList<>();
 
         for (OnlineParticipant participant : playersInside) {

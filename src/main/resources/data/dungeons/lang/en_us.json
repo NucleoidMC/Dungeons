@@ -130,5 +130,11 @@
   "attribute.dungeons.generic.ranged_damage": "Ranged Damage",
   "attribute.dungeons.generic.draw_time": "Draw Time",
 
+  "quest.dungeons.tutorial.name": "Enclosed",
+  "quest.dungeons.tutorial.objective.escape_forest": "Find a way out of the forest",
+  "quest.dungeons.tutorial.objective.inspect_artefact": "Inspect the strange artefact",
+  "quest.dungeons.tutorial.objective.explore_cave": "Explore the cave",
+  "quest.dungeons.tutorial.objective.escape_cave": "Find a way out of the cave",
+
   "": ""
 }
