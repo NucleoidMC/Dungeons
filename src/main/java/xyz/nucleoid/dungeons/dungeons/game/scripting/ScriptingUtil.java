@@ -1,6 +1,8 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -47,5 +49,11 @@ public class ScriptingUtil {
         double y = min.getY();
 
         return new Vec3d(x, y, z);
+    }
+
+    public static void loadChunkAndSpawn(ServerWorld world, Entity entity, Vec3d pos) {
+        world.getChunk(new BlockPos(pos));
+        world.spawnEntity(entity);
+        entity.teleport(pos.x, pos.y, pos.z);
     }
 }
