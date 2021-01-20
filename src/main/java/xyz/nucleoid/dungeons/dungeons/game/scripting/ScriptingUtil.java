@@ -7,6 +7,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.chunk.Chunk;
 import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.plasmid.map.template.MapTemplate;
 import xyz.nucleoid.plasmid.map.template.TemplateRegion;
@@ -52,7 +53,7 @@ public class ScriptingUtil {
     }
 
     public static void loadChunkAndSpawn(ServerWorld world, Entity entity, Vec3d pos) {
-        world.getChunk(new BlockPos(pos));
+        Chunk chunk = world.getChunk(new BlockPos(pos));
         world.spawnEntity(entity);
         entity.teleport(pos.x, pos.y, pos.z);
     }
