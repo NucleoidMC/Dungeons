@@ -1,6 +1,7 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions;
 
 import cal.codes.larynx.Larynx;
+import cal.codes.larynx.resources.TrackRegistry;
 import cal.codes.larynx.tracks.DialogueTrack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
@@ -22,7 +23,7 @@ public class DialogTrackAction implements Action {
 
     public DialogTrackAction(Identifier identifier) {
         this.identifier = identifier;
-        this.dialog = Larynx.get( identifier, Dungeons.class);
+        this.dialog = TrackRegistry.INSTANCE.get(identifier);
     }
 
     public static DialogTrackAction create(MapTemplate template, TemplateRegion trigger, CompoundTag data) throws ScriptTemplateInstantiationError {
