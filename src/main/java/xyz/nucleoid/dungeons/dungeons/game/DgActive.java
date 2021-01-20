@@ -22,8 +22,10 @@ import xyz.nucleoid.dungeons.dungeons.entity.enemy.DgEnemy;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.behavior.ExplodableRegion;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.SpawnerManager;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.quest.QuestManager;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.Action;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerManager;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
+import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
 import xyz.nucleoid.plasmid.game.GameOpenException;
 import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.event.*;
@@ -36,6 +38,7 @@ import xyz.nucleoid.plasmid.util.Scheduler;
 import xyz.nucleoid.plasmid.widget.GlobalWidgets;
 import xyz.nucleoid.plasmid.widget.SidebarWidget;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -68,11 +71,17 @@ public class DgActive {
         this.triggerManager = triggerManager;
         this.widgets = widgets;
 
+        List<OnlineParticipant> online = new ArrayList<>();
         for (PlayerRef player : participants) {
             this.participants.put(player, new DgPlayer());
+            player.ifOnline(this.gameSpace.getWorld(), p -> online.add(new OnlineParticipant(this.participant(p), p)));
         }
 
         spawnerManager.spawnAll(gameSpace.getWorld());
+
+        for (Action action : this.map.spawnActions) {
+            action.execute(this, online);
+        }
     }
 
     public static void open(

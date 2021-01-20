@@ -5,6 +5,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.plasmid.map.template.MapTemplate;
 import xyz.nucleoid.plasmid.map.template.TemplateRegion;
 import xyz.nucleoid.plasmid.util.BlockBounds;
@@ -18,7 +19,7 @@ public class ScriptingUtil {
         if (split.length == 2) {
             return new Identifier(split[0], split[1]);
         } else {
-            return new Identifier("dungeons", split[0]);
+            return new Identifier(Dungeons.ID, split[0]);
         }
     }
 

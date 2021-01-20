@@ -9,6 +9,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.dungeons.dungeons.game.DgActive;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.quest.objectives.SimpleObjective;
 import xyz.nucleoid.plasmid.registry.TinyRegistry;
@@ -30,7 +31,7 @@ public class QuestManager {
     }
 
     private static void register(String id, QuestObjectiveBuilder builder) {
-        OBJECTIVE_BUILDERS.register(new Identifier("dungeons", id), builder);
+        OBJECTIVE_BUILDERS.register(new Identifier(Dungeons.ID, id), builder);
     }
 
     public void tick(DgActive active) {

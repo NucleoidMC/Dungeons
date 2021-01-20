@@ -1,6 +1,5 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions;
 
-import net.minecraft.item.EmptyMapItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;

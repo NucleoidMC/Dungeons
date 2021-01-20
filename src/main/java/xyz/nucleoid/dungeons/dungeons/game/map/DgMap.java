@@ -1,5 +1,6 @@
 package xyz.nucleoid.dungeons.dungeons.game.map;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -17,6 +18,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.map.gen.DgProcgenMapConfig;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.behavior.ExplodableRegion;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.Action;
+import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerManager;
 import xyz.nucleoid.plasmid.game.GameOpenException;
 import xyz.nucleoid.plasmid.map.template.*;
 import xyz.nucleoid.plasmid.util.BlockBounds;
@@ -29,13 +32,15 @@ import java.util.stream.Collectors;
 
 public class DgMap {
     public final BlockBounds spawn;
+    public final List<Action> spawnActions;
     public final float spawnAngle;
     public final Either<MapTemplate, DgProcgenMapConfig> templateOrGenerator;
     public List<ExplodableRegion> explodableRegions;
     public List<BlockBounds> fallDamageReduceRegions;
 
-    private DgMap(BlockBounds spawn, float spawnAngle, Either<MapTemplate, DgProcgenMapConfig> templateOrGenerator) {
+    private DgMap(BlockBounds spawn, List<Action> spawnActions, float spawnAngle, Either<MapTemplate, DgProcgenMapConfig> templateOrGenerator) {
         this.spawn = spawn;
+        this.spawnActions = spawnActions;
         this.spawnAngle = spawnAngle;
         this.templateOrGenerator = templateOrGenerator;
         this.explodableRegions = new ArrayList<>();
@@ -75,7 +80,14 @@ public class DgMap {
             throw new GameOpenException(new LiteralText("No `spawn` region is present but it is required"));
         }
 
-        DgMap map = new DgMap(spawnRegion.getBounds(), spawnRegion.getData().getFloat("yaw"), Either.left(template));
+        List<Action> spawnActions;
+        try {
+            spawnActions = TriggerManager.parseActions(template, spawnRegion);
+        } catch (ScriptTemplateInstantiationError e) {
+            throw new GameOpenException(new LiteralText(e.reason));
+        }
+
+        DgMap map = new DgMap(spawnRegion.getBounds(), spawnActions, spawnRegion.getData().getFloat("yaw"), Either.left(template));
 
         List<TemplateRegion> rawExplodableRegions = meta.getRegions("explodable").collect(Collectors.toList());
         map.explodableRegions = new ArrayList<>();
@@ -105,7 +117,7 @@ public class DgMap {
     }
 
     private static DgMap fromGenerator(DgProcgenMapConfig config) {
-        return new DgMap(BlockBounds.of(new BlockPos(0, 40, 0)), 0, Either.right(config));
+        return new DgMap(BlockBounds.of(new BlockPos(0, 40, 0)), ImmutableList.of(), 0, Either.right(config));
     }
 
     public ChunkGenerator asGenerator(MinecraftServer server) {

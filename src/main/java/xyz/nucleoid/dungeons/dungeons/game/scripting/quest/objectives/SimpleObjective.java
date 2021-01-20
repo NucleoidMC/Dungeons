@@ -2,6 +2,7 @@ package xyz.nucleoid.dungeons.dungeons.game.scripting.quest.objectives;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Formatting;
+import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.quest.Quest;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.quest.QuestObjective;
@@ -26,6 +27,7 @@ public class SimpleObjective implements QuestObjective {
 
     @Override
     public void format(Quest quest, SidebarWidget.Content content) {
-        content.writeFormattedTranslated(Formatting.AQUA, "quest.dungeons." + quest.id + ".objective." + this.id);
+        String key = "quest." + Dungeons.ID + "." + quest.id + ".objective." + this.id;
+        content.writeFormattedTranslated(Formatting.AQUA, key);
     }
 }
