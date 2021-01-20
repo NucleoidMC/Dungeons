@@ -38,6 +38,7 @@ public class TriggerManager {
         registerAction("give", GiveItemAction::create);
         registerAction("set_quest", SetNewQuestAction::create);
         registerAction("advance_objective", AdvanceObjectiveAction::create);
+        registerAction("dialog_track", DialogTrackAction::create);
 
         registerCriterion("once_targets_all", OnceTargetsAll::create);
         registerCriterion("once_targets_triggerer", OnceTargetsAll::create);
