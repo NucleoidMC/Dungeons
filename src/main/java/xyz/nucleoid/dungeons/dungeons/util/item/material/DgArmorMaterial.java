@@ -23,13 +23,10 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
     DIAMOND_PLATING("diamond_plate", 12F, 2F, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.SUPERB, ArmorMaterials.DIAMOND, -1),
     NETHERITE_PLATING("netherite_plate", 15F, 3F, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.LEGENDARY, ArmorMaterials.NETHERITE, -1),
     ;
-    /**
-     * This is the scale that is used to calculate the toughness based on the piece (Boots / Leggings / Chestplate / Helmet)s
-     */
-    private static final int[] partToughness = new int[]{1,2,3,2};
+
 
     public String id;
-    public float baseToughness;
+    public float toughnessMultiplier;
     public float baseKnockbackResistance;
     public DgArmorType type;
     public DgItemQuality minQuality;
@@ -37,9 +34,9 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
     public ArmorMaterials placeholder;
     public int color;
 
-    DgArmorMaterial(String id, float baseToughness, float baseKnockbackResistance, DgArmorType type, DgItemQuality minQuality, DgItemQuality maxQuality, ArmorMaterials placeholder, int color) {
+    DgArmorMaterial(String id, float toughnessMultiplier, float baseKnockbackResistance, DgArmorType type, DgItemQuality minQuality, DgItemQuality maxQuality, ArmorMaterials placeholder, int color) {
         this.id = id;
-        this.baseToughness = baseToughness;
+        this.toughnessMultiplier = toughnessMultiplier;
         this.baseKnockbackResistance = baseKnockbackResistance;
         this.type = type;
         this.minQuality = minQuality;
@@ -56,6 +53,10 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
         return types[Math.max(0, Math.min(types.length, ord))];
     }
 
+    public double getToughnessMultiplier() {
+        return toughnessMultiplier;
+    }
+
 
     @Override
     public String getId() {
@@ -70,10 +71,6 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
     @Override
     public DgItemQuality getMaxQuality() {
         return maxQuality;
-    }
-
-    public float getToughness(EquipmentSlot slot) {
-        return partToughness[slot.getEntitySlotId()] * baseToughness;
     }
 
     @Override
