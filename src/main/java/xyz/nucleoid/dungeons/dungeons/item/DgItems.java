@@ -6,6 +6,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import xyz.nucleoid.dungeons.dungeons.Dungeons;
+import xyz.nucleoid.dungeons.dungeons.item.armor.DgArmorItem;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgModelProvider;
 import xyz.nucleoid.dungeons.dungeons.item.melee.DgMaterialMeleeWeaponItem;
 import xyz.nucleoid.dungeons.dungeons.item.melee.DgMetalMeleeWeaponItem;
@@ -34,6 +35,8 @@ public class DgItems {
     public static final DgMaterialBowItem<DgRangedWeaponWood> SHORTBOW = add("shortbow", new DgWoodBowItem(4.6, 15, new FabricItemSettings()));
     public static final DgMaterialBowItem<DgRangedWeaponWood> LONGBOW = add("longbow", new DgWoodBowItem(6.2, 20, new FabricItemSettings()));
     public static final DgMaterialCrossbowItem<DgRangedWeaponWood> CROSSBOW = add("crossbow", new DgWoodCrossbowItem(7, 25, new FabricItemSettings()));
+
+    public static final DgArmorItem ARMOR_HEAD = add("armor_head")
 
     public static final DgShard SHARD = add("shard", new DgShard(new FabricItemSettings()));
 
