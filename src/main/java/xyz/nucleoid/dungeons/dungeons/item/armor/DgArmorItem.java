@@ -18,6 +18,7 @@ import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgArmorMaterial;
 import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialPicker;
 import xyz.nucleoid.plasmid.fake.FakeItem;
 
 import java.util.*;
@@ -26,7 +27,6 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
     private final EquipmentSlot slot;
     private final double baseToughness;
     private final DgArmorMaterial material;
-    private
 
     public DgArmorItem(DgArmorMaterial material, EquipmentSlot slot, double baseToughness, Settings settings) {
         super(settings);
@@ -53,10 +53,6 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
         return material;
     }
 
-    public double getBaseProtection() {
-        return this.baseToughness;
-    }
-
     public ItemStack createStack(DgItemQuality quality) {
         return DgArmorUtil.initArmor(DgArmorUtil.armorBuilder(this).build(), quality);
     }
@@ -64,7 +60,12 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
     @Override
     public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
         for (DgItemQuality quality : DgItemQuality.values()) {
-            stacks.add(this.createStack(quality));
+            if (group == quality.getItemGroup()) {
+                if (quality.ordinal() >= material.getMinQuality().ordinal() && quality.ordinal() <= material.getMaxQuality().ordinal()) {
+                    stacks.add(createStack(quality));
+                }
+
+            }
         }
     }
 
