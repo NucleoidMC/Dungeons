@@ -82,6 +82,6 @@ public class DgWeaponItemUtil {
         M material = DgItemUtil.materialOf(stack, materialComponent);
         DgItemQuality quality = DgItemUtil.qualityOf(stack);
         double roll = DgItemUtil.rollOf(stack);
-        return DgWeaponItemUtil.calculateDamage(base, roll, material.getDamageMultiplier(), quality.getDamageMultiplier());
+        return DgWeaponItemUtil.calculateDamage(base, roll, material.getDamageMultiplier(), quality.getMultiplier());
     }
 }

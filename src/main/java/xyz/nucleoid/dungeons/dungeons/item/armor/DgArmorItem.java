@@ -3,8 +3,13 @@ package xyz.nucleoid.dungeons.dungeons.item.armor;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.collection.DefaultedList;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgArmor;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgFlavorTextProvider;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgArmorUtil;
@@ -19,16 +24,24 @@ import java.util.*;
 
 public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorTextProvider {
     private final EquipmentSlot slot;
-    private final DgMaterialComponent<DgArmorMaterial> materialComponent = new DgMaterialComponent<>(DgArmorMaterial.class, DgArmorMaterial::choose);
+    private final double baseToughness;
+    private final DgArmorMaterial material;
+    private
 
-    public DgArmorItem(EquipmentSlot slot, Settings settings) {
+    public DgArmorItem(DgArmorMaterial material, EquipmentSlot slot, double baseToughness, Settings settings) {
         super(settings);
         this.slot = slot;
+        this.baseToughness = baseToughness;
+        this.material = material;
     }
 
     @Override
-    public double getArmorToughness() {
-        return material.baseToughness;
+    public double getBaseToughness() {
+        return baseToughness;
+    }
+
+    public EquipmentSlot getSlot() {
+        return slot;
     }
 
     @Override
@@ -36,8 +49,23 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
         return 0;
     }
 
-    public ItemStack createStack(DgArmorMaterial material, DgItemQuality quality) {
-        return DgArmorUtil.
+    public DgArmorMaterial getMaterial() {
+        return material;
+    }
+
+    public double getBaseProtection() {
+        return this.baseToughness;
+    }
+
+    public ItemStack createStack(DgItemQuality quality) {
+        return DgArmorUtil.initArmor(DgArmorUtil.armorBuilder(this).build(), quality);
+    }
+
+    @Override
+    public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
+        for (DgItemQuality quality : DgItemQuality.values()) {
+            stacks.add(this.createStack(quality));
+        }
     }
 
     @Override
@@ -97,16 +125,23 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
 
     @Override
     public DgFlavorText getFlavorText(Random random, ItemStack stack) {
-        return generateFlavourText(random, DgItemUtil.qualityOf(stack), DgItemUtil.materialOf(stack, materialComponent));
+        return generateFlavourText(random, DgItemUtil.qualityOf(stack), material);
     }
 
     @Override
     public String getFlavorTextType() {
         return "armor";
     }
+
     @Override
     public Text getName(ItemStack stack) {
-        return DgItemUtil.nameOf(stack, materialComponent);
+        DgItemQuality quality = DgItemUtil.qualityOf(stack);
+        Text materialText = material == null ? new LiteralText("!! Null Material !!").formatted(Formatting.RED) : new TranslatableText(material.getTranslationKey());
+        return DgItemUtil.formatName(new TranslatableText(stack.getItem().getTranslationKey(), materialText), quality);
     }
 
+    @Override
+    public Item asProxy() {
+        return material.getPlaceholderItem(slot);
+    }
 }
