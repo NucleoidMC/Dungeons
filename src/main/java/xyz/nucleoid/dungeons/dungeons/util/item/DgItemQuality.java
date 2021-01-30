@@ -65,7 +65,7 @@ public enum DgItemQuality {
         return DgTranslationUtil.translationKeyOf("quality", id);
     }
 
-    public double getDamageMultiplier() {
+    public double getMultiplier() {
         return damageMultiplier;
     }
 

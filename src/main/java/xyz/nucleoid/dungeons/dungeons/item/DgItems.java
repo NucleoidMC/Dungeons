@@ -1,11 +1,15 @@
 package xyz.nucleoid.dungeons.dungeons.item;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.lwjgl.system.CallbackI;
 import xyz.nucleoid.dungeons.dungeons.Dungeons;
+import xyz.nucleoid.dungeons.dungeons.item.armor.DgArmorItem;
+import xyz.nucleoid.dungeons.dungeons.item.armor.DgArmorManager;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgModelProvider;
 import xyz.nucleoid.dungeons.dungeons.item.melee.DgMaterialMeleeWeaponItem;
 import xyz.nucleoid.dungeons.dungeons.item.melee.DgMetalMeleeWeaponItem;
@@ -35,9 +39,11 @@ public class DgItems {
     public static final DgMaterialBowItem<DgRangedWeaponWood> LONGBOW = add("longbow", new DgWoodBowItem(6.2, 20, new FabricItemSettings()));
     public static final DgMaterialCrossbowItem<DgRangedWeaponWood> CROSSBOW = add("crossbow", new DgWoodCrossbowItem(7, 25, new FabricItemSettings()));
 
+    public static final DgArmorManager ARMOR_MANAGER = new DgArmorManager().register();
+
     public static final DgShard SHARD = add("shard", new DgShard(new FabricItemSettings()));
 
-    private static <I extends Item> I add(String id, I item) {
+    public static <I extends Item> I add(String id, I item) {
         REGISTRY.put(new Identifier(Dungeons.ID, id), item);
         return item;
     }
