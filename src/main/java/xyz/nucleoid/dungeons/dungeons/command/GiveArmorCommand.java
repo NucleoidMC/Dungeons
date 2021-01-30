@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -13,12 +12,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
-import xyz.nucleoid.dungeons.dungeons.item.DgItems;
-import xyz.nucleoid.dungeons.dungeons.item.base.DgMaterialItem;
 import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
 import xyz.nucleoid.dungeons.dungeons.util.item.loot.DgArmorLoot;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
 
 public class GiveArmorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -39,9 +34,9 @@ public class GiveArmorCommand {
     private static int give(ServerCommandSource source, ItemStack stack) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayer();
 
-        boolean bl = player.inventory.insertStack(stack);
+        boolean playerFull = player.inventory.insertStack(stack);
         ItemEntity itemEntity;
-        if (bl && stack.isEmpty()) {
+        if (playerFull && stack.isEmpty()) {
             itemEntity = player.dropItem(stack, false);
             if (itemEntity != null) {
                 itemEntity.setDespawnImmediately();

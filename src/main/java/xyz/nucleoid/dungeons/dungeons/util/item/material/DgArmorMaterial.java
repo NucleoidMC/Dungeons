@@ -21,8 +21,7 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
     // Heavy Armor
     IRON_PLATING("iron_plate", 10F, 2F, DgArmorType.HEAVY_ARMOR, DgItemQuality.BATTERED, DgItemQuality.FINE, ArmorMaterials.IRON, -1),
     DIAMOND_PLATING("diamond_plate", 12F, 2F, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.SUPERB, ArmorMaterials.DIAMOND, -1),
-    NETHERITE_PLATING("netherite_plate", 15F, 3F, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.LEGENDARY, ArmorMaterials.NETHERITE, -1),
-    ;
+    NETHERITE_PLATING("netherite_plate", 15F, 3F, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.LEGENDARY, ArmorMaterials.NETHERITE, -1);
 
 
     public String id;
