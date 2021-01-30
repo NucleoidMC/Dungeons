@@ -48,6 +48,7 @@ public class DgArmorUtil {
             ((DgArmorItem) item).applyArmorAttributes(stack);
         }
     }
+
     public static ItemStack initArmor(ItemStack stack, DgItemQuality quality) {
         DgArmorMaterial material = ((DgArmorItem) stack.getItem()).getMaterial();
         stack.getOrCreateTag().putString(DgItemUtil.QUALITY, quality.getId());
