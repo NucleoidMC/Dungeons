@@ -79,8 +79,8 @@ public class DgArmorItem extends Item implements PolymerItem, DgArmor, DgFlavorT
                     this.flavorTextOf("unimpressive", 1),
                     this.flavorTextOf("time", 2),
                     this.flavorTextOf("soldier", 3),
-                    this.flavorTextOf("disease", 2),
-                    this.flavorTextOf("cookfire", 3)
+                    this.flavorTextOf("goodenough", 3),
+                    this.flavorTextOf("fragile", 3)
             );
         } else if (quality.ordinal() <= DgItemQuality.FINE.ordinal()) {
             Collections.addAll(
@@ -93,7 +93,6 @@ public class DgArmorItem extends Item implements PolymerItem, DgArmor, DgFlavorT
             Collections.addAll(
                     choices,
                     this.flavorTextOf("glow", 2),
-                    this.flavorTextOf("whispers", 3),
                     this.flavorTextOf("craftsmanship", 2),
                     this.flavorTextOf("skeleton", 3)
             );
@@ -102,13 +101,11 @@ public class DgArmorItem extends Item implements PolymerItem, DgArmor, DgFlavorT
                     choices,
                     this.flavorTextOf("carvings", 2),
                     this.flavorTextOf("legendary", 1),
-                    this.flavorTextOf("reflection", 3),
-                    this.flavorTextOf("ransom", 2)
+                    this.flavorTextOf("reflection", 2)
             );
         }
         Collections.addAll(
                 choices,
-                this.flavorTextOf("prized_material", 2),
                 this.flavorTextOf("expense", 2),
                 this.flavorTextOf("gram", 3)
         );
@@ -131,7 +128,18 @@ public class DgArmorItem extends Item implements PolymerItem, DgArmor, DgFlavorT
     public Text getName(ItemStack stack) {
         DgItemQuality quality = DgItemUtil.qualityOf(stack);
         Text materialText = this.material == null ? new LiteralText("!! Null Material !!").formatted(Formatting.RED) : new TranslatableText(this.material.getTranslationKey());
-        return DgItemUtil.formatName(new TranslatableText(stack.getItem().getTranslationKey(), materialText), quality);
+        return DgItemUtil.formatName(new TranslatableText("item.dungeons." + getKeyFromSlot(slot), materialText), quality);
+
+    }
+
+    private static String getKeyFromSlot(EquipmentSlot slot) {
+        return switch (slot) {
+            case FEET -> "boots";
+            case LEGS -> "leggings";
+            case CHEST -> "chestplate";
+            case HEAD -> "helmet";
+            default -> "invalid";
+        };
     }
 
     @Override
