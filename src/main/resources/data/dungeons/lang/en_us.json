@@ -1,7 +1,10 @@
 {
+  "game.dungeons.tutorial": "Dungeons: Tutorial",
+
   "item.dungeons.shortbow": "%s Shortbow",
   "item.dungeons.longbow": "%s Longbow",
   "item.dungeons.crossbow": "%s Crossbow",
+  "item.dungeons.shard": "Artefact Fragment",
 
   "item.dungeons.hand_axe": "%s Hand Axe",
   "item.dungeons.battle_axe": "%s Battle Axe",
@@ -128,6 +131,12 @@
   "attribute.dungeons.generic.swing_speed": "Swing Speed",
   "attribute.dungeons.generic.ranged_damage": "Ranged Damage",
   "attribute.dungeons.generic.draw_time": "Draw Time",
+
+  "quest.dungeons.tutorial.name": "Enclosed",
+  "quest.dungeons.tutorial.objective.escape_forest": "Find a way out of the forest",
+  "quest.dungeons.tutorial.objective.inspect_artefact": "Inspect the strange artefact",
+  "quest.dungeons.tutorial.objective.explore_cave": "Explore the cave",
+  "quest.dungeons.tutorial.objective.escape_cave": "Find a way out of the cave",
 
   "": ""
 }

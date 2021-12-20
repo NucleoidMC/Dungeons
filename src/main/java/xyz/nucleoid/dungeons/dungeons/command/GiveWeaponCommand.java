@@ -1,4 +1,4 @@
-package xyz.nucleoid.dungeons.dungeons.game.command;
+package xyz.nucleoid.dungeons.dungeons.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
