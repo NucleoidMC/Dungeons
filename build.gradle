@@ -37,9 +37,10 @@ dependencies {
     modImplementation "eu.pb4:polymer:${project.polymer_version}"
     modImplementation "xyz.nucleoid:substrate:${project.substrate_version}"
 
-    modRuntimeOnly("supercoder79:databreaker:0.2.8") {
-        exclude module: "fabric-loader"
-    }
+//    TODO breaks 1.18
+//    modRuntimeOnly("supercoder79:databreaker:0.2.8") {
+//        exclude module: "fabric-loader"
+//    }
 }
 
 processResources {

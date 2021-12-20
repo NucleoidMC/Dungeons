@@ -115,8 +115,8 @@ public class DgActive {
             activity.deny(GameRuleType.PORTALS);
             activity.deny(GameRuleType.PVP);
             activity.deny(GameRuleType.HUNGER);
-            activity.deny(GameRuleType.FALL_DAMAGE);
-            activity.deny(GameRuleType.INTERACTION);
+            activity.allow(GameRuleType.FALL_DAMAGE);
+            activity.allow(GameRuleType.INTERACTION);
             activity.deny(GameRuleType.BLOCK_DROPS);
             activity.deny(GameRuleType.THROW_ITEMS);
             activity.deny(GameRuleType.UNSTABLE_TNT);
@@ -134,7 +134,6 @@ public class DgActive {
             activity.listen(ExplosionDetonatedEvent.EVENT, active::onExplosion);
             activity.listen(PlayerAttackEntityEvent.EVENT, active::onAttackEntity);
             activity.listen(ProjectileHitEvent.ENTITY, active::onProjectileHitEntity); // TODO
-            activity.listen(BlockUseEvent.EVENT, active::onUseBlock);
         });
     }
 
@@ -144,22 +143,6 @@ public class DgActive {
 
     private @Nullable DgPlayer participant(PlayerRef ref) {
         return this.participants.get(ref);
-    }
-
-    private ActionResult onUseBlock(ServerPlayerEntity player, Hand hand, BlockHitResult hitResult) {
-        DgPlayer participant = this.participant(player);
-
-        if (participant == null) {
-            return ActionResult.FAIL;
-        }
-
-        Block block = this.world.getBlockState(hitResult.getBlockPos()).getBlock();
-
-        if (block == Blocks.LEVER) {
-            return ActionResult.PASS;
-        } else {
-            return ActionResult.FAIL;
-        }
     }
 
     private ActionResult onProjectileHitEntity(ProjectileEntity projectileEntity, EntityHitResult hitResult) {
@@ -243,7 +226,6 @@ public class DgActive {
     private void spawnParticipant(ServerPlayerEntity player) {
         this.spawnLogic.resetPlayer(player, GameMode.ADVENTURE);
         this.spawnLogic.spawnPlayer(player);
-        player.getInventory().insertStack(ItemStackBuilder.of(Items.ARROW).setCount(1).build());
     }
 
     private void tick() {
