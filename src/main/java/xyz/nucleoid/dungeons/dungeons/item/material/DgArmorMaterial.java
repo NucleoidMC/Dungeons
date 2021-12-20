@@ -192,4 +192,10 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
         }
         return Items.AIR;
     }
+
+
+    public boolean canBeOfQuality(DgItemQuality quality) {
+        // minQuality <= quality < maxQuality
+        return quality.greaterOrEquals(minQuality) && quality.lessOrEquals(maxQuality);
+    }
 }

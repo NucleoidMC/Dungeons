@@ -7,12 +7,13 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.dungeons.dungeons.util.DgTranslationUtil;
+import xyz.nucleoid.dungeons.dungeons.util.IComparable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public enum DgItemQuality {
+public enum DgItemQuality implements IComparable<DgItemQuality> {
     // Tier 1,
     BATTERED("battered", 1.0, DgItemTier.ONE, Items.STICK),
     OLD("old", 1.1, DgItemTier.ONE, Items.ANCIENT_DEBRIS),
@@ -32,15 +33,15 @@ public enum DgItemQuality {
     MYTHICAL("mythical", 1.1, DgItemTier.FOUR, Items.NETHER_STAR);
 
     private final String id;
-    private final double damageMultiplier;
+    private final double multiplier;
     private final DgItemTier tier;
 
     private static final Map<String, DgItemQuality> ID_MAP = new HashMap<>();
     private final ItemGroup itemGroup;
 
-    DgItemQuality(String id, double damageMultiplier, DgItemTier tier, Item icon) {
+    DgItemQuality(String id, double multiplier, DgItemTier tier, Item icon) {
         this.id = id;
-        this.damageMultiplier = damageMultiplier;
+        this.multiplier = multiplier;
         this.tier = tier;
         this.itemGroup = FabricItemGroupBuilder.build(new Identifier(Dungeons.ID, id), icon::getDefaultStack);
     }
@@ -66,7 +67,7 @@ public enum DgItemQuality {
     }
 
     public double getMultiplier() {
-        return this.damageMultiplier;
+        return this.multiplier;
     }
 
     public static DgItemQuality fromId(String id) {

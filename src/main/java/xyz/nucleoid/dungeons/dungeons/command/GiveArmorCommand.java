@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
@@ -14,17 +15,35 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
 import xyz.nucleoid.dungeons.dungeons.item.DgItemQuality;
 import xyz.nucleoid.dungeons.dungeons.loot.DgArmorLoot;
+import xyz.nucleoid.dungeons.dungeons.util.EnumArgumentType;
 
 public class GiveArmorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> root = CommandManager.literal("givearmor")
-                .requires(source -> source.hasPermissionLevel(2))
-                .then(CommandManager.literal("random").then(CommandManager.argument("dungeonLevel", DoubleArgumentType.doubleArg()).executes(context -> giveRandom(context.getSource(), DoubleArgumentType.getDouble(context, "dungeonLevel")))));
-        for (DgItemQuality quality : DgItemQuality.values()) {
-            LiteralArgumentBuilder<ServerCommandSource> qualityNode = CommandManager.literal(quality.getId());
-            root.then(qualityNode);
-        }
-        dispatcher.register(root);
+        LiteralCommandNode<ServerCommandSource> root =
+                CommandManager.literal("givearmor")
+                        .requires(source -> source.hasPermissionLevel(2))
+                        .build();
+        var randomSubCommand =
+                CommandManager.literal("random")
+                        .then(CommandManager.argument("dungeonLevel", DoubleArgumentType.doubleArg())
+                                .executes(context -> giveRandom(context.getSource(), DoubleArgumentType.getDouble(context, "dungeonLevel"))))
+                        .build();
+        var qualitySubCommand =
+                CommandManager.literal("quality")
+                        .build();
+        var qualityArg = CommandManager.argument("quality", new EnumArgumentType<>(DgItemQuality.class))
+                .executes(context -> giveLevel(context.getSource(), EnumArgumentType.getValue(context, "quality", DgItemQuality.class)))
+                .build();
+
+
+        dispatcher.getRoot().addChild(root);
+        root.addChild(randomSubCommand);
+        root.addChild(qualitySubCommand);
+        qualitySubCommand.addChild(qualityArg);
+    }
+
+    private static int giveLevel(ServerCommandSource source, DgItemQuality quality) throws CommandSyntaxException {
+        return give(source, DgArmorLoot.generateFixed(source.getWorld().getRandom(), quality));
     }
 
     private static int giveRandom(ServerCommandSource source, double dungeonLevel) throws CommandSyntaxException {
