@@ -2,7 +2,7 @@ package xyz.nucleoid.dungeons.dungeons.game;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import xyz.nucleoid.plasmid.game.config.PlayerConfig;
+import xyz.nucleoid.plasmid.game.common.config.PlayerConfig;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMapConfig;
 
 public class DgConfig {

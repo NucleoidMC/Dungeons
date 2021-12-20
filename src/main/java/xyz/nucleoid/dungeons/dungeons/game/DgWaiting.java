@@ -1,53 +1,64 @@
 package xyz.nucleoid.dungeons.dungeons.game;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 
-import xyz.nucleoid.fantasy.BubbleWorldConfig;
+import xyz.nucleoid.dungeons.dungeons.game.map.DgMapConfig;
+import xyz.nucleoid.dungeons.dungeons.game.map.DgMapGenerator;
+import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.plasmid.game.*;
+import xyz.nucleoid.plasmid.game.common.GameWaitingLobby;
 import xyz.nucleoid.plasmid.game.event.*;
 
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
+import xyz.nucleoid.plasmid.game.player.PlayerOffer;
+import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
+import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 
 public class DgWaiting {
-    private final GameSpace gameWorld;
+    private final ServerWorld world;
+    private final GameSpace gameSpace;
     private final DgMap map;
     private final DgConfig config;
     private final DgSpawnLogic spawnLogic;
 
-    private DgWaiting(GameSpace gameWorld, DgMap map, DgConfig config) {
-        this.gameWorld = gameWorld;
+    private DgWaiting(ServerWorld world, GameSpace gameSpace, DgMap map, DgConfig config) {
+        this.world = world;
+        this.gameSpace = gameSpace;
         this.map = map;
         this.config = config;
-        this.spawnLogic = new DgSpawnLogic(gameWorld, map);
+        this.spawnLogic = new DgSpawnLogic(world, map);
     }
 
     public static GameOpenProcedure open(GameOpenContext<DgConfig> context) {
-        DgMap map = new DgMap();
+        DgConfig config = context.config();
+        DgMapGenerator generator = new DgMapGenerator(new DgMapConfig(Blocks.REDSTONE_BLOCK.getDefaultState()));
+        DgMap map = generator.build();
 
-        BubbleWorldConfig worldConfig = new BubbleWorldConfig()
-                .setGenerator(map.asGenerator(context.getServer()))
-                .setDefaultGameMode(GameMode.SPECTATOR);
+        RuntimeWorldConfig worldConfig = new RuntimeWorldConfig().setGenerator(map.asGenerator(context.server()));
 
-        return context.createOpenProcedure(worldConfig, (game) -> {
-            DgWaiting waiting = new DgWaiting(game.getSpace(), map, context.getConfig());
-            GameWaitingLobby.applyTo(game, context.getConfig().playerConfig);
+        return context.openWithWorld(worldConfig, (activity, world) -> {
+            DgWaiting waiting = new DgWaiting(world, activity.getGameSpace(), map, context.config());
+            GameWaitingLobby.addTo(activity, context.config().playerConfig);
 
-            game.on(RequestStartListener.EVENT, waiting::requestStart);
-            game.on(PlayerAddListener.EVENT, waiting::addPlayer);
-            game.on(PlayerDeathListener.EVENT, waiting::onPlayerDeath);
+            activity.listen(GameActivityEvents.REQUEST_START, waiting::requestStart);
+            activity.listen(GamePlayerEvents.OFFER, waiting::offerPlayer);
+            activity.listen(PlayerDeathEvent.EVENT, waiting::onPlayerDeath);
         });
     }
 
-    private StartResult requestStart() {
-        DgActive.open(this.gameWorld, this.map, this.config);
-        return StartResult.OK;
+    private GameResult requestStart() {
+        DgActive.open(this.world, this.gameSpace, this.map, this.config);
+        return GameResult.ok();
     }
 
-    private void addPlayer(ServerPlayerEntity player) {
-        this.spawnPlayer(player);
+    private PlayerOfferResult offerPlayer(PlayerOffer offer) {
+        return this.spawnLogic.acceptPlayer(offer, GameMode.ADVENTURE);
     }
 
     private ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source) {

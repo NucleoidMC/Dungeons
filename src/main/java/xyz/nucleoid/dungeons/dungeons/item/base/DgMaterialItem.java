@@ -11,6 +11,6 @@ public interface DgMaterialItem<M extends Enum<M> & DgMaterial> {
     ItemStack createStack(M material, DgItemQuality quality);
 
     default ItemStack createStackInternal(Enum<?> material, DgItemQuality quality) {
-        return createStack((M) material, quality);
+        return this.createStack((M) material, quality);
     }
 }

@@ -22,8 +22,8 @@ public class Dungeons implements ModInitializer {
 
     public static final GameType<DgConfig> TYPE = GameType.register(
             new Identifier(ID, "dungeons"),
-            DgWaiting::open,
-            DgConfig.CODEC
+            DgConfig.CODEC,
+            DgWaiting::open
     );
 
     @Override

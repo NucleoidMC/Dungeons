@@ -15,17 +15,21 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.dungeons.dungeons.util.item.loot.DgEnemyDropGenerator;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 import xyz.nucleoid.plasmid.game.GameCloseReason;
 import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.event.*;
-import xyz.nucleoid.plasmid.game.player.JoinResult;
-import xyz.nucleoid.plasmid.game.rule.GameRule;
-import xyz.nucleoid.plasmid.game.rule.RuleResult;
+import xyz.nucleoid.plasmid.game.player.PlayerOffer;
+import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
+import xyz.nucleoid.plasmid.game.player.PlayerSet;
+import xyz.nucleoid.plasmid.game.rule.GameRuleType;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 import xyz.nucleoid.plasmid.util.PlayerRef;
+import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
+import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,71 +46,73 @@ public class DgActive {
     private final DgIdle idle;
     private final boolean ignoreWinState;
     private final DgTimerBar timerBar;
+    private final ServerWorld world;
 
-    private DgActive(GameSpace gameSpace, DgMap map, DgConfig config, Set<PlayerRef> participants) {
+    private DgActive(ServerWorld world, GameSpace gameSpace, DgMap map, DgConfig config, Set<PlayerRef> participants) {
         this.gameSpace = gameSpace;
         this.config = config;
+        this.world = world;
         this.gameMap = map;
-        this.spawnLogic = new DgSpawnLogic(gameSpace, map);
+        this.spawnLogic = new DgSpawnLogic(world, map);
         this.participants = new Object2ObjectOpenHashMap<>();
 
         for (PlayerRef player : participants) {
             this.participants.put(player, new DgPlayer());
         }
 
-        this.idle = new DgIdle();
+        this.idle = new DgIdle(this.gameSpace);
         this.ignoreWinState = this.participants.size() <= 1;
         this.timerBar = new DgTimerBar();
     }
 
-    public static void open(GameSpace gameWorld, DgMap map, DgConfig config) {
-        Set<PlayerRef> participants = gameWorld.getPlayers().stream()
+    public static void open(ServerWorld world, GameSpace gameSpace, DgMap map, DgConfig config) {
+        Set<PlayerRef> participants = gameSpace.getPlayers().stream()
                 .map(PlayerRef::of)
                 .collect(Collectors.toSet());
-        DgActive active = new DgActive(gameWorld, map, config, participants);
+        DgActive active = new DgActive(world, gameSpace, map, config, participants);
 
-        gameWorld.openGame(builder -> {
-            builder.setRule(GameRule.CRAFTING, RuleResult.DENY);
-            builder.setRule(GameRule.PORTALS, RuleResult.DENY);
-            builder.setRule(GameRule.PVP, RuleResult.DENY);
-            builder.setRule(GameRule.HUNGER, RuleResult.DENY);
-            builder.setRule(GameRule.FALL_DAMAGE, RuleResult.DENY);
-            builder.setRule(GameRule.INTERACTION, RuleResult.DENY);
-            builder.setRule(GameRule.BLOCK_DROPS, RuleResult.DENY);
-            builder.setRule(GameRule.THROW_ITEMS, RuleResult.DENY);
-            builder.setRule(GameRule.UNSTABLE_TNT, RuleResult.DENY);
+        gameSpace.setActivity(activity -> {
+            activity.deny(GameRuleType.CRAFTING);
+            activity.deny(GameRuleType.PORTALS);
+            activity.deny(GameRuleType.PVP);
+            activity.deny(GameRuleType.HUNGER);
+            activity.deny(GameRuleType.FALL_DAMAGE);
+            activity.deny(GameRuleType.INTERACTION);
+            activity.deny(GameRuleType.BLOCK_DROPS);
+            activity.deny(GameRuleType.THROW_ITEMS);
+            activity.deny(GameRuleType.UNSTABLE_TNT);
 
-            builder.on(GameOpenListener.EVENT, active::onOpen);
-            builder.on(GameCloseListener.EVENT, active::onClose);
+            activity.listen(GameActivityEvents.ENABLE, active::onOpen);
+            activity.listen(GameActivityEvents.DISABLE, active::onClose);
 
-            builder.on(OfferPlayerListener.EVENT, player -> JoinResult.ok());
-            builder.on(PlayerAddListener.EVENT, active::addPlayer);
-            builder.on(PlayerRemoveListener.EVENT, active::removePlayer);
+            activity.listen(GamePlayerEvents.OFFER, active::acceptPlayer);
+            activity.listen(GamePlayerEvents.REMOVE, active::removePlayer);
 
-            builder.on(GameTickListener.EVENT, active::tick);
+            activity.listen(GameActivityEvents.TICK, active::tick);
 
-            builder.on(PlayerDamageListener.EVENT, active::onPlayerDamage);
-            builder.on(PlayerDeathListener.EVENT, active::onPlayerDeath);
+            activity.listen(PlayerDamageEvent.EVENT, active::onPlayerDamage);
+            activity.listen(PlayerDeathEvent.EVENT, active::onPlayerDeath);
         });
     }
 
     private void onOpen() {
-        ServerWorld world = this.gameSpace.getWorld();
+        this.participants.keySet().removeIf(ref -> !ref.isOnline(this.world));
         for (PlayerRef ref : this.participants.keySet()) {
-            ref.ifOnline(world, this::spawnParticipant);
+            ref.ifOnline(this.world, player -> {
+                this.spawnLogic.resetPlayer(player, GameMode.ADVENTURE);
+                this.spawnLogic.spawnPlayer(player);
+            });
         }
-        this.idle.onOpen(world.getTime(), this.config);
+
+        this.idle.onOpen(this.world.getTime(), this.config);
     }
 
     private void onClose() {
         this.timerBar.close();
     }
 
-    private void addPlayer(ServerPlayerEntity player) {
-        if (!this.participants.containsKey(PlayerRef.of(player))) {
-            this.spawnSpectator(player);
-        }
-        this.timerBar.addPlayer(player);
+    private PlayerOfferResult acceptPlayer(PlayerOffer offer) {
+        return this.spawnLogic.acceptPlayer(offer, GameMode.SPECTATOR);
     }
 
     private void removePlayer(ServerPlayerEntity player) {
@@ -124,30 +130,34 @@ public class DgActive {
         return ActionResult.FAIL;
     }
 
-    private void spawnParticipant(ServerPlayerEntity player) {
-        this.spawnLogic.resetPlayer(player, GameMode.ADVENTURE);
-        this.spawnLogic.spawnPlayer(player);
+    public void resetPlayer(ServerPlayerEntity player, GameMode gameMode) {
+        player.changeGameMode(gameMode);
+        player.setVelocity(Vec3d.ZERO);
+        player.fallDistance = 0.0f;
 
-        ServerWorld world = this.gameSpace.getWorld();
+    }
+
+    public void spawnSpectator(ServerPlayerEntity player) {
+        this.resetPlayer(player, GameMode.SPECTATOR);
+    }
+
+    public void spawnParticipant(ServerPlayerEntity player) {
+        this.resetPlayer(player, GameMode.ADVENTURE);
+        this.spawnLogic.findSpawnFor(player);
+
         for (int i = 0; i < 30; i++) {
             ItemStack stack = DgEnemyDropGenerator.generate(player.getRandom(), 1.0);
 
             if (stack != null) {
-                player.inventory.offerOrDrop(world, stack);
+                player.getInventory().insertStack(stack);
             }
         }
 
-        player.inventory.offerOrDrop(world, ItemStackBuilder.of(Items.ARROW).setCount(1).build());
-    }
-
-    private void spawnSpectator(ServerPlayerEntity player) {
-        this.spawnLogic.resetPlayer(player, GameMode.SPECTATOR);
-        this.spawnLogic.spawnPlayer(player);
+        player.getInventory().insertStack(ItemStackBuilder.of(Items.ARROW).setCount(1).build());
     }
 
     private void tick() {
-        ServerWorld world = this.gameSpace.getWorld();
-        long time = world.getTime();
+        long time = this.world.getTime();
 
         DgIdle.IdleTickResult result = this.idle.tick(time, gameSpace);
 
@@ -167,29 +177,6 @@ public class DgActive {
         this.timerBar.update(this.idle.finishTime - time, this.config.timeLimitSecs * 20L );
     }
 
-    protected static void broadcastMessage(Text message, GameSpace world) {
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            player.sendMessage(message, false);
-        }
-    }
-
-    protected static void broadcastSound(SoundEvent sound, float pitch, GameSpace world) {
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            player.playSound(sound, SoundCategory.PLAYERS, 1.0F, pitch);
-        }
-    }
-
-    protected static void broadcastSound(SoundEvent sound,  GameSpace world) {
-        broadcastSound(sound, 1.0f, world);
-    }
-
-    protected static void broadcastTitle(Text message, GameSpace world) {
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            TitleS2CPacket packet = new TitleS2CPacket(TitleS2CPacket.Action.TITLE, message, 1, 5,  3);
-            player.networkHandler.sendPacket(packet);
-        }
-    }
-
     private void broadcastWin(WinResult result) {
         ServerPlayerEntity winningPlayer = result.getWinningPlayer();
 
@@ -200,8 +187,9 @@ public class DgActive {
             message = new LiteralText("The game ended, but nobody won!").formatted(Formatting.GOLD);
         }
 
-        broadcastMessage(message, this.gameSpace);
-        broadcastSound(SoundEvents.ENTITY_VILLAGER_YES, this.gameSpace);
+        PlayerSet players = this.gameSpace.getPlayers();
+        players.sendMessage(message);
+        players.playSound(SoundEvents.ENTITY_VILLAGER_YES);
     }
 
     private WinResult checkWinResult() {
@@ -210,7 +198,6 @@ public class DgActive {
             return WinResult.no();
         }
 
-        ServerWorld world = this.gameSpace.getWorld();
         ServerPlayerEntity winningPlayer = null;
 
         // TODO win result logic

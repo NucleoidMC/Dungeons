@@ -2,6 +2,7 @@ package xyz.nucleoid.dungeons.dungeons.game;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.sound.SoundCategory;
 import xyz.nucleoid.plasmid.game.GameSpace;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
@@ -9,6 +10,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
+import xyz.nucleoid.plasmid.game.player.PlayerSet;
 
 public class DgIdle {
     private long closeTime = -1;
@@ -16,8 +18,10 @@ public class DgIdle {
     private long startTime = -1;
     private final Object2ObjectMap<ServerPlayerEntity, FrozenPlayer> frozen;
     private boolean setSpectator = false;
+    private final GameSpace space;
 
-    public DgIdle() {
+    public DgIdle(GameSpace space) {
+        this.space = space;
         this.frozen = new Object2ObjectOpenHashMap<>();
     }
 
@@ -46,7 +50,7 @@ public class DgIdle {
             if (!this.setSpectator) {
                 this.setSpectator = true;
                 for (ServerPlayerEntity player : world.getPlayers()) {
-                    player.setGameMode(GameMode.SPECTATOR);
+                    player.changeGameMode(GameMode.SPECTATOR);
                 }
             }
 
@@ -79,13 +83,15 @@ public class DgIdle {
 
         int sec = (int) Math.floor(sec_f) - 1;
 
+        PlayerSet players = this.space.getPlayers();
+        
         if ((this.startTime - time) % 20 == 0) {
             if (sec > 0) {
-                DgActive.broadcastTitle(new LiteralText(Integer.toString(sec)).formatted(Formatting.BOLD), world);
-                DgActive.broadcastSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, 1.0F, world);
+                players.showTitle(new LiteralText(Integer.toString(sec)).formatted(Formatting.BOLD), 20);
+                players.playSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP);
             } else {
-                DgActive.broadcastTitle(new LiteralText("Go!").formatted(Formatting.BOLD), world);
-                DgActive.broadcastSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, 2.0F, world);
+                players.showTitle(new LiteralText("Go!").formatted(Formatting.BOLD), 20);
+                players.playSound(SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.PLAYERS, 1.0f, 2.0f);
             }
         }
     }
