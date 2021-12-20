@@ -120,6 +120,7 @@ public class DgActive {
             activity.deny(GameRuleType.BLOCK_DROPS);
             activity.deny(GameRuleType.THROW_ITEMS);
             activity.deny(GameRuleType.UNSTABLE_TNT);
+            activity.deny(GameRuleType.FIRE_TICK);
 
             activity.listen(GameActivityEvents.ENABLE, active::onOpen);
             activity.listen(GameActivityEvents.DISABLE, active::onClose);
