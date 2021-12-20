@@ -3,7 +3,6 @@ package xyz.nucleoid.dungeons.dungeons.game.scripting.quest;
 import eu.pb4.sidebars.api.lines.LineBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import xyz.nucleoid.plasmid.game.common.widget.SidebarWidget;
 
 import java.util.Map;
 

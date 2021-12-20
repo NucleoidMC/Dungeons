@@ -9,14 +9,8 @@ import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiation
 import xyz.nucleoid.dungeons.dungeons.game.scripting.quest.Quest;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.quest.QuestObjective;
 import xyz.nucleoid.map_templates.MapTemplate;
-import xyz.nucleoid.plasmid.game.common.widget.SidebarWidget;
 
-public class SimpleObjective implements QuestObjective {
-    private final String id;
-
-    private SimpleObjective(String id) {
-        this.id = id;
-    }
+public record SimpleObjective(String id) implements QuestObjective {
 
     public static SimpleObjective create(MapTemplate template, NbtCompound data) throws ScriptTemplateInstantiationError {
         if (!data.contains("id")) {

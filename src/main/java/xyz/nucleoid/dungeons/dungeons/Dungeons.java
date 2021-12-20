@@ -13,7 +13,7 @@ import xyz.nucleoid.dungeons.dungeons.entity.attribute.DgEntityAttributes;
 import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.DgWaiting;
 import xyz.nucleoid.dungeons.dungeons.command.GiveWeaponCommand;
-import xyz.nucleoid.dungeons.dungeons.item.DgItems;
+import xyz.nucleoid.dungeons.dungeons.item.items.DgItems;
 import xyz.nucleoid.plasmid.game.GameType;
 
 public class Dungeons implements ModInitializer {

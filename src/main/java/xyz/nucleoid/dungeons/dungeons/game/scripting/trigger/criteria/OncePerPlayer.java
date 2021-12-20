@@ -24,7 +24,7 @@ public class OncePerPlayer implements TriggerCriterion {
         List<OnlineParticipant> runsFor = new ArrayList<>();
 
         for (OnlineParticipant participant : playersInside) {
-            PlayerRef ref = PlayerRef.of(participant.entity);
+            PlayerRef ref = PlayerRef.of(participant.entity());
             if (!this.hasRun.contains(ref)) {
                 this.hasRun.add(ref);
                 runsFor.add(participant);

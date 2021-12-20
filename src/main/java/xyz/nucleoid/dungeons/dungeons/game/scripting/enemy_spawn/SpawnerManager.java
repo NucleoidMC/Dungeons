@@ -1,6 +1,5 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn;
 
-import com.mojang.serialization.Lifecycle;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;

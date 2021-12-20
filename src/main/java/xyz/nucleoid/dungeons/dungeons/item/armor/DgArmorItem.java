@@ -1,29 +1,26 @@
 package xyz.nucleoid.dungeons.dungeons.item.armor;
 
 import com.google.common.collect.ImmutableSet;
+import eu.pb4.polymer.api.item.PolymerItem;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.collection.DefaultedList;
-import xyz.nucleoid.dungeons.dungeons.item.base.DgArmor;
-import xyz.nucleoid.dungeons.dungeons.item.base.DgFlavorTextProvider;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgArmorUtil;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgFlavorText;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgArmorMaterial;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialPicker;
-import xyz.nucleoid.plasmid.fake.FakeItem;
+import xyz.nucleoid.dungeons.dungeons.item.DgFlavorTextProvider;
+import xyz.nucleoid.dungeons.dungeons.item.DgFlavorText;
+import xyz.nucleoid.dungeons.dungeons.item.DgItemQuality;
+import xyz.nucleoid.dungeons.dungeons.item.DgItemUtil;
+import xyz.nucleoid.dungeons.dungeons.item.material.DgArmorMaterial;
 
 import java.util.*;
 
-public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorTextProvider {
+public class DgArmorItem extends Item implements PolymerItem, DgArmor, DgFlavorTextProvider {
     private final EquipmentSlot slot;
     private final double baseToughness;
     private final DgArmorMaterial material;
@@ -37,11 +34,7 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
 
     @Override
     public double getBaseToughness() {
-        return baseToughness;
-    }
-
-    public EquipmentSlot getSlot() {
-        return slot;
+        return this.baseToughness;
     }
 
     @Override
@@ -50,7 +43,7 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
     }
 
     public DgArmorMaterial getMaterial() {
-        return material;
+        return this.material;
     }
 
     public ItemStack createStack(DgItemQuality quality) {
@@ -61,8 +54,8 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
     public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
         for (DgItemQuality quality : DgItemQuality.values()) {
             if (group == quality.getItemGroup()) {
-                if (quality.ordinal() >= material.getMinQuality().ordinal() && quality.ordinal() <= material.getMaxQuality().ordinal()) {
-                    stacks.add(createStack(quality));
+                if (quality.ordinal() >= this.material.getMinQuality().ordinal() && quality.ordinal() <= this.material.getMaxQuality().ordinal()) {
+                    stacks.add(this.createStack(quality));
                 }
 
             }
@@ -71,7 +64,7 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
 
     @Override
     public Set<EquipmentSlot> getValidSlots(ItemStack stack) {
-        return ImmutableSet.of(slot);
+        return ImmutableSet.of(this.slot);
     }
 
     private DgFlavorText generateFlavourText(Random random, DgItemQuality quality, DgArmorMaterial material) {
@@ -83,41 +76,41 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
         if (quality.ordinal() <= DgItemQuality.DUSTY.ordinal()) {
             Collections.addAll(
                     choices,
-                    flavorTextOf("unimpressive", 1),
-                    flavorTextOf("time", 2),
-                    flavorTextOf("soldier", 3),
-                    flavorTextOf("disease", 2),
-                    flavorTextOf("cookfire", 3)
+                    this.flavorTextOf("unimpressive", 1),
+                    this.flavorTextOf("time", 2),
+                    this.flavorTextOf("soldier", 3),
+                    this.flavorTextOf("disease", 2),
+                    this.flavorTextOf("cookfire", 3)
             );
         } else if (quality.ordinal() <= DgItemQuality.FINE.ordinal()) {
             Collections.addAll(
                     choices,
-                    flavorTextOf("will_do", 1),
-                    flavorTextOf("unknowledgeable", 3),
-                    flavorTextOf("standard_issue", 3)
+                    this.flavorTextOf("will_do", 1),
+                    this.flavorTextOf("unknowledgeable", 3),
+                    this.flavorTextOf("standard_issue", 3)
             );
         } else if (quality.ordinal() <= DgItemQuality.SUPERB.ordinal()) {
             Collections.addAll(
                     choices,
-                    flavorTextOf("glow", 2),
-                    flavorTextOf("whispers", 3),
-                    flavorTextOf("craftsmanship", 2),
-                    flavorTextOf("skeleton", 3)
+                    this.flavorTextOf("glow", 2),
+                    this.flavorTextOf("whispers", 3),
+                    this.flavorTextOf("craftsmanship", 2),
+                    this.flavorTextOf("skeleton", 3)
             );
         } else {
             Collections.addAll(
                     choices,
-                    flavorTextOf("carvings", 2),
-                    flavorTextOf("legendary", 1),
-                    flavorTextOf("reflection", 3),
-                    flavorTextOf("ransom", 2)
+                    this.flavorTextOf("carvings", 2),
+                    this.flavorTextOf("legendary", 1),
+                    this.flavorTextOf("reflection", 3),
+                    this.flavorTextOf("ransom", 2)
             );
         }
         Collections.addAll(
                 choices,
-                flavorTextOf("prized_material", 2),
-                flavorTextOf("expense", 2),
-                flavorTextOf("gram", 3)
+                this.flavorTextOf("prized_material", 2),
+                this.flavorTextOf("expense", 2),
+                this.flavorTextOf("gram", 3)
         );
 
         int idx = random.nextInt(choices.size());
@@ -126,7 +119,7 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
 
     @Override
     public DgFlavorText getFlavorText(Random random, ItemStack stack) {
-        return generateFlavourText(random, DgItemUtil.qualityOf(stack), material);
+        return this.generateFlavourText(random, DgItemUtil.qualityOf(stack), this.material);
     }
 
     @Override
@@ -137,12 +130,12 @@ public class DgArmorItem extends Item implements FakeItem, DgArmor, DgFlavorText
     @Override
     public Text getName(ItemStack stack) {
         DgItemQuality quality = DgItemUtil.qualityOf(stack);
-        Text materialText = material == null ? new LiteralText("!! Null Material !!").formatted(Formatting.RED) : new TranslatableText(material.getTranslationKey());
+        Text materialText = this.material == null ? new LiteralText("!! Null Material !!").formatted(Formatting.RED) : new TranslatableText(this.material.getTranslationKey());
         return DgItemUtil.formatName(new TranslatableText(stack.getItem().getTranslationKey(), materialText), quality);
     }
 
     @Override
-    public Item asProxy() {
-        return material.getPlaceholderItem(slot);
+    public Item getPolymerItem(ItemStack stack, ServerPlayerEntity player) {
+        return this.material.getPlaceholderItem(this.slot);
     }
 }

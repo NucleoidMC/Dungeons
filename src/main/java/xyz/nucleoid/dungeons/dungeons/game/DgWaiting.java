@@ -3,13 +3,11 @@ package xyz.nucleoid.dungeons.dungeons.game;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.ActionResult;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.SpawnerManager;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerManager;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
-import xyz.nucleoid.map_templates.MapTemplate;
 import xyz.nucleoid.plasmid.game.*;
 import xyz.nucleoid.plasmid.game.common.GameWaitingLobby;
 import xyz.nucleoid.plasmid.game.event.*;
@@ -20,8 +18,6 @@ import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 import xyz.nucleoid.plasmid.game.player.PlayerOffer;
 import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
-
-import java.util.Optional;
 
 public class DgWaiting {
     private final ServerWorld world;

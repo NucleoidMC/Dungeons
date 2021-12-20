@@ -12,8 +12,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
-import xyz.nucleoid.dungeons.dungeons.util.item.loot.DgArmorLoot;
+import xyz.nucleoid.dungeons.dungeons.item.DgItemQuality;
+import xyz.nucleoid.dungeons.dungeons.loot.DgArmorLoot;
 
 public class GiveArmorCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -33,27 +33,8 @@ public class GiveArmorCommand {
 
     private static int give(ServerCommandSource source, ItemStack stack) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayer();
-
-        boolean playerFull = player.inventory.insertStack(stack);
-        ItemEntity itemEntity;
-        if (playerFull && stack.isEmpty()) {
-            itemEntity = player.dropItem(stack, false);
-            if (itemEntity != null) {
-                itemEntity.setDespawnImmediately();
-            }
-
-            player.world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-            player.playerScreenHandler.sendContentUpdates();
-        } else {
-            itemEntity = player.dropItem(stack, false);
-            if (itemEntity != null) {
-                itemEntity.resetPickupDelay();
-                itemEntity.setOwner(player.getUuid());
-            }
-        }
-
+        player.getInventory().offerOrDrop(stack);
         source.sendFeedback(new TranslatableText("commands.give.success.single", 1, stack.toHoverableText(), player.getDisplayName()), true);
-
         return 1;
     }
 }

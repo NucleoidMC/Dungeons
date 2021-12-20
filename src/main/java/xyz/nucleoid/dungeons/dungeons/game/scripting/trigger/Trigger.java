@@ -4,14 +4,7 @@ import xyz.nucleoid.map_templates.BlockBounds;
 
 import java.util.List;
 
-public class Trigger {
-    public final BlockBounds region;
-    public final TriggerCriterion criterion;
-    public final List<Action> actions;
-
-    public Trigger(BlockBounds region, TriggerCriterion criterion, List<Action> actions) {
-        this.region = region;
-        this.criterion = criterion;
-        this.actions = actions;
-    }
+public record Trigger(BlockBounds region,
+                      TriggerCriterion criterion,
+                      List<Action> actions) {
 }

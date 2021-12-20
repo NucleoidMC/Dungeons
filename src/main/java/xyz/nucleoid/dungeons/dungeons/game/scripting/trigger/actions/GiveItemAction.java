@@ -14,16 +14,8 @@ import xyz.nucleoid.map_templates.TemplateRegion;
 
 import java.util.List;
 
-public class GiveItemAction implements Action {
-    private final Item item;
-    private final int count;
-    private final NbtCompound customData;
-
-    private GiveItemAction(Item item, int count, NbtCompound customData) {
-        this.item = item;
-        this.count = count;
-        this.customData = customData;
-    }
+public record GiveItemAction(Item item, int count,
+                             NbtCompound customData) implements Action {
 
     public static GiveItemAction create(MapTemplate template, TemplateRegion trigger, NbtCompound data) throws ScriptTemplateInstantiationError {
         if (!data.contains("item")) {
@@ -59,7 +51,7 @@ public class GiveItemAction implements Action {
             ItemStack stack = this.item.getDefaultStack();
             stack.setNbt(this.customData);
             stack.setCount(this.count);
-            participant.entity.getInventory().offerOrDrop(stack);
+            participant.entity().getInventory().offerOrDrop(stack);
         }
     }
 }

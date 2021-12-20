@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -29,13 +28,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class GravityAction implements Action {
-    private final BlockBounds targetRegion;
-    private final @Nullable List<Block> affectedBlocks;
-    private final DropBehaviour dropBehaviour;
-    private final boolean destroyItemFrames;
-
-    private GravityAction(BlockBounds targetRegion, @Nullable List<Block> affectedBlocks, boolean destroyItemFrames, DropBehaviour dropBehaviour) {
+public record GravityAction(BlockBounds targetRegion,
+                            @Nullable List<Block> affectedBlocks,
+                            boolean destroyItemFrames,
+                            xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions.GravityAction.DropBehaviour dropBehaviour) implements Action {
+    public GravityAction(BlockBounds targetRegion, @Nullable List<Block> affectedBlocks, boolean destroyItemFrames, DropBehaviour dropBehaviour) {
         this.targetRegion = targetRegion;
         this.affectedBlocks = affectedBlocks;
         this.dropBehaviour = dropBehaviour;
@@ -53,7 +50,7 @@ public class GravityAction implements Action {
             for (int i = 0; i < list.size(); i++) {
                 Identifier id = Identifier.tryParse(list.getString(i));
 
-                if (id == null || !Registry.BLOCK.getOrEmpty(id).isPresent()) {
+                if (id == null || Registry.BLOCK.getOrEmpty(id).isEmpty()) {
                     throw new ScriptTemplateInstantiationError("Invalid block `" + list.getString(i) + "`");
                 }
 
@@ -88,7 +85,7 @@ public class GravityAction implements Action {
     @Override
     public void execute(DgActive game, List<OnlineParticipant> targets) {
         double blockFallVelocity = targets.stream()
-                .map(p -> p.entity.getVelocity().getComponentAlongAxis(Direction.Axis.Y))
+                .map(p -> p.entity().getVelocity().getComponentAlongAxis(Direction.Axis.Y))
                 .min(Comparator.comparingDouble(y -> y))
                 .orElse(0.0);
         blockFallVelocity = Math.min(0.0, blockFallVelocity);
@@ -105,16 +102,12 @@ public class GravityAction implements Action {
             fallingBlock.timeFalling = 1;
 
             switch (this.dropBehaviour) {
-                case DROP_ITEM:
-                    fallingBlock.dropItem = true;
-                    break;
-                case PLACE_BLOCK:
-                    fallingBlock.dropItem = false;
-                    break;
-                case DISAPPEAR:
+                case DROP_ITEM -> fallingBlock.dropItem = true;
+                case PLACE_BLOCK -> fallingBlock.dropItem = false;
+                case DISAPPEAR -> {
                     fallingBlock.dropItem = false;
                     fallingBlock.destroyedOnLanding = true;
-                    break;
+                }
             }
 
             fallingBlock.addVelocity(0.0, blockFallVelocity, 0.0);

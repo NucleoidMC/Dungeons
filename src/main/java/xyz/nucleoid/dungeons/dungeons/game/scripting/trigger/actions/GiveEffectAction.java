@@ -14,16 +14,8 @@ import xyz.nucleoid.map_templates.TemplateRegion;
 
 import java.util.List;
 
-public class GiveEffectAction implements Action {
-    private final StatusEffect effect;
-    private final int level;
-    private final int duration_secs;
-
-    private GiveEffectAction(StatusEffect effect, int level, int duration_secs) {
-        this.effect = effect;
-        this.level = level;
-        this.duration_secs = duration_secs;
-    }
+public record GiveEffectAction(StatusEffect effect, int level,
+                               int duration_secs) implements Action {
 
     public static GiveEffectAction create(MapTemplate template, TemplateRegion trigger, NbtCompound data) throws ScriptTemplateInstantiationError {
         if (!data.contains("effect")) {
@@ -32,7 +24,7 @@ public class GiveEffectAction implements Action {
 
         Identifier id = Identifier.tryParse(data.getString("effect"));
 
-        if (id == null || !Registry.STATUS_EFFECT.getOrEmpty(id).isPresent()) {
+        if (id == null || Registry.STATUS_EFFECT.getOrEmpty(id).isEmpty()) {
             throw new ScriptTemplateInstantiationError("Invalid effect `" + data.getString("effect") + "`");
         }
 
@@ -54,7 +46,7 @@ public class GiveEffectAction implements Action {
     @Override
     public void execute(DgActive active, List<OnlineParticipant> targets) {
         for (OnlineParticipant participant : targets) {
-            participant.entity.addStatusEffect(new StatusEffectInstance(
+            participant.entity().addStatusEffect(new StatusEffectInstance(
                     this.effect,
                     this.duration_secs * 20,
                     this.level,
