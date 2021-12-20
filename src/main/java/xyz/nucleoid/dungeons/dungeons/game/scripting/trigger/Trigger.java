@@ -1,5 +1,6 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.trigger;
-import xyz.nucleoid.plasmid.util.BlockBounds;
+
+import xyz.nucleoid.map_templates.BlockBounds;
 
 import java.util.List;
 

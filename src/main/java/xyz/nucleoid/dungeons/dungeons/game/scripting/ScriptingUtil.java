@@ -1,7 +1,7 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -9,9 +9,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import xyz.nucleoid.dungeons.dungeons.Dungeons;
-import xyz.nucleoid.plasmid.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.map.template.TemplateRegion;
-import xyz.nucleoid.plasmid.util.BlockBounds;
+import xyz.nucleoid.map_templates.BlockBounds;
+import xyz.nucleoid.map_templates.MapTemplate;
+import xyz.nucleoid.map_templates.TemplateRegion;
 
 import java.util.Random;
 
@@ -26,7 +26,7 @@ public class ScriptingUtil {
         }
     }
 
-    public static BlockBounds getTargetOrDefault(MapTemplate template, TemplateRegion region, CompoundTag data) throws ScriptTemplateInstantiationError {
+    public static BlockBounds getTargetOrDefault(MapTemplate template, TemplateRegion region, NbtCompound data) throws ScriptTemplateInstantiationError {
         if (data.contains("target_region")) {
             String marker = data.getString("target_region");
             BlockBounds target = template.getMetadata().getFirstRegionBounds(marker);
@@ -42,8 +42,8 @@ public class ScriptingUtil {
     }
 
     public static Vec3d pickRandomBottomCoord(BlockBounds bounds, Random random) {
-        BlockPos min = bounds.getMin();
-        BlockPos max = bounds.getMax();
+        BlockPos min = bounds.min();
+        BlockPos max = bounds.max();
 
         double x = MathHelper.nextDouble(random, min.getX(), max.getX());
         double z = MathHelper.nextDouble(random, min.getZ(), max.getZ());

@@ -1,6 +1,7 @@
 package xyz.nucleoid.dungeons.dungeons.item.ranged;
 
-import net.minecraft.client.util.math.Vector3f;
+import eu.pb4.polymer.api.item.PolymerItem;
+import net.minecraft.client.util.math.Vector3d;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
@@ -10,7 +11,7 @@ import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,15 +21,16 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 import xyz.nucleoid.dungeons.dungeons.entity.attribute.DgEntityAttributes;
 import xyz.nucleoid.dungeons.dungeons.item.DgItems;
 import xyz.nucleoid.dungeons.dungeons.item.base.DgRangedWeapon;
-import xyz.nucleoid.plasmid.fake.FakeItem;
 
 import java.util.List;
+import java.util.Random;
 
-public abstract class DgCrossbowItem extends CrossbowItem implements FakeItem, DgRangedWeapon {
+public abstract class DgCrossbowItem extends CrossbowItem implements PolymerItem, DgRangedWeapon {
     public DgCrossbowItem(Settings settings) {
         super(settings.maxCount(1));
     }
@@ -41,14 +43,16 @@ public abstract class DgCrossbowItem extends CrossbowItem implements FakeItem, D
         if (f >= 1.0F && !isCharged(stack) && DgCrossbowItem.dgLoadProjectiles(user, stack)) {
             setCharged(stack, true);
             SoundCategory soundCategory = user instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE;
-            world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_CROSSBOW_LOADING_END, soundCategory, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.5F + 1.0F) + 0.2F);
+            Random random = world.getRandom();
+            float pitch = 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F;
+            world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_CROSSBOW_LOADING_END, soundCategory, 1.0F, pitch);
         }
     }
 
     public static boolean dgLoadProjectiles(LivingEntity shooter, ItemStack projectile) {
         int multishot = EnchantmentHelper.getLevel(Enchantments.MULTISHOT, projectile);
         int arrowCount = multishot == 0 ? 1 : 3;
-        boolean creativeMode = shooter instanceof PlayerEntity && ((PlayerEntity) shooter).abilities.creativeMode;
+        boolean creativeMode = shooter instanceof PlayerEntity && ((PlayerEntity) shooter).getAbilities().creativeMode;
         ItemStack arrowStack = shooter.getArrowType(projectile);
         ItemStack arrowStackCopy = arrowStack.copy();
 
@@ -85,12 +89,12 @@ public abstract class DgCrossbowItem extends CrossbowItem implements FakeItem, D
                 if (isPotionArrow) {
                     itemStack2 = projectile.split(1);
                     if (projectile.isEmpty() && shooter instanceof PlayerEntity) {
-                        ((PlayerEntity) shooter).inventory.removeOne(projectile);
+                        ((PlayerEntity) shooter).getInventory().removeOne(projectile);
                     }
                 } else if (shooter instanceof ServerPlayerEntity) {
                     itemStack2 = projectile.copy();
-                    int slot = ((ServerPlayerEntity) shooter).inventory.getSlotWithStack(projectile);
-                    ((ServerPlayerEntity) shooter).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, slot, projectile));
+                    int slot = ((ServerPlayerEntity) shooter).getInventory().getSlotWithStack(projectile);
+                    ((ServerPlayerEntity) shooter).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, slot, projectile));
                 } else { // should never trigger
                     itemStack2 = projectile.copy();
                 }
@@ -131,7 +135,7 @@ public abstract class DgCrossbowItem extends CrossbowItem implements FakeItem, D
 
         for (int i = 0; i < list.size(); ++i) {
             ItemStack itemStack = (ItemStack) list.get(i);
-            boolean bl = entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.creativeMode;
+            boolean bl = entity instanceof PlayerEntity && ((PlayerEntity) entity).getAbilities().creativeMode;
             if (!itemStack.isEmpty()) {
                 if (i == 0) {
                     dgShoot(world, entity, hand, stack, itemStack, fs[i], bl, speed, divergence, 0.0F);
@@ -172,22 +176,19 @@ public abstract class DgCrossbowItem extends CrossbowItem implements FakeItem, D
             }
 
             if (shooter instanceof CrossbowUser) {
-                CrossbowUser crossbowUser = (CrossbowUser) shooter;
+                CrossbowUser crossbowUser = (CrossbowUser)((Object)shooter);
                 crossbowUser.shoot(crossbowUser.getTarget(), crossbow, projectileEntity2, simulated);
             } else {
-                Vec3d vec3d = shooter.getOppositeRotationVector(1.0F);
-                Quaternion quaternion = new Quaternion(new Vector3f(vec3d), simulated, true);
-                Vec3d vec3d2 = shooter.getRotationVec(1.0F);
-                Vector3f vector3f = new Vector3f(vec3d2);
-                vector3f.rotate(quaternion);
-                projectileEntity2.setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), speed, divergence);
+                Vec3d crossbowUser = shooter.getOppositeRotationVector(1.0f);
+                Quaternion quaternion = new Quaternion(new Vec3f(crossbowUser), simulated, true);
+                Vec3d vec3d = shooter.getRotationVec(1.0f);
+                Vec3f vec3f = new Vec3f(vec3d);
+                vec3f.rotate(quaternion);
+                projectileEntity2.setVelocity(vec3f.getX(), vec3f.getY(), vec3f.getZ(), speed, divergence);
             }
-
-            crossbow.damage(bl ? 3 : 1, shooter, (e) -> {
-                e.sendToolBreakStatus(hand);
-            });
+            crossbow.damage(bl ? 3 : 1, shooter, e -> e.sendToolBreakStatus(hand));
             world.spawnEntity(projectileEntity2);
-            world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
+            world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0f, soundPitch);
         }
     }
 
@@ -197,7 +198,7 @@ public abstract class DgCrossbowItem extends CrossbowItem implements FakeItem, D
 
         // BEGIN MODIFICATIONS
 
-        CompoundTag tag = arrow.getOrCreateTag();
+        NbtCompound tag = arrow.getOrCreateNbt();
         double damage = persistentProjectileEntity.getDamage();
 
         // Vanilla is 6.0 for full draw without critical hit by using a 2.0 damage value combined with
@@ -231,7 +232,7 @@ public abstract class DgCrossbowItem extends CrossbowItem implements FakeItem, D
     }
 
     @Override
-    public Item asProxy() {
+    public Item getPolymerItem(ItemStack stack, ServerPlayerEntity player) {
         return Items.CROSSBOW;
     }
 }

@@ -2,7 +2,7 @@ package xyz.nucleoid.dungeons.dungeons.util.item;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
@@ -29,7 +29,7 @@ public class DgWeaponItemUtil {
         // https://minecraft.gamepedia.com/Tutorials/Command_NBT_tags#Items
         // hide all, any tooltip info will be added ourselves
         byte flags = 1 + 2 + 4 + 8 + 16 + 32 + 64;
-        CompoundTag nbt = stack.getOrCreateTag();
+        NbtCompound nbt = stack.getOrCreateNbt();
         nbt.putByte("HideFlags", flags);
         if (!nbt.contains(DgItemUtil.ROLL)) {
             nbt.putDouble(DgItemUtil.ROLL, DgItemUtil.RANDOM.nextDouble());
@@ -56,15 +56,15 @@ public class DgWeaponItemUtil {
     }
 
     public static ItemStack initWeapon(ItemStack stack, DgItemQuality quality) {
-        stack.getOrCreateTag().putString(DgItemUtil.QUALITY, quality.getId());
+        stack.getOrCreateNbt().putString(DgItemUtil.QUALITY, quality.getId());
         DgItemUtil.addCustomModel(stack, DgItemUtil.idPathOf(stack.getItem()));
         finishWeaponInit(stack);
         return stack;
     }
 
     public static <M extends Enum<M> & DgMaterial> ItemStack initMaterialWeapon(ItemStack stack, M material, DgItemQuality quality) {
-        stack.getOrCreateTag().putString(DgItemUtil.QUALITY, quality.getId());
-        stack.getOrCreateTag().putString(DgItemUtil.MATERIAL, material.getId());
+        stack.getOrCreateNbt().putString(DgItemUtil.QUALITY, quality.getId());
+        stack.getOrCreateNbt().putString(DgItemUtil.MATERIAL, material.getId());
         DgItemUtil.addCustomModel(stack, material.getId(), DgItemUtil.idPathOf(stack.getItem()));
         finishWeaponInit(stack);
         return stack;

@@ -4,8 +4,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.collection.WeightedList;
+import net.minecraft.util.collection.Weighting;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 // TODO(restioson): use loot tables? how do they work?
@@ -15,11 +19,11 @@ public enum DgConsumable {
 
     public int weight;
 
-    public final static WeightedList<DgConsumable> LIST = new WeightedList<>();
+    public final static List<Weighted.Present<DgConsumable>> LIST = new ArrayList<>();
 
     static {
         for (DgConsumable value : DgConsumable.values()) {
-            LIST.add(value, value.weight);
+            LIST.add(Weighted.of(value, value.weight));
         }
     }
 
@@ -28,17 +32,13 @@ public enum DgConsumable {
     }
 
     public static DgConsumable choose(Random random) {
-        return LIST.pickRandom(random);
+        return Weighting.getRandom(random, LIST).orElseThrow().getData();
     }
 
     public ItemStack asItemStack() {
-        switch (this) {
-            case INSTANT_HEALTH:
-                return PotionUtil.setPotion(Items.POTION.getDefaultStack(), Potions.HEALING);
-            case GOLDEN_APPLE:
-                return new ItemStack(Items.GOLDEN_APPLE);
-            default:
-                return new ItemStack(Items.STICK);
-        }
+        return switch (this) {
+            case INSTANT_HEALTH -> PotionUtil.setPotion(Items.POTION.getDefaultStack(), Potions.HEALING);
+            case GOLDEN_APPLE -> new ItemStack(Items.GOLDEN_APPLE);
+        };
     }
 }

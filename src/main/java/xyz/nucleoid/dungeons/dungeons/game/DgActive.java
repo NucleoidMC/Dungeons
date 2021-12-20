@@ -7,16 +7,16 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.dungeons.dungeons.entity.enemy.DgEnemy;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.behavior.ExplodableRegion;
@@ -26,17 +26,23 @@ import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.Action;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerManager;
 import xyz.nucleoid.dungeons.dungeons.game.map.DgMap;
 import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
+import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.plasmid.game.GameOpenException;
 import xyz.nucleoid.plasmid.game.GameSpace;
+import xyz.nucleoid.plasmid.game.common.GlobalWidgets;
 import xyz.nucleoid.plasmid.game.event.*;
-import xyz.nucleoid.plasmid.game.player.JoinResult;
-import xyz.nucleoid.plasmid.game.rule.GameRule;
-import xyz.nucleoid.plasmid.game.rule.RuleResult;
-import xyz.nucleoid.plasmid.util.BlockBounds;
+import xyz.nucleoid.plasmid.game.player.PlayerOffer;
+import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
+import xyz.nucleoid.plasmid.game.rule.GameRuleType;
+import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 import xyz.nucleoid.plasmid.util.PlayerRef;
+import xyz.nucleoid.stimuli.event.block.BlockUseEvent;
+import xyz.nucleoid.stimuli.event.player.PlayerAttackEntityEvent;
+import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
+import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 import xyz.nucleoid.plasmid.util.Scheduler;
-import xyz.nucleoid.plasmid.widget.GlobalWidgets;
-import xyz.nucleoid.plasmid.widget.SidebarWidget;
+import xyz.nucleoid.stimuli.event.projectile.ProjectileHitEvent;
+import xyz.nucleoid.stimuli.event.world.ExplosionDetonatedEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +53,9 @@ public class DgActive {
     private final DgConfig config;
     private final DgMap map;
     public final GameSpace gameSpace;
+    public final ServerWorld world;
+
+    // TODO replace with ServerPlayerEntity if players are removed upon leaving
     public final Object2ObjectMap<PlayerRef, DgPlayer> participants;
     private final DgSpawnLogic spawnLogic;
     private final TriggerManager triggerManager;
@@ -54,6 +63,7 @@ public class DgActive {
     public final QuestManager questManager;
 
     private DgActive(
+            ServerWorld world,
             GameSpace gameSpace,
             DgMap map,
             TriggerManager triggerManager,
@@ -65,7 +75,8 @@ public class DgActive {
         this.gameSpace = gameSpace;
         this.config = config;
         this.map = map;
-        this.spawnLogic = new DgSpawnLogic(gameSpace, map);
+        this.spawnLogic = new DgSpawnLogic(world, map);
+        this.world = world;
         this.participants = new Object2ObjectOpenHashMap<>();
         this.questManager = new QuestManager();
         this.triggerManager = triggerManager;
@@ -74,10 +85,10 @@ public class DgActive {
         List<OnlineParticipant> online = new ArrayList<>();
         for (PlayerRef player : participants) {
             this.participants.put(player, new DgPlayer());
-            player.ifOnline(this.gameSpace.getWorld(), p -> online.add(new OnlineParticipant(this.participant(p), p)));
+            player.ifOnline(this.world, p -> online.add(new OnlineParticipant(this.participant(p), p)));
         }
 
-        spawnerManager.spawnAll(gameSpace.getWorld());
+        spawnerManager.spawnAll(this.world);
 
         for (Action action : this.map.spawnActions) {
             action.execute(this, online);
@@ -85,45 +96,45 @@ public class DgActive {
     }
 
     public static void open(
-            GameSpace gameWorld,
+            ServerWorld world,
+            GameSpace gameSpace,
             DgMap map,
             TriggerManager triggerManager,
             SpawnerManager spawnerManager,
             DgConfig config
     ) throws GameOpenException {
-        Set<PlayerRef> participants = gameWorld.getPlayers().stream()
+        Set<PlayerRef> participants = gameSpace.getPlayers().stream()
                 .map(PlayerRef::of)
                 .collect(Collectors.toSet());
 
-        gameWorld.openGame(builder -> {
-            GlobalWidgets widgets = new GlobalWidgets(builder);
-            DgActive active = new DgActive(gameWorld, map, triggerManager, spawnerManager, config, participants, widgets);
-            builder.setRule(GameRule.CRAFTING, RuleResult.DENY);
-            builder.setRule(GameRule.PORTALS, RuleResult.DENY);
-            builder.setRule(GameRule.PVP, RuleResult.DENY);
-            builder.setRule(GameRule.HUNGER, RuleResult.DENY);
-            builder.setRule(GameRule.FALL_DAMAGE, RuleResult.ALLOW);
-            builder.setRule(GameRule.INTERACTION, RuleResult.ALLOW);
-            builder.setRule(GameRule.BLOCK_DROPS, RuleResult.DENY);
-            builder.setRule(GameRule.THROW_ITEMS, RuleResult.DENY);
-            builder.setRule(GameRule.UNSTABLE_TNT, RuleResult.ALLOW);
+        gameSpace.setActivity(activity -> {
+            GlobalWidgets widgets = GlobalWidgets.addTo(activity);
+            DgActive active = new DgActive(world, gameSpace, map, triggerManager, spawnerManager, config, participants, widgets);
 
-            builder.on(GameOpenListener.EVENT, active::onOpen);
-            builder.on(GameCloseListener.EVENT, active::onClose);
+            activity.deny(GameRuleType.CRAFTING);
+            activity.deny(GameRuleType.PORTALS);
+            activity.deny(GameRuleType.PVP);
+            activity.deny(GameRuleType.HUNGER);
+            activity.deny(GameRuleType.FALL_DAMAGE);
+            activity.deny(GameRuleType.INTERACTION);
+            activity.deny(GameRuleType.BLOCK_DROPS);
+            activity.deny(GameRuleType.THROW_ITEMS);
+            activity.deny(GameRuleType.UNSTABLE_TNT);
 
-            builder.on(OfferPlayerListener.EVENT, player -> JoinResult.ok());
-            builder.on(PlayerAddListener.EVENT, active::addPlayer);
-            builder.on(PlayerRemoveListener.EVENT, active::removePlayer);
+            activity.listen(GameActivityEvents.ENABLE, active::onOpen);
+            activity.listen(GameActivityEvents.DISABLE, active::onClose);
 
-            builder.on(GameTickListener.EVENT, active::tick);
+            activity.listen(GamePlayerEvents.OFFER, active::acceptPlayer);
+            activity.listen(GamePlayerEvents.REMOVE, active::removePlayer);
 
-            builder.on(PlayerDamageListener.EVENT, active::onPlayerDamage);
-            builder.on(PlayerDeathListener.EVENT, active::onPlayerDeath);
-            builder.on(ExplosionListener.EVENT, active::onExplosion);
+            activity.listen(GameActivityEvents.TICK, active::tick);
 
-            builder.on(AttackEntityListener.EVENT, active::onAttackEntity);
-            builder.on(EntityHitListener.EVENT, active::onHitEntity);
-            builder.on(UseBlockListener.EVENT, active::onUseBlock);
+            activity.listen(PlayerDamageEvent.EVENT, active::onPlayerDamage);
+            activity.listen(PlayerDeathEvent.EVENT, active::onPlayerDeath);
+            activity.listen(ExplosionDetonatedEvent.EVENT, active::onExplosion);
+            activity.listen(PlayerAttackEntityEvent.EVENT, active::onAttackEntity);
+            activity.listen(ProjectileHitEvent.ENTITY, active::onProjectileHitEntity); // TODO
+            activity.listen(BlockUseEvent.EVENT, active::onUseBlock);
         });
     }
 
@@ -142,8 +153,7 @@ public class DgActive {
             return ActionResult.FAIL;
         }
 
-        ServerWorld world = this.gameSpace.getWorld();
-        Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
+        Block block = this.world.getBlockState(hitResult.getBlockPos()).getBlock();
 
         if (block == Blocks.LEVER) {
             return ActionResult.PASS;
@@ -152,7 +162,7 @@ public class DgActive {
         }
     }
 
-    private ActionResult onHitEntity(ProjectileEntity projectileEntity, EntityHitResult hitResult) {
+    private ActionResult onProjectileHitEntity(ProjectileEntity projectileEntity, EntityHitResult hitResult) {
         if (hitResult.getEntity() instanceof DgEnemy) {
             return ActionResult.PASS;
         } else {
@@ -170,18 +180,19 @@ public class DgActive {
 
 
     private void onOpen() {
-        ServerWorld world = this.gameSpace.getWorld();
+        this.participants.keySet().removeIf(ref -> !ref.isOnline(this.world));
         for (PlayerRef ref : this.participants.keySet()) {
-            ref.ifOnline(world, this::spawnParticipant);
+            ref.ifOnline(this.world, player -> {
+                this.spawnLogic.resetPlayer(player, GameMode.ADVENTURE);
+                this.spawnLogic.spawnPlayer(player);
+            });
         }
     }
 
     private void onClose() {}
 
-    private void addPlayer(ServerPlayerEntity player) {
-        if (!this.participants.containsKey(PlayerRef.of(player))) {
-            this.spawnSpectator(player);
-        }
+    private PlayerOfferResult acceptPlayer(PlayerOffer offer) {
+        return this.spawnLogic.acceptPlayer(offer, GameMode.SPECTATOR);
     }
 
     private void removePlayer(ServerPlayerEntity player) {
@@ -217,11 +228,10 @@ public class DgActive {
     }
 
     // TODO(antibody)
-    private void onExplosion(List<BlockPos> blockPos) {
-        ServerWorld world = this.gameSpace.getWorld();
-        blockPos.removeIf(pos -> {
+    private void onExplosion(Explosion explosion, boolean particles) {
+        explosion.getAffectedBlocks().removeIf(pos -> {
             for (ExplodableRegion region: this.map.explodableRegions) {
-                if (region.region.contains(pos) && region.isExplodable(world.getBlockState(pos).getBlock())) {
+                if (region.region().contains(pos) && region.isExplodable(this.world.getBlockState(pos).getBlock())) {
                     return false;
                 }
             }
@@ -233,16 +243,12 @@ public class DgActive {
     private void spawnParticipant(ServerPlayerEntity player) {
         this.spawnLogic.resetPlayer(player, GameMode.ADVENTURE);
         this.spawnLogic.spawnPlayer(player);
-    }
-
-    private void spawnSpectator(ServerPlayerEntity player) {
-        this.spawnLogic.resetPlayer(player, GameMode.SPECTATOR);
-        this.spawnLogic.spawnPlayer(player);
+        player.getInventory().insertStack(ItemStackBuilder.of(Items.ARROW).setCount(1).build());
     }
 
     private void tick() {
         // arbitrary interval to avoid ticking too often for performance
-        if (this.gameSpace.getWorld().getTime() % 5 == 0) {
+        if (this.world.getTime() % 5 == 0) {
             this.triggerManager.tick(this);
             this.questManager.tick(this);
         }

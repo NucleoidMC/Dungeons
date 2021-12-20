@@ -1,4 +1,6 @@
 {
+  "game.dungeons.tutorial": "Dungeons: Tutorial",
+
   "item.dungeons.shortbow": "%s Shortbow",
   "item.dungeons.longbow": "%s Longbow",
   "item.dungeons.crossbow": "%s Crossbow",

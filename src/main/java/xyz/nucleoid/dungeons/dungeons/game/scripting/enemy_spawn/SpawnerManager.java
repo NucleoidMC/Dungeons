@@ -2,8 +2,8 @@ package xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn;
 
 import com.mojang.serialization.Lifecycle;
 import net.fabricmc.fabric.api.util.NbtType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -11,8 +11,8 @@ import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptingUtil;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.spawners.BasicZombieSpawner;
-import xyz.nucleoid.plasmid.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.map.template.TemplateRegion;
+import xyz.nucleoid.map_templates.MapTemplate;
+import xyz.nucleoid.map_templates.TemplateRegion;
 import xyz.nucleoid.plasmid.registry.TinyRegistry;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SpawnerManager {
-    public static final TinyRegistry<EnemySpawnerBuilder> SPAWNER_BUILDERS = new TinyRegistry<>(Lifecycle.stable());
+    public static final TinyRegistry<EnemySpawnerBuilder> SPAWNER_BUILDERS = TinyRegistry.create();
     private @Nullable List<EnemySpawner> spawnersRunAtStart = new ArrayList<>();
 
     static {
@@ -36,11 +36,11 @@ public class SpawnerManager {
         assert this.spawnersRunAtStart != null;
 
         for (TemplateRegion region : template.getMetadata().getRegions("enemy_spawn").collect(Collectors.toList())) {
-            CompoundTag data = region.getData();
+            NbtCompound data = region.getData();
             if (data.contains("spawn")) {
-                ListTag actionList = data.getList("spawn", NbtType.COMPOUND);
+                NbtList actionList = data.getList("spawn", NbtType.COMPOUND);
                 for (int i = 0; i < actionList.size(); i++) {
-                    CompoundTag tag = actionList.getCompound(i);
+                    NbtCompound tag = actionList.getCompound(i);
                     Identifier id = ScriptingUtil.parseDungeonsDefaultId(tag.getString("type"));
 
                     if (!SPAWNER_BUILDERS.containsKey(id)) {

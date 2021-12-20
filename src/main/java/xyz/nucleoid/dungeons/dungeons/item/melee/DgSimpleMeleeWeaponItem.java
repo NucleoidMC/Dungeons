@@ -16,16 +16,16 @@ public class DgSimpleMeleeWeaponItem extends DgMeleeWeaponItem {
 
     @Override
     public void registerModels() {
-        DgItemModelRegistry.register(this, asProxy(), DgItemUtil.idPathOf(this));
+        DgItemModelRegistry.register(this, this.proxy, DgItemUtil.idPathOf(this));
     }
 
     @Override
     public double getMeleeDamage(ItemStack stack) {
-        return attackDamage;
+        return this.attackDamage;
     }
 
     @Override
     public double getSwingSpeed(ItemStack stack) {
-        return attackSpeed;
+        return this.attackSpeed;
     }
 }

@@ -1,8 +1,9 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.quest;
 
+import eu.pb4.sidebars.api.lines.LineBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import xyz.nucleoid.plasmid.widget.SidebarWidget;
+import xyz.nucleoid.plasmid.game.common.widget.SidebarWidget;
 
 import java.util.Map;
 
@@ -32,11 +33,11 @@ public class Quest {
         this.dirty = true;
     }
 
-    public void renderToSidebar(SidebarWidget.Content content) {
+    public void renderToSidebar(LineBuilder builder) {
         // TODO(quests): ordered objectives? are they needed?
         this.currentObjectives.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .map(Map.Entry::getValue)
-                .forEach(obj -> obj.format(this, content));
+                .forEach(obj -> builder.add(obj.format(this)));
     }
 }

@@ -1,15 +1,15 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.spawners;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import xyz.nucleoid.dungeons.dungeons.entity.enemy.DgZombieEntity;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptingUtil;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.enemy_spawn.EnemySpawner;
-import xyz.nucleoid.plasmid.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.map.template.TemplateRegion;
-import xyz.nucleoid.plasmid.util.BlockBounds;
+import xyz.nucleoid.map_templates.BlockBounds;
+import xyz.nucleoid.map_templates.MapTemplate;
+import xyz.nucleoid.map_templates.TemplateRegion;
 
 public class BasicZombieSpawner implements EnemySpawner {
     private final int count;
@@ -22,7 +22,7 @@ public class BasicZombieSpawner implements EnemySpawner {
         this.targetRegion = targetRegion;
     }
 
-    public static EnemySpawner create(MapTemplate template, TemplateRegion trigger, CompoundTag data, double dungeonLevel) throws ScriptTemplateInstantiationError {
+    public static EnemySpawner create(MapTemplate template, TemplateRegion trigger, NbtCompound data, double dungeonLevel) throws ScriptTemplateInstantiationError {
         int count = 1;
         if (data.contains("count")) {
             count = data.getInt("count");

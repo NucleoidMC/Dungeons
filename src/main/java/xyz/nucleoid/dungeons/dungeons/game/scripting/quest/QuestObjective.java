@@ -1,7 +1,7 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.quest;
 
-import xyz.nucleoid.plasmid.widget.SidebarWidget;
+import net.minecraft.text.Text;
 
 public interface QuestObjective {
-    void format(Quest quest, SidebarWidget.Content content);
+    Text format(Quest quest);
 }

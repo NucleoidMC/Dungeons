@@ -1,6 +1,6 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -10,8 +10,8 @@ import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptingUtil;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.quest.*;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.Action;
 import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
-import xyz.nucleoid.plasmid.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.map.template.TemplateRegion;
+import xyz.nucleoid.map_templates.MapTemplate;
+import xyz.nucleoid.map_templates.TemplateRegion;
 
 import java.util.List;
 
@@ -24,12 +24,12 @@ public class AdvanceObjectiveAction implements Action {
         this.objectiveId = objectiveId;
     }
 
-    public static AdvanceObjectiveAction create(MapTemplate template, TemplateRegion trigger, CompoundTag data) throws ScriptTemplateInstantiationError {
+    public static AdvanceObjectiveAction create(MapTemplate template, TemplateRegion trigger, NbtCompound data) throws ScriptTemplateInstantiationError {
         if (!data.contains("objective")) {
             throw new ScriptTemplateInstantiationError("Advance objective action requires `objective`");
         }
 
-        CompoundTag objectiveData = data.getCompound("objective");
+        NbtCompound objectiveData = data.getCompound("objective");
 
         String typeStr = "simple";
         if (objectiveData.contains("type")) {

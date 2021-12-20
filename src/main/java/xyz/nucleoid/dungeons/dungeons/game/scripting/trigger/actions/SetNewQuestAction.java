@@ -1,6 +1,6 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.actions;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import xyz.nucleoid.dungeons.dungeons.game.DgActive;
@@ -8,8 +8,8 @@ import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiation
 import xyz.nucleoid.dungeons.dungeons.game.scripting.quest.Quest;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.Action;
 import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
-import xyz.nucleoid.plasmid.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.map.template.TemplateRegion;
+import xyz.nucleoid.map_templates.MapTemplate;
+import xyz.nucleoid.map_templates.TemplateRegion;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class SetNewQuestAction implements Action {
         this.id = id;
     }
 
-    public static SetNewQuestAction create(MapTemplate template, TemplateRegion trigger, CompoundTag data) throws ScriptTemplateInstantiationError {
+    public static SetNewQuestAction create(MapTemplate template, TemplateRegion trigger, NbtCompound data) throws ScriptTemplateInstantiationError {
         if (!data.contains("id")) {
             throw new ScriptTemplateInstantiationError("Set new quest action requires `id`");
         }

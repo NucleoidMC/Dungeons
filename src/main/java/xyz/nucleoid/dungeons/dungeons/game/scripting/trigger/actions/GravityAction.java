@@ -4,11 +4,12 @@ import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -20,9 +21,9 @@ import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptingUtil;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.Action;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
 import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
-import xyz.nucleoid.plasmid.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.map.template.TemplateRegion;
-import xyz.nucleoid.plasmid.util.BlockBounds;
+import xyz.nucleoid.map_templates.BlockBounds;
+import xyz.nucleoid.map_templates.MapTemplate;
+import xyz.nucleoid.map_templates.TemplateRegion;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -41,13 +42,13 @@ public class GravityAction implements Action {
         this.destroyItemFrames = destroyItemFrames;
     }
 
-    public static GravityAction create(MapTemplate template, TemplateRegion trigger, CompoundTag data) throws ScriptTemplateInstantiationError {
+    public static GravityAction create(MapTemplate template, TemplateRegion trigger, NbtCompound data) throws ScriptTemplateInstantiationError {
         BlockBounds target = ScriptingUtil.getTargetOrDefault(template, trigger, data);
 
         List<Block> affectedBlocks = null;
         if (data.contains("affected_blocks")) {
             affectedBlocks = new ArrayList<>();
-            ListTag list = data.getList("affected_blocks", NbtType.STRING);
+            NbtList list = data.getList("affected_blocks", NbtType.STRING);
 
             for (int i = 0; i < list.size(); i++) {
                 Identifier id = Identifier.tryParse(list.getString(i));
@@ -92,7 +93,7 @@ public class GravityAction implements Action {
                 .orElse(0.0);
         blockFallVelocity = Math.min(0.0, blockFallVelocity);
 
-        ServerWorld world = game.gameSpace.getWorld();
+        ServerWorld world = game.world;
         for (BlockPos pos : this.targetRegion) {
             BlockState state = world.getBlockState(pos);
 
@@ -122,8 +123,8 @@ public class GravityAction implements Action {
         }
 
         if (this.destroyItemFrames) {
-            for (ItemFrameEntity entity : world.getEntitiesByType(EntityType.ITEM_FRAME, this.targetRegion.toBox(), p -> true)) {
-                entity.remove();
+            for (ItemFrameEntity entity : world.getEntitiesByType(EntityType.ITEM_FRAME, this.targetRegion.asBox(), p -> true)) {
+                entity.kill(); // TODO?
             }
         }
     }

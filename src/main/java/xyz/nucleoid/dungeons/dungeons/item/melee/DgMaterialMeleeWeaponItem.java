@@ -27,38 +27,38 @@ public class DgMaterialMeleeWeaponItem<M extends Enum<M> & DgWeaponMaterial> ext
 
     @Override
     public Text getName(ItemStack stack) {
-        return DgItemUtil.nameOf(stack, materialComponent);
+        return DgItemUtil.nameOf(stack, this.materialComponent);
     }
 
     @Override
     public ItemStack createStack(M material, DgItemQuality quality) {
-        return DgWeaponItemUtil.initMeleeMaterialWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), material, quality, baseMeleeDamage, baseSwingSpeed);
+        return DgWeaponItemUtil.initMeleeMaterialWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), material, quality, this.baseMeleeDamage, this.baseSwingSpeed);
     }
 
     @Override
     public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
-        DgItemUtil.appendMaterialStacks(group, stacks, materialComponent, this::createStack);
+        DgItemUtil.appendMaterialStacks(group, stacks, this.materialComponent, this::createStack);
     }
 
     @Override
     public DgMaterialComponent<M> getMaterialComponent() {
-        return materialComponent;
+        return this.materialComponent;
     }
 
     @Override
     public void registerModels() {
-        for (M material : materialComponent.getMaterials()) {
-            DgItemModelRegistry.register(this, asProxy(), material.getId(), Registry.ITEM.getId(this).getPath());
+        for (M material : this.materialComponent.getMaterials()) {
+            DgItemModelRegistry.register(this, this.proxy, material.getId(), Registry.ITEM.getId(this).getPath());
         }
     }
 
     @Override
     public double getMeleeDamage(ItemStack stack) {
-        return DgWeaponItemUtil.getDamage(stack, baseMeleeDamage, materialComponent);
+        return DgWeaponItemUtil.getDamage(stack, this.baseMeleeDamage, this.materialComponent);
     }
 
     @Override
     public double getSwingSpeed(ItemStack stack) {
-        return baseSwingSpeed;
+        return this.baseSwingSpeed;
     }
 }

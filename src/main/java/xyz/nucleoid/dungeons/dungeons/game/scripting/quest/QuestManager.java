@@ -12,15 +12,15 @@ import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.dungeons.dungeons.game.DgActive;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.quest.objectives.SimpleObjective;
+import xyz.nucleoid.plasmid.game.common.widget.SidebarWidget;
 import xyz.nucleoid.plasmid.registry.TinyRegistry;
 import xyz.nucleoid.plasmid.util.PlayerRef;
-import xyz.nucleoid.plasmid.widget.SidebarWidget;
 
 import java.util.Map;
 import java.util.Objects;
 
 public class QuestManager {
-    public static final TinyRegistry<QuestObjectiveBuilder> OBJECTIVE_BUILDERS = new TinyRegistry<>(Lifecycle.stable());
+    public static final TinyRegistry<QuestObjectiveBuilder> OBJECTIVE_BUILDERS = TinyRegistry.create();
     private @Nullable Quest quest;
     private @Nullable SidebarWidget sidebar;
     // Whether the current quest has changed and must be rendered
@@ -42,7 +42,7 @@ public class QuestManager {
                 this.sidebar = sidebar;
 
                 for (PlayerRef player : active.participants.keySet()) {
-                    player.ifOnline(active.gameSpace.getWorld(), sidebar::addPlayer);
+                    player.ifOnline(active.world, sidebar::addPlayer);
                 }
             }
 

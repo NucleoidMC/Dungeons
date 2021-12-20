@@ -1,7 +1,7 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.criteria;
 
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.dungeons.dungeons.game.DgActive;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.TriggerCriterion;
@@ -15,7 +15,7 @@ import java.util.List;
 public class OncePerPlayer implements TriggerCriterion {
     private final HashSet<PlayerRef> hasRun = new HashSet<>();
 
-    public static OncePerPlayer create(@Nullable CompoundTag data) {
+    public static OncePerPlayer create(@Nullable NbtCompound data) {
         return new OncePerPlayer();
     }
 

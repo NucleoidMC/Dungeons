@@ -56,7 +56,7 @@ public class GiveWeaponCommand {
     private static int give(ServerCommandSource source, ItemStack stack) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayer();
 
-        boolean bl = player.inventory.insertStack(stack);
+        boolean bl = player.getInventory().insertStack(stack);
         ItemEntity itemEntity;
         if (bl && stack.isEmpty()) {
             itemEntity = player.dropItem(stack, false);

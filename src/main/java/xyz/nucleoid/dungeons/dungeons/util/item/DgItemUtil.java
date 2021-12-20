@@ -3,9 +3,9 @@ package xyz.nucleoid.dungeons.dungeons.util.item;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -36,15 +36,15 @@ public class DgItemUtil {
     }
 
     public static DgItemQuality qualityOf(ItemStack stack) {
-        return DgItemQuality.fromId(stack.getOrCreateTag().getString(QUALITY));
+        return DgItemQuality.fromId(stack.getOrCreateNbt().getString(QUALITY));
     }
 
     public static <M extends Enum<M> & DgMaterial> M materialOf(ItemStack stack, DgMaterialComponent<M> materialComponent) {
-        return materialComponent.getMaterial(stack.getOrCreateTag().getString(MATERIAL));
+        return materialComponent.getMaterial(stack.getOrCreateNbt().getString(MATERIAL));
     }
 
     public static double rollOf(ItemStack stack) {
-        return stack.getOrCreateTag().getDouble(ROLL);
+        return stack.getOrCreateNbt().getDouble(ROLL);
     }
 
     public static <M extends Enum<M> & DgMaterial> Text nameOf(ItemStack stack, DgMaterialComponent<M> materialComponent) {
@@ -65,20 +65,20 @@ public class DgItemUtil {
     }
 
     public static void addLore(ItemStack stack, Text text) {
-        CompoundTag display = stack.getOrCreateSubTag("display");
-        ListTag loreList;
+        NbtCompound display = stack.getOrCreateSubNbt("display");
+        NbtList loreList;
         if (display.contains("Lore", 9)) {
             loreList = display.getList("Lore", 8);
         } else {
-            loreList = new ListTag();
+            loreList = new NbtList();
             display.put("Lore", loreList);
         }
 
-        loreList.add(StringTag.of(Text.Serializer.toJson(text)));
+        loreList.add(NbtString.of(Text.Serializer.toJson(text)));
     }
 
     public static void addCustomModel(ItemStack stack, String... modifiers) {
-        stack.getOrCreateTag().putInt("CustomModelData", DgItemModelRegistry.getId(modifiers));
+        stack.getOrCreateNbt().putInt("CustomModelData", DgItemModelRegistry.getId(modifiers));
     }
 
     public static <M extends Enum<M> & DgMaterial> void appendMaterialStacks(ItemGroup group, DefaultedList<ItemStack> stacks, DgMaterialComponent<M> materialComponent, BiFunction<M, DgItemQuality, ItemStack> stackFactory) {

@@ -2,14 +2,14 @@ package xyz.nucleoid.dungeons.dungeons.game.map;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.block.Block;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.ScriptTemplateInstantiationError;
-import xyz.nucleoid.plasmid.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.map.template.TemplateRegion;
-import xyz.nucleoid.plasmid.util.BlockBounds;
+import xyz.nucleoid.map_templates.BlockBounds;
+import xyz.nucleoid.map_templates.MapTemplate;
+import xyz.nucleoid.map_templates.TemplateRegion;
 
 import java.util.Map;
 import java.util.Optional;
@@ -24,7 +24,7 @@ public class BlockReplacementRegion {
     }
 
     public static BlockReplacementRegion parse(TemplateRegion region) throws ScriptTemplateInstantiationError {
-        CompoundTag data = region.getData();
+        NbtCompound data = region.getData();
         BlockReplacementRegion blockReplacementRegion = new BlockReplacementRegion(region.getBounds(), new Object2ObjectOpenHashMap<>());
 
         for (String key : data.getKeys()) {
@@ -34,11 +34,11 @@ public class BlockReplacementRegion {
             Optional<Block> from = Registry.BLOCK.getOrEmpty(fromId);
             Optional<Block> to = Registry.BLOCK.getOrEmpty(toId);
 
-            if (!from.isPresent()) {
+            if (from.isEmpty()) {
                 throw new ScriptTemplateInstantiationError("Invalid block id to replace from: `" + fromId +"`");
             }
 
-            if (!to.isPresent()) {
+            if (to.isEmpty()) {
                 throw new ScriptTemplateInstantiationError("Invalid block id to replace to: `" + toId +"`");
             }
 

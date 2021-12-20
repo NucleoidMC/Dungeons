@@ -2,8 +2,8 @@ package xyz.nucleoid.dungeons.dungeons.game.scripting.trigger;
 
 import com.mojang.serialization.Lifecycle;
 import net.fabricmc.fabric.api.util.NbtType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -18,8 +18,8 @@ import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.criteria.OnceTarget
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.criteria.OncePerPlayer;
 import xyz.nucleoid.dungeons.dungeons.game.scripting.trigger.criteria.OnceTargetsTriggerer;
 import xyz.nucleoid.dungeons.dungeons.util.OnlineParticipant;
-import xyz.nucleoid.plasmid.map.template.MapTemplate;
-import xyz.nucleoid.plasmid.map.template.TemplateRegion;
+import xyz.nucleoid.map_templates.MapTemplate;
+import xyz.nucleoid.map_templates.TemplateRegion;
 import xyz.nucleoid.plasmid.registry.TinyRegistry;
 import xyz.nucleoid.plasmid.util.PlayerRef;
 
@@ -27,8 +27,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class TriggerManager {
-    public static final TinyRegistry<ActionBuilder> ACTION_BUILDERS = new TinyRegistry<>(Lifecycle.stable());
-    public static final TinyRegistry<TriggerCriterionBuilder> TRIGGER_CRITERION_BUILDERS = new TinyRegistry<>(Lifecycle.stable());
+    public static final TinyRegistry<ActionBuilder> ACTION_BUILDERS = TinyRegistry.create();
+    public static final TinyRegistry<TriggerCriterionBuilder> TRIGGER_CRITERION_BUILDERS = TinyRegistry.create();
 
     public final List<Trigger> triggers = new LinkedList<>();
 
@@ -38,7 +38,6 @@ public class TriggerManager {
         registerAction("give", GiveItemAction::create);
         registerAction("set_quest", SetNewQuestAction::create);
         registerAction("advance_objective", AdvanceObjectiveAction::create);
-        registerAction("dialog_track", DialogTrackAction::create);
 
         registerCriterion("once_targets_all", OnceTargetsAll::create);
         registerCriterion("once_targets_triggerer", OnceTargetsAll::create);
@@ -55,7 +54,7 @@ public class TriggerManager {
 
     public void parseAll(MapTemplate template) throws ScriptTemplateInstantiationError {
         for (TemplateRegion region : template.getMetadata().getRegions("trigger").collect(Collectors.toList())) {
-            CompoundTag data = region.getData();
+            NbtCompound data = region.getData();
                 if (data.contains("actions")) {
                 this.triggers.add(TriggerManager.parse(template, region));
             }
@@ -63,12 +62,12 @@ public class TriggerManager {
     }
 
     public static Trigger parse(MapTemplate template, TemplateRegion region) throws ScriptTemplateInstantiationError {
-        CompoundTag data = region.getData();
+        NbtCompound data = region.getData();
         List<Action> actions = TriggerManager.parseActions(template, region);
 
         TriggerCriterion criterion = new OnceTargetsTriggerer();
         Identifier id = null;
-        CompoundTag criterionData = null;
+        NbtCompound criterionData = null;
 
         if (data.contains("criterion", NbtType.STRING)) {
             id = ScriptingUtil.parseDungeonsDefaultId(data.getString("criterion"));
@@ -96,12 +95,12 @@ public class TriggerManager {
     }
 
     public static List<Action> parseActions(MapTemplate template, TemplateRegion region) throws ScriptTemplateInstantiationError {
-        CompoundTag data = region.getData();
-        ListTag actionList = data.getList("actions", NbtType.COMPOUND);
+        NbtCompound data = region.getData();
+        NbtList actionList = data.getList("actions", NbtType.COMPOUND);
 
         List<Action> actions = new ArrayList<>();
         for (int i = 0; i < actionList.size(); i++) {
-            CompoundTag tag = actionList.getCompound(i);
+            NbtCompound tag = actionList.getCompound(i);
             Identifier id = ScriptingUtil.parseDungeonsDefaultId(tag.getString("type"));
 
             if (!ACTION_BUILDERS.containsKey(id)) {
@@ -116,7 +115,7 @@ public class TriggerManager {
     }
 
     public void tick(DgActive active) {
-        ServerWorld world = active.gameSpace.getWorld();
+        ServerWorld world = active.world;
 
         this.triggers.removeIf(trigger -> {
             List<OnlineParticipant> inside = new ArrayList<>();
