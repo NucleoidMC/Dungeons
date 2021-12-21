@@ -61,7 +61,7 @@ public class DgActive {
             GameSpace gameSpace,
             DgMap map,
             TriggerManager triggerManager,
-            SpawnerManager spawnerManager,
+            SpawnerManager spawnerManager,d
             DgConfig config,
             Set<PlayerRef> participants,
             GlobalWidgets widgets
