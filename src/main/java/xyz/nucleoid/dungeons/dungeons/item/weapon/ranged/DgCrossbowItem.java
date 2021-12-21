@@ -32,13 +32,12 @@ public abstract class DgCrossbowItem extends CrossbowItem implements PolymerItem
     public DgCrossbowItem(Settings settings) {
         super(settings.maxCount(1));
     }
-    // arrow removal code removed
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         int i = this.getMaxUseTime(stack) - remainingUseTicks;
         float f = CrossbowItem.getPullProgress(i, stack);
-        if (f >= 1.0F && !isCharged(stack) && DgCrossbowItem.dgLoadProjectiles(user, stack)) {
+        if (f >= 1.0F && !isCharged(stack) && DgCrossbowItem.dgLoadProjectiles(user, stack)) { // use dgLoadProjectiles
             setCharged(stack, true);
             SoundCategory soundCategory = user instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE;
             Random random = world.getRandom();
@@ -64,7 +63,7 @@ public abstract class DgCrossbowItem extends CrossbowItem implements PolymerItem
                 arrowStackCopy = arrowStack.copy();
             }
 
-            if (!dgLoadProjectile(shooter, projectile, arrowStack, k > 0, creativeMode)) {
+            if (!dgLoadProjectile(shooter, projectile, arrowStack, k > 0, creativeMode)) { // use dgLoadProjectile
                 return false;
             }
         }
@@ -136,11 +135,11 @@ public abstract class DgCrossbowItem extends CrossbowItem implements PolymerItem
             boolean bl = entity instanceof PlayerEntity && ((PlayerEntity) entity).getAbilities().creativeMode;
             if (!itemStack.isEmpty()) {
                 if (i == 0) {
-                    dgShoot(world, entity, hand, stack, itemStack, fs[i], bl, speed, divergence, 0.0F);
+                    dgShoot(world, entity, hand, stack, itemStack, fs[i], bl, speed, divergence, 0.0F); // use dgShoot
                 } else if (i == 1) {
-                    dgShoot(world, entity, hand, stack, itemStack, fs[i], bl, speed, divergence, -10.0F);
+                    dgShoot(world, entity, hand, stack, itemStack, fs[i], bl, speed, divergence, -10.0F); // use dgShoot
                 } else if (i == 2) {
-                    dgShoot(world, entity, hand, stack, itemStack, fs[i], bl, speed, divergence, 10.0F);
+                    dgShoot(world, entity, hand, stack, itemStack, fs[i], bl, speed, divergence, 10.0F); // use dgShoot
                 }
             }
         }

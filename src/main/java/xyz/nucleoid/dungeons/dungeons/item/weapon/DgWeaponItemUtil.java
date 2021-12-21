@@ -33,23 +33,12 @@ public class DgWeaponItemUtil {
         }
     }
 
-    public static ItemStack initWeapon(ItemStack stack, DgItemQuality quality) {
-        stack.getOrCreateNbt().putString(DgItemUtil.QUALITY, quality.getId());
-        DgItemUtil.addCustomModel(stack, DgItemUtil.idPathOf(stack.getItem()));
-        finishWeaponInit(stack);
-        return stack;
-    }
-
     public static <M extends Enum<M> & DgMaterial> ItemStack initMaterialWeapon(ItemStack stack, M material, DgItemQuality quality) {
         stack.getOrCreateNbt().putString(DgItemUtil.QUALITY, quality.getId());
         stack.getOrCreateNbt().putString(DgItemUtil.MATERIAL, material.getId());
         DgItemUtil.addCustomModel(stack, material.getId(), DgItemUtil.idPathOf(stack.getItem()));
         finishWeaponInit(stack);
         return stack;
-    }
-
-    public static <M extends Enum<M> & DgWeaponMaterial> ItemStack initMeleeMaterialWeapon(ItemStack stack, M material, DgItemQuality quality, double baseMeleeDamage, double baseSwingSpeed) {
-        return initMaterialWeapon(stack, material, quality);
     }
 
     public static double calculateDamage(double base, double roll, double materialMultiplier, double qualityMultiplier) {

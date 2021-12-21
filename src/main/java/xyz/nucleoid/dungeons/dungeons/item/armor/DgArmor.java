@@ -27,7 +27,6 @@ public interface DgArmor extends DgAttributeProvider {
         return ImmutableSet.of(((ArmorItem)stack.getItem()).getSlotType());
     }
 
-
     default void applyArmorAttributes(ItemStack stack) {
         for (EquipmentSlot slot: this.getValidSlots(stack)) {
             UUID modifier_id = ARMOR_MODIFIERS[slot.getEntitySlotId()];
