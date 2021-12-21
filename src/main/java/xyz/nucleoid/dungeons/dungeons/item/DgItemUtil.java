@@ -1,0 +1,118 @@
+package xyz.nucleoid.dungeons.dungeons.item;
+
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.registry.Registry;
+import xyz.nucleoid.dungeons.dungeons.item.material.DgMaterial;
+import xyz.nucleoid.dungeons.dungeons.item.material.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.item.model.DgItemModelRegistry;
+import xyz.nucleoid.dungeons.dungeons.util.DgTranslationUtil;
+
+import java.util.Random;
+import java.util.function.BiFunction;
+
+public class DgItemUtil {
+    public static final String QUALITY = "dungeons:quality";
+    public static final String MATERIAL = "dungeons:material";
+    public static final String ROLL = "dungeons:roll";
+
+    public static final Random RANDOM = new Random();
+
+    public static Identifier idOf(Item item) {
+        return Registry.ITEM.getId(item);
+    }
+
+    public static String idPathOf(Item item) {
+        return idOf(item).getPath();
+    }
+
+    public static DgItemQuality qualityOf(ItemStack stack) {
+        return DgItemQuality.fromId(stack.getOrCreateNbt().getString(QUALITY));
+    }
+
+    public static <M extends Enum<M> & DgMaterial> M materialOf(ItemStack stack, DgMaterialComponent<M> materialComponent) {
+        return materialComponent.getMaterial(stack.getOrCreateNbt().getString(MATERIAL));
+    }
+
+    public static double rollOf(ItemStack stack) {
+        return stack.getOrCreateNbt().getDouble(ROLL);
+    }
+
+    public static <M extends Enum<M> & DgMaterial> Text nameOf(ItemStack stack, DgMaterialComponent<M> materialComponent) {
+        DgItemQuality quality = DgItemUtil.qualityOf(stack);
+        M material = DgItemUtil.materialOf(stack, materialComponent);
+        Text materialText = material == null ? new LiteralText("!! Null Material !!").formatted(Formatting.RED) : new TranslatableText(material.getTranslationKey());
+        return formatName(new TranslatableText(stack.getItem().getTranslationKey(), materialText), quality);
+    }
+
+    public static Text formatName(Text text, DgItemQuality quality) {
+        return text.copy().styled(style -> {
+            style = style.withItalic(false);
+            if (quality != null) {
+                style = style.withColor(quality.getTier().getRarity().formatting);
+            }
+            return style;
+        });
+    }
+
+    public static void addLore(ItemStack stack, Text text) {
+        NbtCompound display = stack.getOrCreateSubNbt("display");
+        NbtList loreList;
+        if (display.contains("Lore", 9)) {
+            loreList = display.getList("Lore", 8);
+        } else {
+            loreList = new NbtList();
+            display.put("Lore", loreList);
+        }
+
+        loreList.add(NbtString.of(Text.Serializer.toJson(text)));
+    }
+
+    public static void addCustomModel(ItemStack stack, String... modifiers) {
+        stack.getOrCreateNbt().putInt("CustomModelData", DgItemModelRegistry.getId(modifiers));
+    }
+
+    public static <M extends Enum<M> & DgMaterial> void appendMaterialStacks(ItemGroup group, DefaultedList<ItemStack> stacks, DgMaterialComponent<M> materialComponent, BiFunction<M, DgItemQuality, ItemStack> stackFactory) {
+        for (DgItemQuality quality : DgItemQuality.values()) {
+            if (group == quality.getItemGroup()) {
+                for (M material : materialComponent.getMaterials()) {
+                    if (quality.ordinal() >= material.getMinQuality().ordinal() && quality.ordinal() <= material.getMaxQuality().ordinal()) {
+                        stacks.add(stackFactory.apply(material, quality));
+                    }
+                }
+            }
+        }
+    }
+
+    public static Item finishArmorOrWeapon(ItemStack stack) {
+        Item item = stack.getItem();
+        stack.setCustomName(item.getName(stack));
+
+        byte flags = 1 + 2 + 4 + 8 + 16 + 32 + 64;
+        NbtCompound nbt = stack.getOrCreateNbt();
+        nbt.putByte("HideFlags", flags);
+        if (!nbt.contains(DgItemUtil.ROLL)) {
+            nbt.putDouble(DgItemUtil.ROLL, DgItemUtil.RANDOM.nextDouble());
+        }
+        DgItemQuality quality = DgItemUtil.qualityOf(stack);
+        Text qualityText = quality == null ? new LiteralText("!! Null Quality !!").formatted(Formatting.RED) : new TranslatableText(quality.getTranslationKey()).styled(style -> style.withItalic(false).withColor(TextColor.fromRgb(quality.getTier().getColor())));
+        DgItemUtil.addLore(stack, new TranslatableText(DgTranslationUtil.translationKeyOf("quality", "prefix")).styled(style -> style.withColor(Formatting.GRAY).withItalic(false)).append(qualityText));
+
+        if (item instanceof DgFlavorTextProvider) {
+            ((DgFlavorTextProvider) item).applyFlavorText(stack);
+        }
+
+        return item;
+    }
+}

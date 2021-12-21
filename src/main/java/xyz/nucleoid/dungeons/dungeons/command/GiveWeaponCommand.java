@@ -13,12 +13,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
-import xyz.nucleoid.dungeons.dungeons.item.DgItems;
-import xyz.nucleoid.dungeons.dungeons.item.base.DgMaterialItem;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemQuality;
-import xyz.nucleoid.dungeons.dungeons.util.item.DgItemUtil;
-import xyz.nucleoid.dungeons.dungeons.util.item.material.DgMaterialComponent;
-import xyz.nucleoid.dungeons.dungeons.util.item.loot.DgWeaponLoot;
+import xyz.nucleoid.dungeons.dungeons.item.items.DgItems;
+import xyz.nucleoid.dungeons.dungeons.item.DgMaterialItem;
+import xyz.nucleoid.dungeons.dungeons.item.DgItemQuality;
+import xyz.nucleoid.dungeons.dungeons.item.DgItemUtil;
+import xyz.nucleoid.dungeons.dungeons.item.material.DgMaterialComponent;
+import xyz.nucleoid.dungeons.dungeons.loot.DgWeaponLoot;
 
 public class GiveWeaponCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -55,27 +55,8 @@ public class GiveWeaponCommand {
 
     private static int give(ServerCommandSource source, ItemStack stack) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayer();
-
-        boolean bl = player.getInventory().insertStack(stack);
-        ItemEntity itemEntity;
-        if (bl && stack.isEmpty()) {
-            itemEntity = player.dropItem(stack, false);
-            if (itemEntity != null) {
-                itemEntity.setDespawnImmediately();
-            }
-
-            player.world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-            player.playerScreenHandler.sendContentUpdates();
-        } else {
-            itemEntity = player.dropItem(stack, false);
-            if (itemEntity != null) {
-                itemEntity.resetPickupDelay();
-                itemEntity.setOwner(player.getUuid());
-            }
-        }
-
+        player.getInventory().offerOrDrop(stack);
         source.sendFeedback(new TranslatableText("commands.give.success.single", 1, stack.toHoverableText(), player.getDisplayName()), true);
-
         return 1;
     }
 }

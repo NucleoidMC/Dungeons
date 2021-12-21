@@ -8,11 +8,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import xyz.nucleoid.dungeons.dungeons.assets.DgModelGenerator;
 import xyz.nucleoid.dungeons.dungeons.block.DgBlocks;
+import xyz.nucleoid.dungeons.dungeons.command.GiveArmorCommand;
 import xyz.nucleoid.dungeons.dungeons.entity.attribute.DgEntityAttributes;
 import xyz.nucleoid.dungeons.dungeons.game.DgConfig;
 import xyz.nucleoid.dungeons.dungeons.game.DgWaiting;
 import xyz.nucleoid.dungeons.dungeons.command.GiveWeaponCommand;
-import xyz.nucleoid.dungeons.dungeons.item.DgItems;
+import xyz.nucleoid.dungeons.dungeons.item.items.DgItems;
 import xyz.nucleoid.plasmid.game.GameType;
 
 public class Dungeons implements ModInitializer {
@@ -33,7 +34,10 @@ public class Dungeons implements ModInitializer {
         DgBlocks.register();
         DgEntityAttributes.register();
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            CommandRegistrationCallback.EVENT.register((dispatcher, b) -> GiveWeaponCommand.register(dispatcher));
+            CommandRegistrationCallback.EVENT.register((dispatcher, b) -> {
+                GiveWeaponCommand.register(dispatcher);
+                GiveArmorCommand.register(dispatcher);
+            });
             if (GENERATE_MODELS) {
                 DgModelGenerator.generateModels();
             }

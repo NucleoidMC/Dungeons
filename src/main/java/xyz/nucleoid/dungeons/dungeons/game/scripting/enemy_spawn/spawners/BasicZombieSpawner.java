@@ -11,16 +11,8 @@ import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.map_templates.MapTemplate;
 import xyz.nucleoid.map_templates.TemplateRegion;
 
-public class BasicZombieSpawner implements EnemySpawner {
-    private final int count;
-    private final double level;
-    private final BlockBounds targetRegion;
-
-    public BasicZombieSpawner(int count, double level, BlockBounds targetRegion) {
-        this.count = count;
-        this.level = level;
-        this.targetRegion = targetRegion;
-    }
+public record BasicZombieSpawner(int count, double level,
+                                 BlockBounds targetRegion) implements EnemySpawner {
 
     public static EnemySpawner create(MapTemplate template, TemplateRegion trigger, NbtCompound data, double dungeonLevel) throws ScriptTemplateInstantiationError {
         int count = 1;

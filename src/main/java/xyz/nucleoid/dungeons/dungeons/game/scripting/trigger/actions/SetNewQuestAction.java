@@ -13,12 +13,7 @@ import xyz.nucleoid.map_templates.TemplateRegion;
 
 import java.util.List;
 
-public class SetNewQuestAction implements Action {
-    private final String id;
-
-    private SetNewQuestAction(String id) {
-        this.id = id;
-    }
+public record SetNewQuestAction(String id) implements Action {
 
     public static SetNewQuestAction create(MapTemplate template, TemplateRegion trigger, NbtCompound data) throws ScriptTemplateInstantiationError {
         if (!data.contains("id")) {
@@ -34,7 +29,7 @@ public class SetNewQuestAction implements Action {
         active.questManager.setCurrentQuest(new Quest(this.id));
 
         for (OnlineParticipant participant : targets) {
-            participant.entity.playSound(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.PLAYERS, 1.0f, 1.0f);
+            participant.entity().playSound(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.PLAYERS, 1.0f, 1.0f);
         }
     }
 }

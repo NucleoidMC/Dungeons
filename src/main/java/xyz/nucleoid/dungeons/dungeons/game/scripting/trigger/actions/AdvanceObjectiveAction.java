@@ -15,14 +15,8 @@ import xyz.nucleoid.map_templates.TemplateRegion;
 
 import java.util.List;
 
-public class AdvanceObjectiveAction implements Action {
-    private final QuestObjective objective;
-    private final String objectiveId;
-
-    public AdvanceObjectiveAction(QuestObjective objective, String objectiveId) {
-        this.objective = objective;
-        this.objectiveId = objectiveId;
-    }
+public record AdvanceObjectiveAction(QuestObjective objective,
+                                     String objectiveId) implements Action {
 
     public static AdvanceObjectiveAction create(MapTemplate template, TemplateRegion trigger, NbtCompound data) throws ScriptTemplateInstantiationError {
         if (!data.contains("objective")) {
@@ -64,7 +58,7 @@ public class AdvanceObjectiveAction implements Action {
         }
 
         for (OnlineParticipant participant : targets) {
-            participant.entity.playSound(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.PLAYERS, 1.0f, 1.0f);
+            participant.entity().playSound(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.PLAYERS, 1.0f, 1.0f);
         }
     }
 }

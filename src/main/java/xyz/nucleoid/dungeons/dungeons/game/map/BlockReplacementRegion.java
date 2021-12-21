@@ -14,14 +14,8 @@ import xyz.nucleoid.map_templates.TemplateRegion;
 import java.util.Map;
 import java.util.Optional;
 
-public class BlockReplacementRegion {
-    public final BlockBounds region;
-    public final Map<Block, Block> replacements;
-
-    public BlockReplacementRegion(BlockBounds region, Map<Block, Block> replacements) {
-        this.region = region;
-        this.replacements = replacements;
-    }
+public record BlockReplacementRegion(BlockBounds region,
+                                     Map<Block, Block> replacements) {
 
     public static BlockReplacementRegion parse(TemplateRegion region) throws ScriptTemplateInstantiationError {
         NbtCompound data = region.getData();
@@ -35,11 +29,11 @@ public class BlockReplacementRegion {
             Optional<Block> to = Registry.BLOCK.getOrEmpty(toId);
 
             if (from.isEmpty()) {
-                throw new ScriptTemplateInstantiationError("Invalid block id to replace from: `" + fromId +"`");
+                throw new ScriptTemplateInstantiationError("Invalid block id to replace from: `" + fromId + "`");
             }
 
             if (to.isEmpty()) {
-                throw new ScriptTemplateInstantiationError("Invalid block id to replace to: `" + toId +"`");
+                throw new ScriptTemplateInstantiationError("Invalid block id to replace to: `" + toId + "`");
             }
 
             blockReplacementRegion.replacements.put(from.get(), to.get());

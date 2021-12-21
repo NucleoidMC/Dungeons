@@ -1,6 +1,5 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.trigger;
 
-import com.mojang.serialization.Lifecycle;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -123,7 +122,7 @@ public class TriggerManager {
             for (Map.Entry<PlayerRef, DgPlayer> entry : active.participants.entrySet()) {
                 ServerPlayerEntity player = entry.getKey().getEntity(world);
 
-                if (player == null || !trigger.region.contains(player.getBlockPos()) || player.interactionManager.getGameMode() != GameMode.ADVENTURE) {
+                if (player == null || !trigger.region().contains(player.getBlockPos()) || player.interactionManager.getGameMode() != GameMode.ADVENTURE) {
                     continue;
                 }
 
@@ -134,15 +133,15 @@ public class TriggerManager {
                 return false;
             }
 
-            TriggerCriterion.TestResult result = trigger.criterion.testForPlayers(active, inside);
+            TriggerCriterion.TestResult result = trigger.criterion().testForPlayers(active, inside);
 
-            if (!result.runsFor.isEmpty()) {
-                for (Action action : trigger.actions) {
-                    action.execute(active, result.runsFor);
+            if (!result.runsFor().isEmpty()) {
+                for (Action action : trigger.actions()) {
+                    action.execute(active, result.runsFor());
                 }
             }
 
-            return result.removeTrigger;
+            return result.removeTrigger();
         });
     }
 }

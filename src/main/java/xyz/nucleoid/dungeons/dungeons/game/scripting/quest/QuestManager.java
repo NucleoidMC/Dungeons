@@ -1,8 +1,5 @@
 package xyz.nucleoid.dungeons.dungeons.game.scripting.quest;
 
-import com.mojang.serialization.Lifecycle;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -16,7 +13,6 @@ import xyz.nucleoid.plasmid.game.common.widget.SidebarWidget;
 import xyz.nucleoid.plasmid.registry.TinyRegistry;
 import xyz.nucleoid.plasmid.util.PlayerRef;
 
-import java.util.Map;
 import java.util.Objects;
 
 public class QuestManager {
