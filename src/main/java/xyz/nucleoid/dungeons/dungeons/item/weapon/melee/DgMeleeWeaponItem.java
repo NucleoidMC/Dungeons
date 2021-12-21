@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -26,18 +27,8 @@ public abstract class DgMeleeWeaponItem extends Item implements PolymerItem, DgM
         this.proxy = proxy;
     }
 
-    public ItemStack createStack(DgItemQuality quality) {
-        return DgWeaponItemUtil.initWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), quality);
-    }
-
     @Override
-    public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
-        for (DgItemQuality quality : DgItemQuality.values()) {
-            if (group == quality.getItemGroup()) {
-                stacks.add(this.createStack(quality));
-            }
-        }
-    }
+    public abstract void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks);
 
     @Override
     public Text getName(ItemStack stack) {

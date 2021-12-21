@@ -11,32 +11,36 @@ import java.util.Random;
 
 public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
     // Light Armor
-    CLOTH("cloth", 1F, 0F, DgArmorType.LIGHT_ARMOR, DgItemQuality.BATTERED, DgItemQuality.FINE, ArmorMaterials.LEATHER, 14609387),  //#deebeb
-    IRON_THREAD("iron_thread", 2F, 0F, DgArmorType.LIGHT_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.SUPERB, ArmorMaterials.LEATHER, 13751765), //#d1d5d5
-    SILK("silk", 1.5F, 0F, DgArmorType.LIGHT_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.LEGENDARY, ArmorMaterials.LEATHER, 16448205), //#fafacd
+    CLOTH("cloth", 1F, 0F, 1, DgArmorType.LIGHT_ARMOR, DgItemQuality.BATTERED, DgItemQuality.FINE, ArmorMaterials.LEATHER, 14609387),  //#deebeb
+    IRON_THREAD("iron_thread", 2F, 0F, 1, DgArmorType.LIGHT_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.SUPERB, ArmorMaterials.LEATHER, 13751765), //#d1d5d5
+    SILK("silk", 1.5F, 0F, 1, DgArmorType.LIGHT_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.LEGENDARY, ArmorMaterials.LEATHER, 16448205), //#fafacd
     // Medium Armor
-    LEATHER("leather", 4F, 0F, DgArmorType.MEDIUM_ARMOR, DgItemQuality.BATTERED, DgItemQuality.FINE, ArmorMaterials.LEATHER, 10511680), //Default
-    CHAINS("chains", 6F, 0F, DgArmorType.MEDIUM_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.SUPERB, ArmorMaterials.CHAIN, -1),
-    HIDE("hide", 3F, 0F, DgArmorType.MEDIUM_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.LEGENDARY, ArmorMaterials.LEATHER, 13467442), // #cd7f32
+    LEATHER("leather", 4F, 0F, 2, DgArmorType.MEDIUM_ARMOR, DgItemQuality.BATTERED, DgItemQuality.FINE, ArmorMaterials.LEATHER, 10511680), //Default
+    CHAINS("chains", 6F, 0F, 2, DgArmorType.MEDIUM_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.SUPERB, ArmorMaterials.CHAIN, -1),
+    HIDE("hide", 3F, 0F, 2, DgArmorType.MEDIUM_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.LEGENDARY, ArmorMaterials.LEATHER, 13467442), // #cd7f32
     // Heavy Armor
-    IRON_PLATING("iron_plate", 10F, 2F, DgArmorType.HEAVY_ARMOR, DgItemQuality.BATTERED, DgItemQuality.FINE, ArmorMaterials.IRON, -1),
-    DIAMOND_PLATING("diamond_plate", 12F, 2F, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.SUPERB, ArmorMaterials.DIAMOND, -1),
-    NETHERITE_PLATING("netherite_plate", 15F, 3F, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.LEGENDARY, ArmorMaterials.NETHERITE, -1);
+    IRON_PLATING("iron_plate", 10F, 2F, 3, DgArmorType.HEAVY_ARMOR, DgItemQuality.BATTERED, DgItemQuality.FINE, ArmorMaterials.IRON, -1),
+    DIAMOND_PLATING("diamond_plate", 12F, 2F, 3, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.SUPERB, ArmorMaterials.DIAMOND, -1),
+    NETHERITE_PLATING("netherite_plate", 15F, 3F, 3, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.LEGENDARY, ArmorMaterials.NETHERITE, -1);
 
+    // We use leather's ratios because it's simple
+    private static final int[] baseProtectionPerSlot = new int[]{ 1, 2, 3, 1 };
 
-    public String id;
-    public float toughnessMultiplier;
-    public float baseKnockbackResistance;
-    public DgArmorType type;
-    public DgItemQuality minQuality;
-    public DgItemQuality maxQuality;
-    public ArmorMaterials placeholder;
-    public int color;
+    public final String id;
+    public final float toughness;
+    public final float baseKnockbackResistance;
+    public final float protectionMultiplier;
+    public final DgArmorType type;
+    public final DgItemQuality minQuality;
+    public final DgItemQuality maxQuality;
+    public final ArmorMaterials placeholder;
+    public final int color;
 
-    DgArmorMaterial(String id, float toughnessMultiplier, float baseKnockbackResistance, DgArmorType type, DgItemQuality minQuality, DgItemQuality maxQuality, ArmorMaterials placeholder, int color) {
+    DgArmorMaterial(String id, float toughness, float baseKnockbackResistance, float protectionMultiplier, DgArmorType type, DgItemQuality minQuality, DgItemQuality maxQuality, ArmorMaterials placeholder, int color) {
         this.id = id;
-        this.toughnessMultiplier = toughnessMultiplier;
+        this.toughness = toughness;
         this.baseKnockbackResistance = baseKnockbackResistance;
+        this.protectionMultiplier = protectionMultiplier;
         this.type = type;
         this.minQuality = minQuality;
         this.maxQuality = maxQuality;
@@ -49,13 +53,8 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
         int ord = (int) Math.round(number);
 
         DgArmorMaterial[] types = DgArmorMaterial.values();
-        return types[Math.max(0, Math.min(types.length, ord))];
+        return types[Math.max(0, Math.min(types.length - 1, ord))];
     }
-
-    public double getToughnessMultiplier() {
-        return this.toughnessMultiplier;
-    }
-
 
     @Override
     public String getId() {
@@ -74,12 +73,12 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
 
     @Override
     public int getDurability(EquipmentSlot slot) {
-        return this.placeholder.getDurability(slot);
+        return Integer.MAX_VALUE;
     }
 
     @Override
     public int getProtectionAmount(EquipmentSlot slot) {
-        return 0;
+        return (int) Math.floor(baseProtectionPerSlot[slot.getEntitySlotId()] * this.protectionMultiplier);
     }
 
     @Override
@@ -101,6 +100,7 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
     public String getName() {
         return this.id;
     }
+
     /**
      * @deprecated This function is only here because of the ArmorMaterial constraint. You should instead use getToughness(EquipmentSlot slot)
      * @return The default toughness fixed by the placeholder item.
@@ -193,9 +193,8 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
         return Items.AIR;
     }
 
-
     public boolean canBeOfQuality(DgItemQuality quality) {
         // minQuality <= quality < maxQuality
-        return quality.greaterOrEquals(minQuality) && quality.lessOrEquals(maxQuality);
+        return quality.greaterOrEquals(this.minQuality) && quality.lessOrEquals(this.maxQuality);
     }
 }

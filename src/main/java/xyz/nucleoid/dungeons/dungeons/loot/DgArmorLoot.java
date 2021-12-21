@@ -15,11 +15,15 @@ public class DgArmorLoot {
     public static ItemStack generate(Random random, double dungeonLevel) {
         DgArmorMaterial material = DgArmorMaterial.choose(random, dungeonLevel);
         DgItemQuality quality = DgItemQuality.chooseInRange(random, material.minQuality, material.maxQuality);
+
         // Choose a random piece of armor
         EquipmentSlot slot = EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, random.nextInt(4));
         DgArmorItem item = DgItems.ARMOR_MANAGER.getArmor(slot, material);
-        return item != null ? item.createStack(quality) : ItemStack.EMPTY;
+        assert item != null;
+
+        return item.createStack(quality);
     }
+
     public static ItemStack generateFixed(Random random, DgItemQuality quality) {
         List<DgArmorMaterial> materialList = Arrays.stream(DgArmorMaterial.values()).filter(mat -> mat.canBeOfQuality(quality)).toList();
         DgArmorMaterial material = materialList.get(random.nextInt(materialList.size()));
@@ -27,7 +31,8 @@ public class DgArmorLoot {
         // Choose a random piece of armor
         EquipmentSlot slot = EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, random.nextInt(4));
         DgArmorItem item = DgItems.ARMOR_MANAGER.getArmor(slot, material);
+        assert item != null;
 
-        return item != null ? item.createStack(quality) : ItemStack.EMPTY;
+        return item.createStack(quality);
     }
 }

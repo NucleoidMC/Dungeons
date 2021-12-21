@@ -32,7 +32,7 @@ public class DgMaterialMeleeWeaponItem<M extends Enum<M> & DgWeaponMaterial> ext
 
     @Override
     public ItemStack createStack(M material, DgItemQuality quality) {
-        return DgWeaponItemUtil.initMeleeMaterialWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), material, quality, this.baseMeleeDamage, this.baseSwingSpeed);
+        return DgWeaponItemUtil.initMaterialWeapon(DgWeaponItemUtil.weaponBuilder(this).build(), material, quality);
     }
 
     @Override

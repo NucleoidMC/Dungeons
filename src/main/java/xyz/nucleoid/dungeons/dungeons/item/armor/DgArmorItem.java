@@ -3,9 +3,7 @@ package xyz.nucleoid.dungeons.dungeons.item.armor;
 import com.google.common.collect.ImmutableSet;
 import eu.pb4.polymer.api.item.PolymerItem;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -20,26 +18,12 @@ import xyz.nucleoid.dungeons.dungeons.item.material.DgArmorMaterial;
 
 import java.util.*;
 
-public class DgArmorItem extends Item implements PolymerItem, DgArmor, DgFlavorTextProvider {
-    private final EquipmentSlot slot;
-    private final double baseToughness;
+public class DgArmorItem extends ArmorItem implements PolymerItem, DgFlavorTextProvider {
     private final DgArmorMaterial material;
 
-    public DgArmorItem(DgArmorMaterial material, EquipmentSlot slot, double baseToughness, Settings settings) {
-        super(settings);
-        this.slot = slot;
-        this.baseToughness = baseToughness;
+    public DgArmorItem(DgArmorMaterial material, EquipmentSlot slot, Settings settings) {
+        super(material, slot, settings);
         this.material = material;
-    }
-
-    @Override
-    public double getBaseToughness() {
-        return this.baseToughness;
-    }
-
-    @Override
-    public double getKnockBackResistance() {
-        return 0;
     }
 
     public DgArmorMaterial getMaterial() {
@@ -47,7 +31,16 @@ public class DgArmorItem extends Item implements PolymerItem, DgArmor, DgFlavorT
     }
 
     public ItemStack createStack(DgItemQuality quality) {
-        return DgArmorUtil.initArmor(DgArmorUtil.armorBuilder(this).build(), quality);
+        ItemStack stack = new ItemStack(this);
+        DgArmorMaterial material = ((DgArmorItem) stack.getItem()).getMaterial();
+        stack.getOrCreateNbt().putString(DgItemUtil.QUALITY, quality.getId());
+        stack.getOrCreateNbt().putString(DgItemUtil.MATERIAL, material.getId());
+        if (material.placeholder == ArmorMaterials.LEATHER) {
+            stack.getOrCreateSubNbt("display").putInt("color", material.color);
+        }
+
+        DgItemUtil.finishArmorOrWeapon(stack);
+        return stack;
     }
 
     @Override
@@ -57,14 +50,8 @@ public class DgArmorItem extends Item implements PolymerItem, DgArmor, DgFlavorT
                 if (quality.ordinal() >= this.material.getMinQuality().ordinal() && quality.ordinal() <= this.material.getMaxQuality().ordinal()) {
                     stacks.add(this.createStack(quality));
                 }
-
             }
         }
-    }
-
-    @Override
-    public Set<EquipmentSlot> getValidSlots(ItemStack stack) {
-        return ImmutableSet.of(this.slot);
     }
 
     private DgFlavorText generateFlavourText(Random random, DgItemQuality quality, DgArmorMaterial material) {
@@ -128,7 +115,7 @@ public class DgArmorItem extends Item implements PolymerItem, DgArmor, DgFlavorT
     public Text getName(ItemStack stack) {
         DgItemQuality quality = DgItemUtil.qualityOf(stack);
         Text materialText = this.material == null ? new LiteralText("!! Null Material !!").formatted(Formatting.RED) : new TranslatableText(this.material.getTranslationKey());
-        return DgItemUtil.formatName(new TranslatableText("item.dungeons." + getKeyFromSlot(slot), materialText), quality);
+        return DgItemUtil.formatName(new TranslatableText("item.dungeons." + getKeyFromSlot(this.slot), materialText), quality);
 
     }
 
