@@ -41,7 +41,7 @@ public enum DgRangedWeaponWood implements DgWeaponMaterial {
         int ord = (int) Math.round(number);
 
         DgRangedWeaponWood[] types = DgRangedWeaponWood.values();
-        return types[Math.max(0, Math.min(types.length, ord))];
+        return types[Math.max(0, Math.min(types.length - 1, ord))];
     }
 
     @Override

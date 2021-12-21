@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * DgArmor is a utility class used for armors.
  * @apiNote Armor Points are not present in this implementation, as this seems to only be cosmetic, and armor points
  * could be used to display a custom status bar.
  */

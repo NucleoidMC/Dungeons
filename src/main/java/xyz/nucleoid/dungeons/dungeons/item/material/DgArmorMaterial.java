@@ -23,7 +23,6 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
     DIAMOND_PLATING("diamond_plate", 12F, 2F, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.SUPERB, ArmorMaterials.DIAMOND, -1),
     NETHERITE_PLATING("netherite_plate", 15F, 3F, DgArmorType.HEAVY_ARMOR, DgItemQuality.MEDIOCRE, DgItemQuality.LEGENDARY, ArmorMaterials.NETHERITE, -1);
 
-
     public String id;
     public float toughnessMultiplier;
     public float baseKnockbackResistance;
@@ -49,13 +48,8 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
         int ord = (int) Math.round(number);
 
         DgArmorMaterial[] types = DgArmorMaterial.values();
-        return types[Math.max(0, Math.min(types.length, ord))];
+        return types[Math.max(0, Math.min(types.length - 1, ord))];
     }
-
-    public double getToughnessMultiplier() {
-        return this.toughnessMultiplier;
-    }
-
 
     @Override
     public String getId() {
@@ -77,6 +71,10 @@ public enum DgArmorMaterial implements DgMaterial, ArmorMaterial {
         return this.placeholder.getDurability(slot);
     }
 
+    /**
+     * @apiNote Armor Points are not present in this implementation, as this seems to only be cosmetic, and armor points
+     * could be used to implement another kind of status bar. Instead, armor attributes are used, see DgArmor.
+     */
     @Override
     public int getProtectionAmount(EquipmentSlot slot) {
         return 0;

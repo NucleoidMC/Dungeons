@@ -38,7 +38,7 @@ public enum DgMeleeWeaponMetal implements DgWeaponMaterial {
         int ord = (int) Math.round(number);
 
         DgMeleeWeaponMetal[] types = DgMeleeWeaponMetal.values();
-        DgMeleeWeaponMetal type = types[Math.max(0, Math.min(types.length, ord))];
+        DgMeleeWeaponMetal type = types[Math.max(0, Math.min(types.length - 1, ord))];
 
         if (replaceDamascus && type == DgMeleeWeaponMetal.DAMASCUS_STEEL) {
             type = DgMeleeWeaponMetal.STEEL;

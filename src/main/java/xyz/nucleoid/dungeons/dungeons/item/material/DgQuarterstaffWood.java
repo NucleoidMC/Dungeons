@@ -39,7 +39,7 @@ public enum DgQuarterstaffWood implements DgWeaponMaterial {
         int ord = (int) Math.round(number);
 
         DgQuarterstaffWood[] types = DgQuarterstaffWood.values();
-        return types[Math.max(0, Math.min(types.length, ord))];
+        return types[Math.max(0, Math.min(types.length - 1, ord))];
     }
 
     @Override

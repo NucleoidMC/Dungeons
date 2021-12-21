@@ -52,10 +52,7 @@ public class DgArmorItem extends ArmorItem implements PolymerItem, DgArmor, DgFl
         }
 
         Item item = DgItemUtil.finishArmorOrWeapon(stack);
-
-        if (item instanceof DgArmorItem) {
-            ((DgArmorItem) item).applyArmorAttributes(stack);
-        }
+        ((DgArmorItem) item).applyArmorAttributes(stack);
 
         return stack;
     }
