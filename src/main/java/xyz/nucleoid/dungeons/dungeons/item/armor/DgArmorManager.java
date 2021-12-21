@@ -8,30 +8,33 @@ import xyz.nucleoid.dungeons.dungeons.Dungeons;
 import xyz.nucleoid.dungeons.dungeons.item.items.DgItems;
 import xyz.nucleoid.dungeons.dungeons.item.material.DgArmorMaterial;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class DgArmorManager {
-    private final double[] equipmentBase = new double[]{1, 2, 3, 2};
     private final HashMap<Identifier, DgArmorItem> items = new HashMap<>();
 
     public DgArmorManager register() {
         for (DgArmorMaterial material : DgArmorMaterial.values()) {
-            this.add(material.id + "_boots", new DgArmorItem(material, EquipmentSlot.FEET, this.equipmentBase[0], new FabricItemSettings()));
-            this.add(material.id + "_leggings", new DgArmorItem(material, EquipmentSlot.LEGS, this.equipmentBase[1], new FabricItemSettings()));
-            this.add(material.id + "_chestplate", new DgArmorItem(material, EquipmentSlot.CHEST, this.equipmentBase[2], new FabricItemSettings()));
-            this.add(material.id + "_helmet", new DgArmorItem(material, EquipmentSlot.HEAD, this.equipmentBase[3], new FabricItemSettings()));
+            this.add(EquipmentSlot.FEET, material);
+            this.add(EquipmentSlot.LEGS, material);
+            this.add(EquipmentSlot.CHEST, material);
+            this.add(EquipmentSlot.HEAD, material);
         }
+
         return this;
     }
 
-    private void add(String id, DgArmorItem item) {
+    private void add(EquipmentSlot slot, DgArmorMaterial material) {
+        DgArmorItem item = new DgArmorItem(material, slot, new FabricItemSettings());
+        String id = getId(slot, material);
         DgItems.add(id, item);
-        this.items.put(new Identifier(Dungeons.ID, id ), item);
+        this.items.put(new Identifier(Dungeons.ID, id), item);
     }
 
     @Nullable
     public DgArmorItem getArmor(EquipmentSlot slot, DgArmorMaterial material) {
-        return this.items.getOrDefault(new Identifier(Dungeons.ID, getId(slot, material)), null);
+        return this.items.get(new Identifier(Dungeons.ID, getId(slot, material)));
     }
 
     private static String getId(EquipmentSlot slot, DgArmorMaterial material) {

@@ -18,24 +18,12 @@ import xyz.nucleoid.dungeons.dungeons.item.material.DgArmorMaterial;
 
 import java.util.*;
 
-public class DgArmorItem extends ArmorItem implements PolymerItem, DgArmor, DgFlavorTextProvider {
-    private final double baseToughness;
+public class DgArmorItem extends ArmorItem implements PolymerItem, DgFlavorTextProvider {
     private final DgArmorMaterial material;
 
-    public DgArmorItem(DgArmorMaterial material, EquipmentSlot slot, double baseToughness, Settings settings) {
+    public DgArmorItem(DgArmorMaterial material, EquipmentSlot slot, Settings settings) {
         super(material, slot, settings);
-        this.baseToughness = baseToughness;
         this.material = material;
-    }
-
-    @Override
-    public double getBaseToughness() {
-        return this.baseToughness;
-    }
-
-    @Override
-    public double getKnockBackResistance() {
-        return 0;
     }
 
     public DgArmorMaterial getMaterial() {
@@ -51,9 +39,7 @@ public class DgArmorItem extends ArmorItem implements PolymerItem, DgArmor, DgFl
             stack.getOrCreateSubNbt("display").putInt("color", material.color);
         }
 
-        Item item = DgItemUtil.finishArmorOrWeapon(stack);
-        ((DgArmorItem) item).applyArmorAttributes(stack);
-
+        DgItemUtil.finishArmorOrWeapon(stack);
         return stack;
     }
 
@@ -66,11 +52,6 @@ public class DgArmorItem extends ArmorItem implements PolymerItem, DgArmor, DgFl
                 }
             }
         }
-    }
-
-    @Override
-    public Set<EquipmentSlot> getValidSlots(ItemStack stack) {
-        return ImmutableSet.of(this.slot);
     }
 
     private DgFlavorText generateFlavourText(Random random, DgItemQuality quality, DgArmorMaterial material) {
